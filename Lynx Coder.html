@@ -78,8 +78,25 @@
     <div class="nav-cta">
       <a class="btn btn-primary btn-sm" href="#contato">Falar connosco ↗</a>
     </div>
+    <button class="nav-burger" id="navBurger" aria-label="Abrir menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
   </div>
 </header>
+
+<div class="nav-mobile" id="navMobile" aria-hidden="true">
+  <nav class="nav-mobile-links">
+    <a href="#servicos">Serviços</a>
+    <a href="#processo">Processo</a>
+    <a href="#portfolio">Portfólio</a>
+    <a href="#sobre">Sobre</a>
+    <a href="#valores">Valores</a>
+    <a href="#blog">Blog</a>
+    <a href="#depoimentos">Depoimentos</a>
+    <a href="#contato">Contato</a>
+    <a class="btn btn-primary" href="#contato" style="margin-top:16px;text-align:center">Falar connosco ↗</a>
+  </nav>
+</div>
 
 <main id="top">
 
@@ -637,6 +654,27 @@
       el.classList.add('visible');
     });
   }
+})();
+
+(function() {
+  var burger = document.getElementById('navBurger');
+  var mobile = document.getElementById('navMobile');
+  burger.addEventListener('click', function() {
+    var open = burger.classList.toggle('open');
+    mobile.classList.toggle('open', open);
+    burger.setAttribute('aria-expanded', open);
+    mobile.setAttribute('aria-hidden', !open);
+    document.body.style.overflow = open ? 'hidden' : '';
+  });
+  mobile.querySelectorAll('a').forEach(function(link) {
+    link.addEventListener('click', function() {
+      burger.classList.remove('open');
+      mobile.classList.remove('open');
+      burger.setAttribute('aria-expanded', 'false');
+      mobile.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+    });
+  });
 })();
 </script>
 </body>

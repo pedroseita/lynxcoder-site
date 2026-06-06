@@ -1,0 +1,1120 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-accent="cyan" data-hero="split" data-type="grotesk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LynxCoder — Desenvolvimento de Software</title>
+<meta name="description" content="LynxCoder é uma empresa de desenvolvimento de software fundada por Pedro Seita. Desenvolvemos sites, apps, sistemas e APIs para empresas e clientes que querem soluções reais.">
+<meta name="theme-color" content="#08090b">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%2308090b'/><path d='M16 4 C10 4 5 9 5 15 C5 21 9 26 16 28 C23 26 27 21 27 15 C27 9 22 4 16 4Z' stroke='%233df0ff' stroke-width='1.5' fill='none'/><circle cx='12.5' cy='14' r='1.2' fill='%233df0ff'/><circle cx='19.5' cy='14' r='1.2' fill='%233df0ff'/></svg>">
+<meta property="og:type" content="website">
+<meta property="og:title" content="LynxCoder — Desenvolvimento de Software">
+<meta property="og:description" content="Desenvolvemos sites, apps, sistemas e APIs para empresas e clientes que querem soluções reais, entregues com clareza e sem surpresas.">
+<meta property="og:url" content="https://lynxcoder.com.br">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<style>
+  .marquee-strip{padding:24px 0;border-block:1px solid var(--border);background:var(--bg)}
+  .marquee-clip{overflow:hidden;position:relative}
+  .marquee-clip::before,.marquee-clip::after{content:'';position:absolute;top:0;bottom:0;width:60px;z-index:2;pointer-events:none}
+  .marquee-clip::before{left:0;background:linear-gradient(to right,var(--bg),transparent)}
+  .marquee-clip::after{right:0;background:linear-gradient(to left,var(--bg),transparent)}
+  .marquee-inner{display:flex;width:max-content;animation:marquee 34s linear infinite}
+  .marquee-inner:hover{animation-play-state:paused}
+  .marquee-group{display:flex;gap:12px;padding-right:12px}
+  .tech-chip{display:flex;align-items:center;gap:8px;padding:7px 16px;border:1px solid var(--border);border-radius:999px;font-family:var(--font-mono);font-size:12px;color:var(--dim);white-space:nowrap;transition:border-color .2s,color .2s}
+  .tech-chip:hover{border-color:var(--accent);color:var(--text)}
+  .tech-chip svg{flex-shrink:0;width:14px;height:14px;opacity:.6}
+  @keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+  .values-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:16px;overflow:hidden;margin-top:56px}
+  .value-item{background:var(--bg);padding:clamp(20px,3vw,32px);display:flex;flex-direction:column;gap:10px}
+  .value-num{font-family:var(--font-mono);font-size:11px;color:var(--accent);letter-spacing:.1em}
+  .value-item h3{font-size:clamp(15px,1.4vw,17px);font-weight:700;margin:0}
+  .value-item p{font-size:14px;color:var(--dim);line-height:1.65;margin:0}
+  @media(max-width:900px){.values-grid{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:560px){.values-grid{grid-template-columns:1fr}}
+  .blog-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:56px}
+  .blog-card{background:var(--bg);border:1px solid var(--border);border-radius:16px;padding:28px;display:flex;flex-direction:column;gap:14px;transition:border-color .2s,transform .2s;text-decoration:none;color:inherit}
+  .blog-card:hover{border-color:var(--accent);transform:translateY(-3px)}
+  .blog-tag{display:inline-flex;align-items:center;padding:4px 12px;border:1px solid var(--border);border-radius:999px;font-family:var(--font-mono);font-size:11px;color:var(--accent);letter-spacing:.06em;width:fit-content}
+  .blog-card h3{font-size:clamp(15px,1.4vw,17px);font-weight:700;line-height:1.4;margin:0;color:var(--text)}
+  .blog-card p{font-size:14px;color:var(--dim);line-height:1.65;margin:0;flex:1}
+  .blog-meta{display:flex;gap:16px;font-family:var(--font-mono);font-size:11px;color:var(--dim);margin-top:auto;padding-top:16px;border-top:1px solid var(--border)}
+  @media(max-width:900px){.blog-grid{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:560px){.blog-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<!-- ============ NAV ============ -->
+<header class="nav" id="nav" data-screen-label="Nav">
+  <div class="wrap nav-inner">
+    <a class="brand" href="#top">
+      <img src="logo.png" alt="LynxCoder" class="mark" style="width:44px;height:44px;object-fit:contain;border-radius:4px">
+      <span>LynxCoder</span>
+    </a>
+    <nav class="nav-links">
+      <a href="#servicos">Serviços</a>
+      <a href="#processo">Processo</a>
+      <a href="#portfolio">Portfólio</a>
+      <a href="#sobre">Sobre</a>
+      <a href="#valores">Valores</a>
+      <a href="#blog">Blog</a>
+      <a href="#contato">Contato</a>
+    </nav>
+    <div class="nav-cta">
+      <a class="btn btn-primary btn-sm" href="#contato">Falar connosco ↗</a>
+    </div>
+  </div>
+</header>
+
+<main id="top">
+
+<!-- ============ HERO ============ -->
+<section class="hero" data-screen-label="Hero">
+  <div class="hero-bg"></div>
+  <div class="grid-lines"></div>
+  <div class="wrap hero-inner">
+    <div class="hero-grid">
+      <div class="reveal">
+        <p class="eyebrow" style="margin-bottom:18px">// desenvolvimento de software</p>
+        <h1>Transformamos ideias em <span class="accent">software que funciona</span>.</h1>
+        <p class="lead" style="margin-top:22px">
+          Da landing page ao sistema completo — desenvolvemos web, apps e APIs
+          para empresas e clientes que querem soluções reais, entregues com
+          clareza e sem surpresas.
+        </p>
+        <div class="hero-cta" style="margin-top:30px">
+          <a class="btn btn-primary" href="#servicos">Ver serviços</a>
+          <a class="btn btn-ghost" href="#contato">Entrar em contato →</a>
+        </div>
+        <p class="hero-note" style="margin-top:22px">
+          <span class="dot">●</span> Web &amp; Mobile
+          <span style="opacity:.4">·</span> APIs &amp; Sistemas
+          <span style="opacity:.4">·</span> Suporte contínuo
+        </p>
+      </div>
+
+      <!-- animated terminal -->
+      <div class="terminal reveal" aria-hidden="true">
+        <div class="term-bar">
+          <span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span>
+          <span class="term-title">lynxcoder <span class="accent">deploy</span> "lançar nova plataforma do cliente"</span>
+        </div>
+        <div class="term-body"><div id="term-out"></div><span class="cursor" id="cursor"></span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SERVIÇOS (bento) ============ -->
+<section class="section" id="servicos" data-screen-label="Servicos">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="count">01 — serviços</span>
+      <h2>Do design ao deploy, <span class="accent">entregamos</span>.</h2>
+      <p class="lead">Cobrimos todo o ciclo de desenvolvimento — do levantamento de requisitos ao produto em produção, com comunicação direta e prazos cumpridos.</p>
+    </div>
+
+    <div class="bento">
+      <article class="card span-2 reveal">
+        <div class="corner"></div>
+        <div class="ic">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.7"/><path d="M3 8h18" stroke="currentColor" stroke-width="1.4"/><path d="M7 12h4M7 15h6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+        </div>
+        <h3>Desenvolvimento Web</h3>
+        <p>Sites institucionais, landing pages de alta conversão, portais e plataformas web completas. Código limpo, performance otimizada e design fiel ao que foi acordado — sem reviravolta no escopo.</p>
+        <div class="kvs">
+          <span class="kv">stack <b>React / Next.js</b></span>
+          <span class="kv">design <b>pixel-perfect</b></span>
+          <span class="kv">entrega <b>responsiva</b></span>
+        </div>
+      </article>
+
+      <article class="card reveal">
+        <div class="corner"></div>
+        <div class="ic">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M9 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V9l-6-6Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M9 3v6h6" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M8 13h4M8 17h6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+        </div>
+        <h3>Apps &amp; Sistemas</h3>
+        <p>Aplicações web, sistemas de gestão internos e APIs robustas. Arquitetura pensada para crescer com o negócio.</p>
+      </article>
+
+      <article class="card reveal">
+        <div class="corner"></div>
+        <div class="ic">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 3v4M12 17v4M3 12h4M17 12h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1.7"/></svg>
+        </div>
+        <h3>Integrações &amp; APIs</h3>
+        <p>Conexão entre sistemas, automações e APIs REST/GraphQL. Do pagamento ao CRM, tudo integrado e funcionando.</p>
+      </article>
+
+      <article class="card reveal">
+        <div class="corner"></div>
+        <div class="ic">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+        </div>
+        <h3>Manutenção &amp; Suporte</h3>
+        <p>Evolução contínua de projetos existentes, correção de bugs, melhorias de performance e actualizações de segurança.</p>
+      </article>
+
+      <article class="card span-2 reveal">
+        <div class="corner"></div>
+        <div class="ic">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5Z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <h3>Consultoria Técnica</h3>
+        <p>Revisão de arquitectura, escolha de stack, code review e planeamento técnico para equipas que querem tomar decisões melhores. Uma conversa honesta sobre o que faz sentido para o seu projecto — sem jargão desnecessário.</p>
+        <div class="kvs">
+          <span class="kv">arquitectura <b>fundamentada</b></span>
+          <span class="kv">stack <b>adequada ao problema</b></span>
+          <span class="kv">código <b>revisado</b></span>
+          <span class="kv">decisões <b>documentadas</b></span>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============ COMO TRABALHAMOS ============ -->
+<section class="section" id="processo" style="background:var(--bg-2); border-block:1px solid var(--border)" data-screen-label="Processo">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="count">02 — processo</span>
+      <h2>Como trabalhamos consigo.</h2>
+      <p class="lead">Sem reuniões intermináveis nem surpresas no orçamento. Um processo directo do primeiro contacto à entrega.</p>
+    </div>
+    <div class="steps">
+      <div class="step reveal">
+        <span class="num">PASSO 01</span>
+        <h3>Descoberta</h3>
+        <p>Começamos por entender o problema, o público e os objectivos reais do projecto. Levantamos requisitos, alinhamos expectativas e definimos um escopo claro antes de escrever uma linha de código.</p>
+      </div>
+      <div class="step reveal">
+        <span class="num">PASSO 02</span>
+        <h3>Desenvolvimento</h3>
+        <p>Desenvolvemos em iterações curtas, com actualizações regulares e código disponível para revisão. Sem desaparecimentos de semanas — o cliente acompanha o progresso em tempo real.</p>
+      </div>
+      <div class="step reveal">
+        <span class="num">PASSO 03</span>
+        <h3>Entrega</h3>
+        <p>Deploy em produção, documentação do que foi construído e transferência de conhecimento. O projecto é seu — com código limpo, testado e pronto para evoluir.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PORTFÓLIO ============ -->
+<section class="section" id="portfolio" data-screen-label="Portfolio">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="count">03 — portfólio</span>
+      <h2>Projectos que falam por si.</h2>
+      <p class="lead">Cada projecto é uma solução real para um problema real. Os detalhes chegam em breve.</p>
+    </div>
+
+    <div class="demo-shell reveal" style="min-height:260px; display:flex; align-items:center; justify-content:center; flex-direction:column; gap:20px; text-align:center; padding: clamp(40px,6vw,80px) 40px;">
+      <div style="font-size: clamp(32px,5vw,56px); line-height:1;">
+        <span style="font-family:var(--font-mono); color:var(--accent)">{ }</span>
+      </div>
+      <h3 style="margin:0; font-size:clamp(18px,2.5vw,24px)">Em construção</h3>
+      <p class="lead" style="margin:0; max-width:480px; color:var(--dim)">
+        Os projectos estão a ser documentados e serão apresentados em breve.
+        Enquanto isso, <a href="#contato" style="color:var(--accent); text-decoration:none">entre em contacto</a> e
+        conte-nos o que precisa de construir.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SOBRE ============ -->
+<section class="section" id="sobre" style="background:var(--bg-2); border-block:1px solid var(--border)" data-screen-label="Sobre">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="count">04 — sobre</span>
+      <h2>Código com <span class="accent">propósito</span>.</h2>
+    </div>
+
+    <div class="reveal" style="max-width:720px">
+      <p style="font-size:clamp(15px,1.6vw,17px); line-height:1.75; color:var(--text); margin:0 0 20px">
+        A <strong>LynxCoder</strong> é fundada por <strong>Pedro Seita</strong>,
+        programador apaixonado por resolver problemas reais com tecnologia. O foco não é apenas
+        escrever código — é entregar software que as pessoas consigam usar e que os negócios
+        consigam sustentar.
+      </p>
+      <p style="font-size:clamp(15px,1.6vw,17px); line-height:1.75; color:var(--dim); margin:0 0 28px">
+        Cada projecto recebe atenção directa, sem intermediários nem delegação para juniores.
+        A clareza na comunicação é tão importante quanto a qualidade técnica — porque
+        software que não é entendido pela equipa que o usa não cumpre o seu propósito.
+      </p>
+      <div class="kvs">
+        <span class="kv">linguagens <b>TypeScript / Node.js</b></span>
+        <span class="kv">frontend <b>React / Next.js</b></span>
+        <span class="kv">backend <b>NestJS</b></span>
+        <span class="kv">base de dados <b>PostgreSQL</b></span>
+        <span class="kv">infra <b>Docker / Linux</b></span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ TECH STACK MARQUEE ============ -->
+<div class="marquee-strip" aria-label="Tecnologias que utilizo">
+  <div class="wrap">
+  <div class="marquee-clip">
+  <div class="marquee-inner">
+    <div class="marquee-group">
+      <span class="tech-chip">JavaScript</span>
+      <span class="tech-chip">TypeScript</span>
+      <span class="tech-chip">React</span>
+      <span class="tech-chip">Next.js</span>
+      <span class="tech-chip">Node.js</span>
+      <span class="tech-chip">NestJS</span>
+      <span class="tech-chip">Git</span>
+      <span class="tech-chip">Firebase</span>
+      <span class="tech-chip">PostgreSQL</span>
+      <span class="tech-chip">Docker</span>
+      <span class="tech-chip">GitHub</span>
+      <span class="tech-chip">Tailwind CSS</span>
+    </div>
+    <div class="marquee-group" aria-hidden="true">
+      <span class="tech-chip">JavaScript</span>
+      <span class="tech-chip">TypeScript</span>
+      <span class="tech-chip">React</span>
+      <span class="tech-chip">Next.js</span>
+      <span class="tech-chip">Node.js</span>
+      <span class="tech-chip">NestJS</span>
+      <span class="tech-chip">Git</span>
+      <span class="tech-chip">Firebase</span>
+      <span class="tech-chip">PostgreSQL</span>
+      <span class="tech-chip">Docker</span>
+      <span class="tech-chip">GitHub</span>
+      <span class="tech-chip">Tailwind CSS</span>
+    </div>
+  </div>
+  </div>
+  </div>
+</div>
+
+<!-- ============ VALORES ============ -->
+<section class="section" id="valores" data-screen-label="Valores">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="count">05 — valores</span>
+      <h2>O que guia o meu <span class="accent">trabalho</span>.</h2>
+      <p class="lead">Não são princípios numa página — são o que levo para cada projecto.</p>
+    </div>
+
+    <div class="values-grid">
+      <div class="value-item reveal">
+        <span class="value-num">01</span>
+        <h3>Transparência</h3>
+        <p>Comunicação clara evita problemas e cria confiança. Prefiro sempre alinhar expectativas, explicar decisões técnicas e manter tudo às claras durante o projecto.</p>
+      </div>
+      <div class="value-item reveal">
+        <span class="value-num">02</span>
+        <h3>Responsabilidade</h3>
+        <p>Se assumi um compromisso, eu cumpro. Prazo, qualidade e respeito ao cliente são prioridades — sem enrolação, sem desculpas.</p>
+      </div>
+      <div class="value-item reveal">
+        <span class="value-num">03</span>
+        <h3>Evolução Contínua</h3>
+        <p>Tecnologia muda rápido, e gosto disso. Estou sempre estudando, testando ferramentas novas e procurando formas melhores de resolver problemas.</p>
+      </div>
+      <div class="value-item reveal">
+        <span class="value-num">04</span>
+        <h3>Simplicidade</h3>
+        <p>Solução boa não precisa ser complicada. Gosto de criar sistemas directos, fáceis de entender e fáceis de manter.</p>
+      </div>
+      <div class="value-item reveal">
+        <span class="value-num">05</span>
+        <h3>Colaboração</h3>
+        <p>Trabalhar em conjunto é sempre melhor. Gosto de trocar ideias, ouvir feedback e construir soluções em parceria com o cliente ou com a equipa.</p>
+      </div>
+      <div class="value-item reveal">
+        <span class="value-num">06</span>
+        <h3>Qualidade</h3>
+        <p>Código limpo, arquitectura bem pensada e testes fazem parte do meu dia a dia. Não entrego nada que eu não usaria.</p>
+      </div>
+      <div class="value-item reveal">
+        <span class="value-num">07</span>
+        <h3>Empatia</h3>
+        <p>Antes de escrever código, entendo o problema. Importo-me com a experiência de quem vai usar o produto e com a realidade de quem está a pedir.</p>
+      </div>
+      <div class="value-item reveal">
+        <span class="value-num">08</span>
+        <h3>Criatividade</h3>
+        <p>Gosto de pensar fora da caixa e encontrar soluções inteligentes — às vezes simples, às vezes ousadas, mas sempre eficientes.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ BLOG ============ -->
+<section class="section" id="blog" style="background:var(--bg-2); border-block:1px solid var(--border)" data-screen-label="Blog">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="count">06 — blog</span>
+      <h2>Artigos & <span class="accent">insights</span>.</h2>
+      <p class="lead">Partilho o que aprendo — desenvolvimento, arquitectura, ferramentas e boas práticas.</p>
+    </div>
+
+    <div class="blog-grid">
+      <a class="blog-card reveal" href="https://blog.lynxcoder.com.br" target="_blank" rel="noopener">
+        <span class="blog-tag">TypeScript</span>
+        <h3>Porquê escolhi NestJS para APIs em produção</h3>
+        <p>Uma análise prática das razões pelas quais o NestJS se tornou o meu framework de eleição para construir APIs robustas e escaláveis.</p>
+        <div class="blog-meta">
+          <span>Em breve</span>
+          <span>5 min de leitura</span>
+        </div>
+      </a>
+      <a class="blog-card reveal" href="https://blog.lynxcoder.com.br" target="_blank" rel="noopener">
+        <span class="blog-tag">DevOps</span>
+        <h3>Docker para devs: do zero ao deploy com Traefik</h3>
+        <p>Como configurar um servidor VPS com Docker, Traefik e HTTPS automático — o setup que uso em todos os meus projetos.</p>
+        <div class="blog-meta">
+          <span>Em breve</span>
+          <span>8 min de leitura</span>
+        </div>
+      </a>
+      <a class="blog-card reveal" href="https://blog.lynxcoder.com.br" target="_blank" rel="noopener">
+        <span class="blog-tag">Frontend</span>
+        <h3>Next.js App Router: o que mudou e como adaptar</h3>
+        <p>As principais diferenças entre o Pages Router e o App Router, e como migrar sem quebrar o que já funciona.</p>
+        <div class="blog-meta">
+          <span>Em breve</span>
+          <span>6 min de leitura</span>
+        </div>
+      </a>
+    </div>
+
+    <div style="text-align:center; margin-top:48px">
+      <a class="btn btn-ghost" href="https://blog.lynxcoder.com.br" target="_blank" rel="noopener">
+        Ver todos os artigos →
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CONTATO ============ -->
+<section class="section" id="contato" data-screen-label="Contato">
+  <div class="wrap">
+    <div class="cta-final reveal">
+      <div class="glowring"></div>
+      <p class="eyebrow" style="justify-content:center; margin-bottom:18px">// vamos conversar</p>
+      <span class="count" style="display:block; text-align:center; margin-bottom:16px">07 — contato</span>
+      <h2>Tens um projecto? <span class="accent">Vamos conversar.</span></h2>
+      <p class="lead">
+        Descreve o que precisas de construir. Uma resposta em menos de 24 horas,
+        sem compromisso e sem formulários complicados.
+      </p>
+
+      <div style="display:flex; flex-direction:column; align-items:center; gap:16px; margin-top:32px; margin-bottom:8px">
+        <a class="btn btn-primary" href="mailto:devlynxcoder@gmail.com" style="min-width:220px; justify-content:center">
+          Enviar mensagem ↗
+        </a>
+        <div style="display:flex; gap:20px; align-items:center; flex-wrap:wrap; justify-content:center">
+          <a class="btn btn-ghost btn-sm" href="#" aria-label="LinkedIn">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6zM2 9h4v12H2z"/><circle cx="4" cy="4" r="2"/></svg>
+            LinkedIn
+          </a>
+          <a class="btn btn-ghost btn-sm" href="https://github.com/pedroseita" target="_blank" rel="noopener" aria-label="GitHub">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+            GitHub
+          </a>
+          <span style="color:var(--dim); font-family:var(--font-mono); font-size:13px">
+            devlynxcoder@gmail.com
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- ============ FOOTER ============ -->
+<footer class="footer" data-screen-label="Footer">
+  <div class="wrap">
+    <div class="foot-grid">
+      <div class="foot-brand">
+        <a class="brand" href="#top">
+          <img src="logo.png" alt="LynxCoder" class="mark" style="width:44px;height:44px;object-fit:contain;border-radius:4px">
+          <span>LynxCoder</span>
+        </a>
+        <p class="lead" style="color:var(--dim)">Desenvolvimento de software para empresas e clientes que querem soluções reais.</p>
+      </div>
+      <div class="foot-col">
+        <h4>Navegação</h4>
+        <a href="#servicos">Serviços</a>
+        <a href="#portfolio">Portfólio</a>
+        <a href="#sobre">Sobre</a>
+        <a href="#valores">Valores</a>
+        <a href="#blog">Blog</a>
+        <a href="#contato">Contato</a>
+      </div>
+      <div class="foot-col">
+        <h4>Serviços</h4>
+        <a href="#servicos">Desenvolvimento Web</a>
+        <a href="#servicos">Apps &amp; Sistemas</a>
+        <a href="#servicos">APIs &amp; Integrações</a>
+        <a href="#servicos">Consultoria Técnica</a>
+      </div>
+      <div class="foot-col">
+        <h4>Contato</h4>
+        <a href="mailto:devlynxcoder@gmail.com">devlynxcoder@gmail.com</a>
+        <a href="#">LinkedIn</a>
+        <a href="https://github.com/pedroseita" target="_blank" rel="noopener">GitHub</a>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2026 LynxCoder — Pedro Seita</span>
+      <span>// código com propósito</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* ===== LynxCoder — interactions ===== */
+(function () {
+  'use strict';
+
+  /* nav shadow on scroll */
+  var nav = document.getElementById('nav');
+  function onScroll() {
+    if (!nav) return;
+    nav.classList.toggle('scrolled', window.scrollY > 10);
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+
+  /* scroll reveal */
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---- terminal typing animation — deploy workflow ---- */
+  var out = document.getElementById('term-out');
+  var cursor = document.getElementById('cursor');
+  if (out && !reduce) {
+    var L = function (cls, text) { return { cls: cls, text: text }; };
+    var script = [
+      L('term-prompt', '$ git add . && git commit -m "feat: nova plataforma cliente"\n'),
+      L('term-dim',    '[main 3a7f2c1] feat: nova plataforma cliente\n'),
+      L('term-dim',    ' 12 files changed, 847 insertions(+), 23 deletions(-)\n'),
+      L('term-prompt', '\n$ git push origin main\n'),
+      L('term-comment','▸ a enviar para produção…\n'),
+      L('term-path',   '  ~ build concluído em 34s\n'),
+      L('term-path',   '  ~ testes passados: 96/96\n'),
+      L('term-add',    '  + deploy em lynxcoder.com.br\n'),
+      L('term-ok',     '\n✔ em produção — https://cliente.com.br ↗\n')
+    ];
+
+    var li = 0, ci = 0;
+    function type() {
+      if (li >= script.length) {
+        setTimeout(function () { out.innerHTML = ''; li = 0; ci = 0; type(); }, 4200);
+        return;
+      }
+      var item = script[li];
+      if (ci === 0) {
+        var span = document.createElement('span');
+        span.className = item.cls;
+        span.dataset.li = li;
+        out.appendChild(span);
+      }
+      var span2 = out.querySelector('span[data-li="' + li + '"]');
+      span2.textContent = item.text.slice(0, ci + 1);
+      ci++;
+      if (ci >= item.text.length) { li++; ci = 0; }
+      var ch = item.text[Math.max(0, ci - 1)];
+      var delay = ch === '\n' ? 90 : (item.cls === 'term-add' || item.cls === 'term-dim' ? 8 : 16);
+      setTimeout(type, delay);
+    }
+    var startSeen = false;
+    var term = out.closest('.terminal');
+    function kick() { if (!startSeen) { startSeen = true; type(); } }
+    if ('IntersectionObserver' in window && term) {
+      var tio = new IntersectionObserver(function (es) {
+        es.forEach(function (e) { if (e.isIntersecting) { kick(); tio.disconnect(); } });
+      }, { threshold: 0.4 });
+      tio.observe(term);
+      setTimeout(kick, 1000);
+    } else { kick(); }
+  } else if (out && reduce) {
+    out.textContent = '$ git push origin main\n✔ em produção — deploy concluído com sucesso';
+    if (cursor) cursor.style.display = 'none';
+  }
+
+  /* scroll reveal for .reveal elements */
+  if (!reduce && 'IntersectionObserver' in window) {
+    var revealEls = document.querySelectorAll('.reveal');
+    var rio = new IntersectionObserver(function(entries) {
+      entries.forEach(function(e) {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+          rio.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.12 });
+    revealEls.forEach(function(el) { rio.observe(el); });
+  } else {
+    document.querySelectorAll('.reveal').forEach(function(el) {
+      el.classList.add('visible');
+    });
+  }
+})();
+</script>
+<!-- tweaks-panel removed for production -->
+<!--
+<script type="text/babel" data-presets="react">
+/* ---- inlined tweaks-panel.jsx (avoids flaky external fetch) ---- */
+// @ds-adherence-ignore -- omelette starter scaffold (raw elements/hex/px by design)
+
+
+// ─────────────────────────────────────────────────────────────────────────────
+
+const __TWEAKS_STYLE = `
+  .twk-panel{position:fixed;right:16px;bottom:16px;z-index:2147483646;width:280px;
+    max-height:calc(100vh - 32px);display:flex;flex-direction:column;
+    transform:scale(var(--dc-inv-zoom,1));transform-origin:bottom right;
+    background:rgba(250,249,247,.78);color:#29261b;
+    -webkit-backdrop-filter:blur(24px) saturate(160%);backdrop-filter:blur(24px) saturate(160%);
+    border:.5px solid rgba(255,255,255,.6);border-radius:14px;
+    box-shadow:0 1px 0 rgba(255,255,255,.5) inset,0 12px 40px rgba(0,0,0,.18);
+    font:11.5px/1.4 ui-sans-serif,system-ui,-apple-system,sans-serif;overflow:hidden}
+  .twk-hd{display:flex;align-items:center;justify-content:space-between;
+    padding:10px 8px 10px 14px;cursor:move;user-select:none}
+  .twk-hd b{font-size:12px;font-weight:600;letter-spacing:.01em}
+  .twk-x{appearance:none;border:0;background:transparent;color:rgba(41,38,27,.55);
+    width:22px;height:22px;border-radius:6px;cursor:default;font-size:13px;line-height:1}
+  .twk-x:hover{background:rgba(0,0,0,.06);color:#29261b}
+  .twk-body{padding:2px 14px 14px;display:flex;flex-direction:column;gap:10px;
+    overflow-y:auto;overflow-x:hidden;min-height:0;
+    scrollbar-width:thin;scrollbar-color:rgba(0,0,0,.15) transparent}
+  .twk-body::-webkit-scrollbar{width:8px}
+  .twk-body::-webkit-scrollbar-track{background:transparent;margin:2px}
+  .twk-body::-webkit-scrollbar-thumb{background:rgba(0,0,0,.15);border-radius:4px;
+    border:2px solid transparent;background-clip:content-box}
+  .twk-body::-webkit-scrollbar-thumb:hover{background:rgba(0,0,0,.25);
+    border:2px solid transparent;background-clip:content-box}
+  .twk-row{display:flex;flex-direction:column;gap:5px}
+  .twk-row-h{flex-direction:row;align-items:center;justify-content:space-between;gap:10px}
+  .twk-lbl{display:flex;justify-content:space-between;align-items:baseline;
+    color:rgba(41,38,27,.72)}
+  .twk-lbl>span:first-child{font-weight:500}
+  .twk-val{color:rgba(41,38,27,.5);font-variant-numeric:tabular-nums}
+
+  .twk-sect{font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;
+    color:rgba(41,38,27,.45);padding:10px 0 0}
+  .twk-sect:first-child{padding-top:0}
+
+  .twk-field{appearance:none;box-sizing:border-box;width:100%;min-width:0;height:26px;padding:0 8px;
+    border:.5px solid rgba(0,0,0,.1);border-radius:7px;
+    background:rgba(255,255,255,.6);color:inherit;font:inherit;outline:none}
+  .twk-field:focus{border-color:rgba(0,0,0,.25);background:rgba(255,255,255,.85)}
+  select.twk-field{padding-right:22px;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path fill='rgba(0,0,0,.5)' d='M0 0h10L5 6z'/></svg>");
+    background-repeat:no-repeat;background-position:right 8px center}
+
+  .twk-slider{appearance:none;-webkit-appearance:none;width:100%;height:4px;margin:6px 0;
+    border-radius:999px;background:rgba(0,0,0,.12);outline:none}
+  .twk-slider::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;
+    width:14px;height:14px;border-radius:50%;background:#fff;
+    border:.5px solid rgba(0,0,0,.12);box-shadow:0 1px 3px rgba(0,0,0,.2);cursor:default}
+  .twk-slider::-moz-range-thumb{width:14px;height:14px;border-radius:50%;
+    background:#fff;border:.5px solid rgba(0,0,0,.12);box-shadow:0 1px 3px rgba(0,0,0,.2);cursor:default}
+
+  .twk-seg{position:relative;display:flex;padding:2px;border-radius:8px;
+    background:rgba(0,0,0,.06);user-select:none}
+  .twk-seg-thumb{position:absolute;top:2px;bottom:2px;border-radius:6px;
+    background:rgba(255,255,255,.9);box-shadow:0 1px 2px rgba(0,0,0,.12);
+    transition:left .15s cubic-bezier(.3,.7,.4,1),width .15s}
+  .twk-seg.dragging .twk-seg-thumb{transition:none}
+  .twk-seg button{appearance:none;position:relative;z-index:1;flex:1;border:0;
+    background:transparent;color:inherit;font:inherit;font-weight:500;min-height:22px;
+    border-radius:6px;cursor:default;padding:4px 6px;line-height:1.2;
+    overflow-wrap:anywhere}
+
+  .twk-toggle{position:relative;width:32px;height:18px;border:0;border-radius:999px;
+    background:rgba(0,0,0,.15);transition:background .15s;cursor:default;padding:0}
+  .twk-toggle[data-on="1"]{background:#34c759}
+  .twk-toggle i{position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;
+    background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.25);transition:transform .15s}
+  .twk-toggle[data-on="1"] i{transform:translateX(14px)}
+
+  .twk-num{display:flex;align-items:center;box-sizing:border-box;min-width:0;height:26px;padding:0 0 0 8px;
+    border:.5px solid rgba(0,0,0,.1);border-radius:7px;background:rgba(255,255,255,.6)}
+  .twk-num-lbl{font-weight:500;color:rgba(41,38,27,.6);cursor:ew-resize;
+    user-select:none;padding-right:8px}
+  .twk-num input{flex:1;min-width:0;height:100%;border:0;background:transparent;
+    font:inherit;font-variant-numeric:tabular-nums;text-align:right;padding:0 8px 0 0;
+    outline:none;color:inherit;-moz-appearance:textfield}
+  .twk-num input::-webkit-inner-spin-button,.twk-num input::-webkit-outer-spin-button{
+    -webkit-appearance:none;margin:0}
+  .twk-num-unit{padding-right:8px;color:rgba(41,38,27,.45)}
+
+  .twk-btn{appearance:none;height:26px;padding:0 12px;border:0;border-radius:7px;
+    background:rgba(0,0,0,.78);color:#fff;font:inherit;font-weight:500;cursor:default}
+  .twk-btn:hover{background:rgba(0,0,0,.88)}
+  .twk-btn.secondary{background:rgba(0,0,0,.06);color:inherit}
+  .twk-btn.secondary:hover{background:rgba(0,0,0,.1)}
+
+  .twk-swatch{appearance:none;-webkit-appearance:none;width:56px;height:22px;
+    border:.5px solid rgba(0,0,0,.1);border-radius:6px;padding:0;cursor:default;
+    background:transparent;flex-shrink:0}
+  .twk-swatch::-webkit-color-swatch-wrapper{padding:0}
+  .twk-swatch::-webkit-color-swatch{border:0;border-radius:5.5px}
+  .twk-swatch::-moz-color-swatch{border:0;border-radius:5.5px}
+
+  .twk-chips{display:flex;gap:6px}
+  .twk-chip{position:relative;appearance:none;flex:1;min-width:0;height:46px;
+    padding:0;border:0;border-radius:6px;overflow:hidden;cursor:default;
+    box-shadow:0 0 0 .5px rgba(0,0,0,.12),0 1px 2px rgba(0,0,0,.06);
+    transition:transform .12s cubic-bezier(.3,.7,.4,1),box-shadow .12s}
+  .twk-chip:hover{transform:translateY(-1px);
+    box-shadow:0 0 0 .5px rgba(0,0,0,.18),0 4px 10px rgba(0,0,0,.12)}
+  .twk-chip[data-on="1"]{box-shadow:0 0 0 1.5px rgba(0,0,0,.85),
+    0 2px 6px rgba(0,0,0,.15)}
+  .twk-chip>span{position:absolute;top:0;bottom:0;right:0;width:34%;
+    display:flex;flex-direction:column;box-shadow:-1px 0 0 rgba(0,0,0,.1)}
+  .twk-chip>span>i{flex:1;box-shadow:0 -1px 0 rgba(0,0,0,.1)}
+  .twk-chip>span>i:first-child{box-shadow:none}
+  .twk-chip svg{position:absolute;top:6px;left:6px;width:13px;height:13px;
+    filter:drop-shadow(0 1px 1px rgba(0,0,0,.3))}
+`;
+
+// ── useTweaks ───────────────────────────────────────────────────────────────
+// Single source of truth for tweak values. setTweak persists via the host
+// (__edit_mode_set_keys → host rewrites the EDITMODE block on disk).
+function useTweaks(defaults) {
+  const [values, setValues] = React.useState(defaults);
+  // Accepts either setTweak('key', value) or setTweak({ key: value, ... }) so a
+  // useState-style call doesn't write a "[object Object]" key into the persisted
+  // JSON block.
+  const setTweak = React.useCallback((keyOrEdits, val) => {
+    const edits = typeof keyOrEdits === 'object' && keyOrEdits !== null
+      ? keyOrEdits : { [keyOrEdits]: val };
+    setValues((prev) => ({ ...prev, ...edits }));
+    window.parent.postMessage({ type: '__edit_mode_set_keys', edits }, '*');
+    // Same-window signal so in-page listeners (deck-stage rail thumbnails)
+    // can react — the parent message only reaches the host, not peers.
+    window.dispatchEvent(new CustomEvent('tweakchange', { detail: edits }));
+  }, []);
+  return [values, setTweak];
+}
+
+// ── TweaksPanel ─────────────────────────────────────────────────────────────
+// Floating shell. Registers the protocol listener BEFORE announcing
+// availability — if the announce ran first, the host's activate could land
+// before our handler exists and the toolbar toggle would silently no-op.
+// The close button posts __edit_mode_dismissed so the host's toolbar toggle
+// flips off in lockstep; the host echoes __deactivate_edit_mode back which
+// is what actually hides the panel.
+function TweaksPanel({ title = 'Tweaks', children }) {
+  const [open, setOpen] = React.useState(false);
+  const dragRef = React.useRef(null);
+  const offsetRef = React.useRef({ x: 16, y: 16 });
+  const PAD = 16;
+
+  const clampToViewport = React.useCallback(() => {
+    const panel = dragRef.current;
+    if (!panel) return;
+    const w = panel.offsetWidth, h = panel.offsetHeight;
+    const maxRight = Math.max(PAD, window.innerWidth - w - PAD);
+    const maxBottom = Math.max(PAD, window.innerHeight - h - PAD);
+    offsetRef.current = {
+      x: Math.min(maxRight, Math.max(PAD, offsetRef.current.x)),
+      y: Math.min(maxBottom, Math.max(PAD, offsetRef.current.y)),
+    };
+    panel.style.right = offsetRef.current.x + 'px';
+    panel.style.bottom = offsetRef.current.y + 'px';
+  }, []);
+
+  React.useEffect(() => {
+    if (!open) return;
+    clampToViewport();
+    if (typeof ResizeObserver === 'undefined') {
+      window.addEventListener('resize', clampToViewport);
+      return () => window.removeEventListener('resize', clampToViewport);
+    }
+    const ro = new ResizeObserver(clampToViewport);
+    ro.observe(document.documentElement);
+    return () => ro.disconnect();
+  }, [open, clampToViewport]);
+
+  React.useEffect(() => {
+    const onMsg = (e) => {
+      const t = e?.data?.type;
+      if (t === '__activate_edit_mode') setOpen(true);
+      else if (t === '__deactivate_edit_mode') setOpen(false);
+    };
+    window.addEventListener('message', onMsg);
+    window.parent.postMessage({ type: '__edit_mode_available' }, '*');
+    return () => window.removeEventListener('message', onMsg);
+  }, []);
+
+  const dismiss = () => {
+    setOpen(false);
+    window.parent.postMessage({ type: '__edit_mode_dismissed' }, '*');
+  };
+
+  const onDragStart = (e) => {
+    const panel = dragRef.current;
+    if (!panel) return;
+    const r = panel.getBoundingClientRect();
+    const sx = e.clientX, sy = e.clientY;
+    const startRight = window.innerWidth - r.right;
+    const startBottom = window.innerHeight - r.bottom;
+    const move = (ev) => {
+      offsetRef.current = {
+        x: startRight - (ev.clientX - sx),
+        y: startBottom - (ev.clientY - sy),
+      };
+      clampToViewport();
+    };
+    const up = () => {
+      window.removeEventListener('mousemove', move);
+      window.removeEventListener('mouseup', up);
+    };
+    window.addEventListener('mousemove', move);
+    window.addEventListener('mouseup', up);
+  };
+
+  if (!open) return null;
+  return (
+    <>
+      <style>{__TWEAKS_STYLE}</style>
+      <div ref={dragRef} className="twk-panel" data-omelette-chrome=""
+           style={{ right: offsetRef.current.x, bottom: offsetRef.current.y }}>
+        <div className="twk-hd" onMouseDown={onDragStart}>
+          <b>{title}</b>
+          <button className="twk-x" aria-label="Close tweaks"
+                  onMouseDown={(e) => e.stopPropagation()}
+                  onClick={dismiss}>✕</button>
+        </div>
+        <div className="twk-body">
+          {children}
+        </div>
+      </div>
+    </>
+  );
+}
+
+// ── Layout helpers ──────────────────────────────────────────────────────────
+
+function TweakSection({ label, children }) {
+  return (
+    <>
+      <div className="twk-sect">{label}</div>
+      {children}
+    </>
+  );
+}
+
+function TweakRow({ label, value, children, inline = false }) {
+  return (
+    <div className={inline ? 'twk-row twk-row-h' : 'twk-row'}>
+      <div className="twk-lbl">
+        <span>{label}</span>
+        {value != null && <span className="twk-val">{value}</span>}
+      </div>
+      {children}
+    </div>
+  );
+}
+
+// ── Controls ────────────────────────────────────────────────────────────────
+
+function TweakSlider({ label, value, min = 0, max = 100, step = 1, unit = '', onChange }) {
+  return (
+    <TweakRow label={label} value={`${value}${unit}`}>
+      <input type="range" className="twk-slider" min={min} max={max} step={step}
+             value={value} onChange={(e) => onChange(Number(e.target.value))} />
+    </TweakRow>
+  );
+}
+
+function TweakToggle({ label, value, onChange }) {
+  return (
+    <div className="twk-row twk-row-h">
+      <div className="twk-lbl"><span>{label}</span></div>
+      <button type="button" className="twk-toggle" data-on={value ? '1' : '0'}
+              role="switch" aria-checked={!!value}
+              onClick={() => onChange(!value)}><i /></button>
+    </div>
+  );
+}
+
+function TweakRadio({ label, value, options, onChange }) {
+  const trackRef = React.useRef(null);
+  const [dragging, setDragging] = React.useState(false);
+  // The active value is read by pointer-move handlers attached for the lifetime
+  // of a drag — ref it so a stale closure doesn't fire onChange for every move.
+  const valueRef = React.useRef(value);
+  valueRef.current = value;
+
+  // Segments wrap mid-word once per-segment width runs out. The track is
+  // ~248px (280 panel − 28 body pad − 4 seg pad), each button loses 12px
+  // to its own padding, and 11.5px system-ui averages ~6.3px/char — so 2
+  // options fit ~16 chars each, 3 fit ~10. Past that (or >3 options), fall
+  // back to a dropdown rather than wrap.
+  const labelLen = (o) => String(typeof o === 'object' ? o.label : o).length;
+  const maxLen = options.reduce((m, o) => Math.max(m, labelLen(o)), 0);
+  const fitsAsSegments = maxLen <= ({ 2: 16, 3: 10 }[options.length] ?? 0);
+  if (!fitsAsSegments) {
+    // <select> emits strings — map back to the original option value so the
+    // fallback stays type-preserving (numbers, booleans) like the segment path.
+    const resolve = (s) => {
+      const m = options.find((o) => String(typeof o === 'object' ? o.value : o) === s);
+      return m === undefined ? s : typeof m === 'object' ? m.value : m;
+    };
+    return <TweakSelect label={label} value={value} options={options}
+                        onChange={(s) => onChange(resolve(s))} />;
+  }
+  const opts = options.map((o) => (typeof o === 'object' ? o : { value: o, label: o }));
+  const idx = Math.max(0, opts.findIndex((o) => o.value === value));
+  const n = opts.length;
+
+  const segAt = (clientX) => {
+    const r = trackRef.current.getBoundingClientRect();
+    const inner = r.width - 4;
+    const i = Math.floor(((clientX - r.left - 2) / inner) * n);
+    return opts[Math.max(0, Math.min(n - 1, i))].value;
+  };
+
+  const onPointerDown = (e) => {
+    setDragging(true);
+    const v0 = segAt(e.clientX);
+    if (v0 !== valueRef.current) onChange(v0);
+    const move = (ev) => {
+      if (!trackRef.current) return;
+      const v = segAt(ev.clientX);
+      if (v !== valueRef.current) onChange(v);
+    };
+    const up = () => {
+      setDragging(false);
+      window.removeEventListener('pointermove', move);
+      window.removeEventListener('pointerup', up);
+    };
+    window.addEventListener('pointermove', move);
+    window.addEventListener('pointerup', up);
+  };
+
+  return (
+    <TweakRow label={label}>
+      <div ref={trackRef} role="radiogroup" onPointerDown={onPointerDown}
+           className={dragging ? 'twk-seg dragging' : 'twk-seg'}>
+        <div className="twk-seg-thumb"
+             style={{ left: `calc(2px + ${idx} * (100% - 4px) / ${n})`,
+                      width: `calc((100% - 4px) / ${n})` }} />
+        {opts.map((o) => (
+          <button key={o.value} type="button" role="radio" aria-checked={o.value === value}>
+            {o.label}
+          </button>
+        ))}
+      </div>
+    </TweakRow>
+  );
+}
+
+function TweakSelect({ label, value, options, onChange }) {
+  return (
+    <TweakRow label={label}>
+      <select className="twk-field" value={value} onChange={(e) => onChange(e.target.value)}>
+        {options.map((o) => {
+          const v = typeof o === 'object' ? o.value : o;
+          const l = typeof o === 'object' ? o.label : o;
+          return <option key={v} value={v}>{l}</option>;
+        })}
+      </select>
+    </TweakRow>
+  );
+}
+
+function TweakText({ label, value, placeholder, onChange }) {
+  return (
+    <TweakRow label={label}>
+      <input className="twk-field" type="text" value={value} placeholder={placeholder}
+             onChange={(e) => onChange(e.target.value)} />
+    </TweakRow>
+  );
+}
+
+function TweakNumber({ label, value, min, max, step = 1, unit = '', onChange }) {
+  const clamp = (n) => {
+    if (min != null && n < min) return min;
+    if (max != null && n > max) return max;
+    return n;
+  };
+  const startRef = React.useRef({ x: 0, val: 0 });
+  const onScrubStart = (e) => {
+    e.preventDefault();
+    startRef.current = { x: e.clientX, val: value };
+    const decimals = (String(step).split('.')[1] || '').length;
+    const move = (ev) => {
+      const dx = ev.clientX - startRef.current.x;
+      const raw = startRef.current.val + dx * step;
+      const snapped = Math.round(raw / step) * step;
+      onChange(clamp(Number(snapped.toFixed(decimals))));
+    };
+    const up = () => {
+      window.removeEventListener('pointermove', move);
+      window.removeEventListener('pointerup', up);
+    };
+    window.addEventListener('pointermove', move);
+    window.addEventListener('pointerup', up);
+  };
+  return (
+    <div className="twk-num">
+      <span className="twk-num-lbl" onPointerDown={onScrubStart}>{label}</span>
+      <input type="number" value={value} min={min} max={max} step={step}
+             onChange={(e) => onChange(clamp(Number(e.target.value)))} />
+      {unit && <span className="twk-num-unit">{unit}</span>}
+    </div>
+  );
+}
+
+// Relative-luminance contrast pick — checkmarks drawn over a swatch need to
+// read on both #111 and #fafafa without per-option configuration. Hex input
+// only (#rgb / #rrggbb); named or rgb()/hsl() colors fall through to "light".
+function __twkIsLight(hex) {
+  const h = String(hex).replace('#', '');
+  const x = h.length === 3 ? h.replace(/./g, (c) => c + c) : h.padEnd(6, '0');
+  const n = parseInt(x.slice(0, 6), 16);
+  if (Number.isNaN(n)) return true;
+  const r = (n >> 16) & 255, g = (n >> 8) & 255, b = n & 255;
+  return r * 299 + g * 587 + b * 114 > 148000;
+}
+
+const __TwkCheck = ({ light }) => (
+  <svg viewBox="0 0 14 14" aria-hidden="true">
+    <path d="M3 7.2 5.8 10 11 4.2" fill="none" strokeWidth="2.2"
+          strokeLinecap="round" strokeLinejoin="round"
+          stroke={light ? 'rgba(0,0,0,.78)' : '#fff'} />
+  </svg>
+);
+
+// TweakColor — curated color/palette picker. Each option is either a single
+// hex string or an array of 1-5 hex strings; the card adapts — a lone color
+// renders solid, a palette renders colors[0] as the hero (left ~2/3) with the
+// rest stacked in a sharp column on the right. onChange emits the
+// option in the shape it was passed (string stays string, array stays array).
+// Without options it falls back to the native color input for back-compat.
+function TweakColor({ label, value, options, onChange }) {
+  if (!options || !options.length) {
+    return (
+      <div className="twk-row twk-row-h">
+        <div className="twk-lbl"><span>{label}</span></div>
+        <input type="color" className="twk-swatch" value={value}
+               onChange={(e) => onChange(e.target.value)} />
+      </div>
+    );
+  }
+  // Native <input type=color> emits lowercase hex per the HTML spec, so
+  // compare case-insensitively. String() guards JSON.stringify(undefined),
+  // which returns the primitive undefined (no .toLowerCase).
+  const key = (o) => String(JSON.stringify(o)).toLowerCase();
+  const cur = key(value);
+  return (
+    <TweakRow label={label}>
+      <div className="twk-chips" role="radiogroup">
+        {options.map((o, i) => {
+          const colors = Array.isArray(o) ? o : [o];
+          const [hero, ...rest] = colors;
+          const sup = rest.slice(0, 4);
+          const on = key(o) === cur;
+          return (
+            <button key={i} type="button" className="twk-chip" role="radio"
+                    aria-checked={on} data-on={on ? '1' : '0'}
+                    aria-label={colors.join(', ')} title={colors.join(' · ')}
+                    style={{ background: hero }}
+                    onClick={() => onChange(o)}>
+              {sup.length > 0 && (
+                <span>
+                  {sup.map((c, j) => <i key={j} style={{ background: c }} />)}
+                </span>
+              )}
+              {on && <__TwkCheck light={__twkIsLight(hero)} />}
+            </button>
+          );
+        })}
+      </div>
+    </TweakRow>
+  );
+}
+
+function TweakButton({ label, onClick, secondary = false }) {
+  return (
+    <button type="button" className={secondary ? 'twk-btn secondary' : 'twk-btn'}
+            onClick={onClick}>{label}</button>
+  );
+}
+
+Object.assign(window, {
+  useTweaks, TweaksPanel, TweakSection, TweakRow,
+  TweakSlider, TweakToggle, TweakRadio, TweakSelect,
+  TweakText, TweakNumber, TweakColor, TweakButton,
+});
+
+/* ---- inlined tweaks.jsx ---- */
+// tweaks.jsx — LynxCoder design tweaks (mounted island, applies to the vanilla page)
+/* global React, ReactDOM, useTweaks, TweaksPanel, TweakSection, TweakColor, TweakRadio */
+
+const LYNX_TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+  "accent": "cyan",
+  "hero": "split",
+  "type": "grotesk"
+}/*EDITMODE-END*/;
+
+const ACCENT_SWATCH = {
+  lime:   "#b6ff3d",
+  cyan:   "#3df0ff",
+  amber:  "#ffb43d",
+  violet: "#a98bff"
+};
+
+function LynxTweaks() {
+  const [t, setTweak] = useTweaks(LYNX_TWEAK_DEFAULTS);
+  const root = document.documentElement;
+
+  React.useEffect(() => { root.setAttribute("data-accent", t.accent); }, [t.accent]);
+  React.useEffect(() => { root.setAttribute("data-hero", t.hero); }, [t.hero]);
+  React.useEffect(() => { root.setAttribute("data-type", t.type); }, [t.type]);
+
+  return (
+    <TweaksPanel title="Ajustes">
+      <TweakSection label="Destaque" />
+      <TweakColor
+        label="Cor de destaque"
+        value={ACCENT_SWATCH[t.accent]}
+        options={[ACCENT_SWATCH.lime, ACCENT_SWATCH.cyan, ACCENT_SWATCH.amber, ACCENT_SWATCH.violet]}
+        onChange={(hex) => {
+          const key = Object.keys(ACCENT_SWATCH).find((k) => ACCENT_SWATCH[k] === hex) || "cyan";
+          setTweak("accent", key);
+        }}
+      />
+      <TweakSection label="Layout do hero" />
+      <TweakRadio
+        label="Composição"
+        value={t.hero}
+        options={[{value:"split",label:"Dividido"},{value:"centered",label:"Centralizado"}]}
+        onChange={(v) => setTweak("hero", v)}
+      />
+      <TweakSection label="Tipografia" />
+      <TweakRadio
+        label="Fonte de exibição"
+        value={t.type}
+        options={[{value:"grotesk",label:"Grotesk"},{value:"mono",label:"Mono"}]}
+        onChange={(v) => setTweak("type", v)}
+      />
+    </TweaksPanel>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("tweaks-root")).render(<LynxTweaks />);
+</script>
+-->
+</body>
+</html>

@@ -1,0 +1,17 @@
+services:
+  site:
+    build: .
+    container_name: lynxcoder-site
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.lynxcoder.rule=Host(`lynxcoder.com.br`) || Host(`www.lynxcoder.com.br`)"
+      - "traefik.http.routers.lynxcoder.entrypoints=websecure"
+      - "traefik.http.routers.lynxcoder.tls.certresolver=letsencrypt"
+      - "traefik.http.services.lynxcoder.loadbalancer.server.port=80"
+    networks:
+      - proxy
+
+networks:
+  proxy:
+    external: true

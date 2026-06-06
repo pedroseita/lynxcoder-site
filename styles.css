@@ -322,6 +322,10 @@ h3 { font-size: clamp(20px, 2.2vw, 26px); }
 .footer { border-top:1px solid var(--border); padding-block: 60px 40px; }
 .foot-grid { display:grid; grid-template-columns: 1.6fr repeat(3, 1fr); gap: 40px; }
 .foot-brand .lead { font-size:14.5px; max-width: 32ch; margin-top:14px; }
+.foot-socials { display:flex; gap:10px; margin-top:20px; }
+.foot-social { display:flex; align-items:center; justify-content:center; width:36px; height:36px; border:1px solid var(--border); border-radius:8px; color:var(--dim); transition:color .2s,border-color .2s; }
+.foot-social:hover { color:var(--accent); border-color:var(--accent); }
+.foot-social svg { width:16px; height:16px; }
 .foot-col h4 { font-family:var(--font-mono); font-size:12px; letter-spacing:.12em; text-transform:uppercase; color: var(--faint); margin:0 0 16px; }
 .foot-col a { display:block; color: var(--dim); font-size:14.5px; padding: 5px 0; }
 .foot-col a:hover { color: var(--accent); }

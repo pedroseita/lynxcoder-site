@@ -21,6 +21,7 @@ const { verifyPassword } = require('../lib/password');
 const totp = require('../lib/totp');
 const { zipStream } = require('../lib/zip');
 const propostas = require('./propostas');
+const flags = require('../lib/flags');
 
 const ADMIN_HOST = (process.env.ADMIN_HOST || 'admin.lynxcoder.com.br').toLowerCase();
 const CREDENTIALS = path.join(DIRS.admin, 'credentials.json');
@@ -93,6 +94,7 @@ async function listPedidos() {
       subtitulo: `${dados.negocio.especialidade} · ${dados.negocio.cidade}`,
       detalhe: dados.plano.tipo === 'essencial' ? `${dados.plano.subdominio}.lynxcoder.com.br` : dados.plano.dominio,
       status: admin.status || 'novo',
+      teste: !!dados.teste,
     });
   }
   return out;
@@ -236,9 +238,10 @@ module.exports = async function adminRoutes(app) {
       ok: true,
       items,
       contagem: {
-        pedidosNovos: items.filter((i) => i.tipo === 'pedido' && i.status === 'novo').length,
+        pedidosNovos: items.filter((i) => i.tipo === 'pedido' && i.status === 'novo' && !i.teste).length,
         mensagensNovas: items.filter((i) => i.tipo === 'mensagem' && i.status === 'nova').length,
-        propostasAceitas: items.filter((i) => i.tipo === 'proposta' && i.status === 'aceita').length,
+        propostasAceitas: items.filter((i) => i.tipo === 'proposta' && i.status === 'aceita' && !i.teste).length,
+        testes: items.filter((i) => i.teste).length,
       },
     };
   });
@@ -330,6 +333,15 @@ module.exports = async function adminRoutes(app) {
     await fsp.rm(mensagemFile(req.params.id), { force: true });
     req.log.info({ id: req.params.id }, 'mensagem excluída no painel');
     return { ok: true };
+  });
+
+  // ---------- manutenção (bandeira lida pelo nginx do site) ----------
+  app.get('/adm/manutencao', async () => ({ ok: true, ...(await flags.estado()) }));
+  app.put('/adm/manutencao', async (req) => {
+    const ativo = !!(req.body && req.body.ativo === true);
+    const r = await flags.definir(ativo);
+    req.log.info({ ativo }, 'manutenção alterada no painel');
+    return { ok: true, ...r };
   });
 
   // ---------- propostas e configuração (routes/propostas.js) ----------

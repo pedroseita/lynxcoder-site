@@ -92,6 +92,8 @@
     $('topUser').textContent = user;
     loadItems().then(route);
     loadBlog();
+    loadMaint();
+    loadFormOptions();
   }
 
   $('loginForm').addEventListener('submit', function (e) {
@@ -135,6 +137,9 @@
     var visible = state.items.filter(function (it) {
       if (state.type !== 'todos' && it.tipo !== state.type) return false;
       var arch = ARCHIVED.indexOf(it.status) !== -1;
+      if (state.status === 'testes') return !!it.teste;
+      if (state.status === 'todos') return true;
+      if (it.teste) return false;
       if (state.status === 'abertos') return !arch;
       if (state.status === 'arquivados') return arch;
       return true;
@@ -149,6 +154,7 @@
         h('span', { class: 'item-top' },
           h('span', { class: 'kind', text: KIND[it.tipo] }),
           h('span', { class: 'item-title', text: it.titulo }),
+          it.teste ? h('span', { class: 'badge st-teste', text: 'Teste' }) : null,
           badge(it.tipo, it.status)),
         h('span', { class: 'item-sub', text: it.subtitulo }),
         h('span', { class: 'item-top' },
@@ -157,6 +163,7 @@
       )));
     });
     $('emptyList').hidden = visible.length > 0;
+    $('clearTests').hidden = state.status !== 'testes' || !visible.length;
   }
 
   $('typeTabs').addEventListener('click', function (e) {
@@ -194,12 +201,17 @@
 
   function route() {
     var layout = document.querySelector('.layout');
-    if (location.hash === '#/nova-proposta' || location.hash === '#/config') {
+    if (location.hash === '#/nova-proposta' || /^#\/config(\/(texto|formulario))?$/.test(location.hash)) {
       state.current = null;
       layout.classList.add('showing-detail');
       renderList();
-      api('GET', '/adm/config').then(function (r) {
-        if (location.hash === '#/config') renderConfig(r); else renderNovaProposta(r);
+      var view = location.hash;
+      var url = view === '#/config/texto' ? '/adm/proposta-texto' : (view === '#/config/formulario' ? '/adm/formulario' : '/adm/config');
+      api('GET', url).then(function (r) {
+        if (view === '#/config') renderConfig(r);
+        else if (view === '#/config/texto') renderTexto(r);
+        else if (view === '#/config/formulario') renderFormulario(r);
+        else renderNovaProposta(r);
         showDetail();
       }).catch(function (err) { if (err.message !== '401') toast(err.message, true); });
       return;
@@ -455,6 +467,7 @@
       h('div', null,
         h('h1', { text: c.nome }),
         h('p', { class: 'd-meta', text: 'Proposta criada em ' + fmtDate(p.criadoEm) + ' · válida até ' + fmtDate(p.expiraEm) }),
+        p.teste ? h('span', { class: 'badge st-teste', text: 'Teste' }) : null, ' ',
         badge('proposta', p.status)),
       h('div', { class: 'd-actions' },
         cancelada ? null : h('a', { class: 'btn btn-ghost btn-sm', href: p.link.replace('/proposta#', '/proposta?previa=1#'), target: '_blank', rel: 'noopener noreferrer' }, 'Ver como o cliente'),
@@ -535,6 +548,8 @@
       formField('Profissional: implantação', textInput('profissional_implantacao', v.profissional_implantacao)),
       formField('Profissional: mensalidade', textInput('profissional_mensalidade', v.profissional_mensalidade)),
       formField('Validade (dias)', textInput('validade', v.validade_dias || '15', { inputmode: 'numeric', maxlength: '2' })),
+      h('label', { class: 'f wide check-row' }, h('input', { type: 'checkbox', name: 'teste' }),
+        h('span', null, h('strong', { text: 'Proposta de teste' }), ' — não envia e-mails, não conta nos números e pode ser apagada com "Apagar todos os testes".')),
       h('label', { class: 'f wide' }, h('span', { class: 'f-label', text: 'Mensagem no topo da proposta (opcional)' }),
         h('textarea', { name: 'mensagem', maxlength: '1000', placeholder: 'Ex.: Como combinamos por telefone, segue a proposta com 10% de desconto na implantação.' })),
       h('div', { class: 'f wide form-actions' },
@@ -551,6 +566,7 @@
           profissional_implantacao: f.profissional_implantacao.value, profissional_mensalidade: f.profissional_mensalidade.value
         },
         validadeDias: f.validade.value,
+        teste: f.teste.checked,
         mensagem: f.mensagem.value
       }).then(function (r) { toast('Proposta criada'); loadItems(); location.hash = '#/proposta/' + r.id; })
         .catch(function (err) { toast(err.message, true); });
@@ -583,9 +599,218 @@
     var el = $('detail');
     el.textContent = '';
     el.appendChild(backLink());
-    el.appendChild(h('div', { class: 'd-head' }, h('div', null, h('h1', { text: 'Configurações da proposta' }),
+    el.appendChild(configNav('#/config'));
+    el.appendChild(h('div', { class: 'd-head' }, h('div', null, h('h1', { text: 'Valores da proposta' }),
       h('p', { class: 'd-meta', text: 'Valores usados nas propostas novas. Em branco aparece "a combinar". Propostas já criadas não mudam.' }))));
     el.appendChild(h('section', { class: 'card wide' }, form));
+  }
+
+  // ---------- manutenção (bandeira) ----------
+  var maint = { ativo: false };
+  function renderMaint() {
+    var btn = $('maintBtn');
+    btn.textContent = maint.ativo ? 'Manutenção: LIGADA' : 'Manutenção';
+    btn.classList.toggle('maint-on', maint.ativo);
+    btn.setAttribute('aria-pressed', String(maint.ativo));
+    $('maintBanner').hidden = !maint.ativo;
+    if (maint.ativo) $('maintSince').textContent = maint.desde ? ' desde ' + fmtDate(maint.desde) : '';
+  }
+  function loadMaint() {
+    api('GET', '/adm/manutencao').then(function (r) { maint = r; renderMaint(); }).catch(function () {});
+  }
+  function setMaint(ativo) {
+    api('PUT', '/adm/manutencao', { ativo: ativo }).then(function (r) {
+      maint = r; renderMaint();
+      toast(ativo ? 'Site em manutenção' : 'Site de volta ao ar');
+    }).catch(function (err) { toast(err.message, true); });
+  }
+  (function () {
+    var armed = false, timer;
+    $('maintBtn').addEventListener('click', function () {
+      var btn = $('maintBtn');
+      if (!armed) {
+        armed = true;
+        btn.textContent = maint.ativo ? 'Confirmar: tirar de manutenção' : 'Confirmar: pôr em manutenção';
+        btn.classList.add('maint-confirm');
+        timer = setTimeout(function () { armed = false; btn.classList.remove('maint-confirm'); renderMaint(); }, 5000);
+        return;
+      }
+      clearTimeout(timer); armed = false; btn.classList.remove('maint-confirm');
+      setMaint(!maint.ativo);
+    });
+    $('maintOff').addEventListener('click', function () { setMaint(false); });
+  })();
+
+  // ---------- opções do formulário (rótulos de extras e paletas) ----------
+  function loadFormOptions() {
+    api('GET', '/adm/formulario').then(function (r) {
+      r.extras.forEach(function (x) { EXTRAS[x.id] = x.label; });
+      r.paletas.forEach(function (p) { PALETAS[p.id] = p.label; });
+    }).catch(function () {});
+  }
+
+  // ---------- apagar testes ----------
+  $('clearTests').addEventListener('click', function () {
+    var btn = $('clearTests');
+    if (!btn.classList.contains('confirm')) {
+      btn.classList.add('confirm'); btn.textContent = 'Confirmar: apagar todos';
+      setTimeout(function () { btn.classList.remove('confirm'); btn.textContent = 'Apagar todos os testes'; }, 5000);
+      return;
+    }
+    api('DELETE', '/adm/testes').then(function (r) {
+      btn.classList.remove('confirm'); btn.textContent = 'Apagar todos os testes';
+      toast(r.propostasApagadas + ' propostas e ' + r.pedidosApagados + ' pedidos de teste apagados');
+      location.hash = '';
+      loadItems();
+    }).catch(function (err) { toast(err.message, true); });
+  });
+
+  // ---------- configurações: sub-navegação ----------
+  function configNav(atual) {
+    var tabs = [['#/config', 'Valores'], ['#/config/texto', 'Texto da proposta'], ['#/config/formulario', 'Formulário']];
+    return h('nav', { class: 'subnav', 'aria-label': 'Configurações' }, tabs.map(function (t) {
+      return h('a', { href: t[0], class: t[0] === atual ? 'on' : '', 'aria-current': t[0] === atual ? 'page' : null }, t[1]);
+    }));
+  }
+
+  function criarPropostaTeste() {
+    return api('POST', '/adm/propostas', {
+      teste: true,
+      cliente: { nome: 'Cliente de teste', negocio: 'Negócio de teste', whatsapp: '', email: '' }
+    }).then(function (r) { loadItems(); return r.id; });
+  }
+
+  function renderTexto(r) {
+    var ta = h('textarea', { class: 'code-editor', spellcheck: 'false', 'aria-label': 'Texto da proposta' });
+    ta.value = r.texto;
+    var estado = h('span', { class: 'muted small', text: r.padrao ? 'A usar o texto padrão.' : 'Texto personalizado.' });
+    function salvar() {
+      return api('PUT', '/adm/proposta-texto', { texto: ta.value }).then(function (x) {
+        estado.textContent = x.padrao ? 'A usar o texto padrão.' : 'Texto personalizado salvo.';
+        return x;
+      });
+    }
+    var btnSalvar = h('button', { type: 'button', class: 'btn btn-primary btn-sm' }, 'Salvar');
+    btnSalvar.addEventListener('click', function () { salvar().then(function () { toast('Texto salvo'); }).catch(function (e) { toast(e.message, true); }); });
+    var btnTestar = h('button', { type: 'button', class: 'btn btn-ghost btn-sm' }, 'Salvar e testar');
+    btnTestar.addEventListener('click', function () {
+      salvar().then(criarPropostaTeste).then(function (id) {
+        toast('Proposta de teste criada: abra "Ver como o cliente"');
+        location.hash = '#/proposta/' + id;
+      }).catch(function (e) { toast(e.message, true); });
+    });
+    var armed = false;
+    var btnPadrao = h('button', { type: 'button', class: 'btn btn-danger btn-sm' }, 'Restaurar texto padrão');
+    btnPadrao.addEventListener('click', function () {
+      if (!armed) { armed = true; btnPadrao.classList.add('confirm'); btnPadrao.textContent = 'Confirmar: perder as edições'; setTimeout(function () { armed = false; btnPadrao.classList.remove('confirm'); btnPadrao.textContent = 'Restaurar texto padrão'; }, 5000); return; }
+      api('PUT', '/adm/proposta-texto', { texto: '' }).then(function (x) { ta.value = x.texto; estado.textContent = 'A usar o texto padrão.'; toast('Texto padrão restaurado'); armed = false; btnPadrao.classList.remove('confirm'); btnPadrao.textContent = 'Restaurar texto padrão'; })
+        .catch(function (e) { toast(e.message, true); });
+    });
+
+    function inserir(txt) {
+      var s = ta.selectionStart, e = ta.selectionEnd;
+      ta.value = ta.value.slice(0, s) + txt + ta.value.slice(e);
+      ta.focus();
+      ta.selectionStart = ta.selectionEnd = s + txt.length;
+    }
+    var camposList = h('ul', { class: 'chips' }, r.campos.map(function (c) {
+      return h('li', null, h('button', { type: 'button', class: 'chip', title: c[1], onclick: function () { inserir('{{' + c[0] + '}}'); } }, '{{' + c[0] + '}}'));
+    }));
+
+    var el = $('detail');
+    el.textContent = '';
+    el.appendChild(backLink());
+    el.appendChild(configNav('#/config/texto'));
+    el.appendChild(h('div', { class: 'd-head' }, h('div', null, h('h1', { text: 'Texto da proposta' }),
+      h('p', { class: 'd-meta', text: 'Usado nas propostas novas. Propostas já criadas guardam o texto que tinham.' }))));
+    el.appendChild(h('div', { class: 'd-grid' },
+      h('section', { class: 'card wide' },
+        h('div', { class: 'link-row editor-actions' }, btnSalvar, btnTestar, btnPadrao, estado),
+        ta),
+      h('section', { class: 'card' }, h('h2', { text: 'Formato' }),
+        h('ul', { class: 'help-list' },
+          h('li', null, h('code', { text: '## Título' }), ' nova secção  ·  ', h('code', { text: '### Subtítulo' })),
+          h('li', null, 'Linha em branco separa parágrafos'),
+          h('li', null, h('code', { text: '- item' }), ' lista  ·  ', h('code', { text: '1. item' }), ' lista numerada'),
+          h('li', null, h('code', { text: '**negrito**' }), '  ·  ', h('code', { text: '[texto](/exemplos/eletricista)' }), ' link'),
+          h('li', null, h('code', { text: '> texto' }), ' caixa de destaque'),
+          h('li', null, h('code', { text: '| a | b |' }), ' tabela: a 1.ª linha é o cabeçalho'))),
+      h('section', { class: 'card' }, h('h2', { text: 'Campos (clique para inserir)' }),
+        h('p', { class: 'muted small', text: 'São trocados pelos valores das Configurações. Em branco aparecem como "a combinar".' }),
+        camposList)));
+  }
+
+  function renderFormulario(r) {
+    var extrasBox = h('div', { class: 'opt-list' });
+    var paletasBox = h('div', { class: 'opt-list' });
+    function extraRow(x) {
+      var inp = textInput('label', x ? x.label : '', { maxlength: '60', placeholder: 'Ex.: Criação de logotipo', 'aria-label': 'Nome do extra' });
+      inp.setAttribute('data-id', x ? x.id : '');
+      var row = h('div', { class: 'opt-row' }, inp,
+        h('button', { type: 'button', class: 'btn btn-ghost btn-sm', 'aria-label': 'Remover extra', onclick: function () { row.remove(); } }, '×'));
+      return row;
+    }
+    function paletaRow(p) {
+      var nome = textInput('label', p ? p.label : '', { maxlength: '30', placeholder: 'Nome', 'aria-label': 'Nome da paleta' });
+      nome.setAttribute('data-id', p ? p.id : '');
+      var c1 = h('input', { type: 'color', 'aria-label': 'Cor principal' }); c1.value = p ? p.c1 : '#1e3a5f';
+      var c2 = h('input', { type: 'color', 'aria-label': 'Cor de destaque' }); c2.value = p ? p.c2 : '#f2b134';
+      var row = h('div', { class: 'opt-row' }, nome, c1, c2,
+        h('button', { type: 'button', class: 'btn btn-ghost btn-sm', 'aria-label': 'Remover paleta', onclick: function () { row.remove(); } }, '×'));
+      return row;
+    }
+    r.extras.forEach(function (x) { extrasBox.appendChild(extraRow(x)); });
+    r.paletas.forEach(function (p) { paletasBox.appendChild(paletaRow(p)); });
+
+    function coletar() {
+      return {
+        extras: Array.prototype.map.call(extrasBox.querySelectorAll('.opt-row'), function (row) {
+          var i = row.querySelector('input[type=text]');
+          return { id: i.getAttribute('data-id'), label: i.value };
+        }),
+        paletas: Array.prototype.map.call(paletasBox.querySelectorAll('.opt-row'), function (row) {
+          var i = row.querySelector('input[type=text]'), cs = row.querySelectorAll('input[type=color]');
+          return { id: i.getAttribute('data-id'), label: i.value, c1: cs[0].value, c2: cs[1].value };
+        })
+      };
+    }
+    var salvar = h('button', { type: 'button', class: 'btn btn-primary btn-sm' }, 'Salvar');
+    salvar.addEventListener('click', function () {
+      api('PUT', '/adm/formulario', coletar()).then(function (x) { toast('Opções salvas'); loadFormOptions(); renderFormulario(x); })
+        .catch(function (e) { toast(e.message, true); });
+    });
+    var testar = h('button', { type: 'button', class: 'btn btn-ghost btn-sm' }, 'Salvar e testar');
+    testar.addEventListener('click', function () {
+      api('PUT', '/adm/formulario', coletar()).then(criarPropostaTeste).then(function (id) {
+        return api('POST', '/adm/propostas/' + id + '/convite').then(function () { return id; });
+      }).then(function (id) {
+        toast('Formulário de teste liberado: abra o link na proposta de teste');
+        location.hash = '#/proposta/' + id;
+      }).catch(function (e) { toast(e.message, true); });
+    });
+    var padrao = h('button', { type: 'button', class: 'btn btn-danger btn-sm' }, 'Restaurar padrão');
+    padrao.addEventListener('click', function () {
+      if (!padrao.classList.contains('confirm')) { padrao.classList.add('confirm'); padrao.textContent = 'Confirmar'; setTimeout(function () { padrao.classList.remove('confirm'); padrao.textContent = 'Restaurar padrão'; }, 5000); return; }
+      api('PUT', '/adm/formulario', { restaurar: true }).then(function (x) { toast('Opções padrão restauradas'); loadFormOptions(); renderFormulario(x); })
+        .catch(function (e) { toast(e.message, true); });
+    });
+
+    var el = $('detail');
+    el.textContent = '';
+    el.appendChild(backLink());
+    el.appendChild(configNav('#/config/formulario'));
+    el.appendChild(h('div', { class: 'd-head' }, h('div', null, h('h1', { text: 'Opções do formulário' }),
+      h('p', { class: 'd-meta', text: 'O que o cliente vê nas etapas 2 (extras) e 3 (paletas de cores) do /comecar.' }))));
+    el.appendChild(h('div', { class: 'd-grid' },
+      h('section', { class: 'card wide' }, h('div', { class: 'link-row' }, salvar, testar, padrao)),
+      h('section', { class: 'card' }, h('h2', { text: 'Extras (etapa 2)' }),
+        h('p', { class: 'muted small', text: 'Sem nenhum extra, a secção não aparece no formulário.' }),
+        extrasBox,
+        h('button', { type: 'button', class: 'btn btn-ghost btn-sm', onclick: function () { extrasBox.appendChild(extraRow(null)); } }, '+ Extra')),
+      h('section', { class: 'card' }, h('h2', { text: 'Paletas de cores (etapa 3)' }),
+        h('p', { class: 'muted small', text: 'Nome, cor principal e cor de destaque. A primeira vem selecionada.' }),
+        paletasBox,
+        h('button', { type: 'button', class: 'btn btn-ghost btn-sm', onclick: function () { paletasBox.appendChild(paletaRow(null)); } }, '+ Paleta'))));
   }
 
   // ---------- arranque ----------

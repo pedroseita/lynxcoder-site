@@ -90,6 +90,33 @@ textarea { resize: vertical; min-height: 110px; }
 .st-concluida { background: rgba(62,207,142,.14); color: var(--ok); }
 .st-expirada, .st-cancelada { background: rgba(255,255,255,.06); color: var(--faint); }
 
+/* ---------- manutenção ---------- */
+#maintBtn.maint-on { background: #ff7b72; border-color: #ff7b72; color: #1a0705; }
+#maintBtn.maint-confirm { border-color: var(--warn); color: var(--warn); }
+.maint-banner { display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap;
+  padding: 10px 24px; background: rgba(255,123,114,.14); border-bottom: 1px solid rgba(255,123,114,.4); color: #ffb3ad; font-size: 14px; }
+.maint-banner .btn { background: #ff7b72; color: #1a0705; border-color: transparent; }
+.st-teste { background: rgba(242,177,52,.12); color: var(--warn); border: 1px dashed rgba(242,177,52,.5); }
+
+/* ---------- configurações: sub-navegação e editores ---------- */
+.subnav { display: flex; gap: 4px; margin-bottom: 18px; padding: 3px; border-radius: 999px; background: var(--surface); border: 1px solid var(--border); width: fit-content; max-width: 100%; overflow-x: auto; }
+.subnav a { padding: 6px 14px; border-radius: 999px; font-size: 13.5px; font-weight: 700; color: var(--dim); text-decoration: none; white-space: nowrap; }
+.subnav a.on { background: var(--surface-2); color: var(--text); }
+.code-editor { width: 100%; min-height: 60vh; font: 13px/1.6 var(--mono); tab-size: 2; margin-top: 12px; font-variant-ligatures: none; font-feature-settings: "liga" 0, "calt" 0; }
+.editor-actions .muted { margin: 0 0 0 6px; }
+.help-list { margin: 0; padding-left: 18px; font-size: 13.5px; color: var(--dim); display: grid; gap: 6px; }
+.help-list code { font: 12.5px var(--mono); color: var(--text); background: var(--surface-2); padding: 1px 5px; border-radius: 4px; }
+.chips { list-style: none; margin: 8px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { font: 12px var(--mono); padding: 4px 8px; border-radius: 6px; border: 1px solid var(--border-2); background: var(--bg); color: var(--dim); cursor: pointer; }
+.chip:hover { border-color: var(--accent); color: var(--accent); }
+.opt-list { display: grid; gap: 8px; margin: 10px 0 12px; }
+.opt-row { display: flex; gap: 8px; align-items: center; }
+.opt-row input[type=text] { flex: 1; }
+.opt-row input[type=color] { width: 44px; height: 38px; padding: 3px; border-radius: 8px; border: 1px solid var(--border-2); background: var(--bg-2); cursor: pointer; }
+.check-row { display: flex !important; gap: 10px; align-items: flex-start; font-size: 14px; color: var(--dim); }
+.check-row input { width: 18px; height: 18px; margin-top: 2px; accent-color: var(--accent); }
+#clearTests { justify-self: start; }
+
 /* ---------- propostas e configurações ---------- */
 .d-head .badge { display: inline-block; margin-top: 8px; }
 .link-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }

@@ -6,6 +6,7 @@
 .ob-body { font-size: 16px; }
 /* Vários blocos têm display próprio (grid/flex), que ganharia ao [hidden]. */
 .ob-body [hidden] { display: none !important; }
+.ob-test { margin: 0 0 14px; padding: 8px 14px; border-radius: 10px; background: rgba(242,177,52,.14); color: #f2b134; font-size: 14px; font-weight: 700; border: 1px dashed rgba(242,177,52,.5); }
 .ob-gate { display: grid; place-items: center; min-height: 60vh; padding-block: 40px; text-align: center; }
 .ob-gate .state-inner { justify-items: center; }
 .ob-gate h1 { font-size: clamp(26px, 4vw, 38px); }

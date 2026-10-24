@@ -15,7 +15,9 @@ const fsp = require('node:fs/promises');
 const crypto = require('node:crypto');
 const { DIRS, HttpError, str, isEmail, newId, ID_RE, readJson, writeJson, createLimiter } = require('../lib/common');
 const config = require('../lib/config');
-const { render } = require('../lib/proposta-template');
+const { render, AJUDA_CAMPOS } = require('../lib/proposta-template');
+const propostaTexto = require('../lib/proposta-texto');
+const formulario = require('../lib/formulario');
 const mail = require('../lib/mail');
 
 const PUBLIC_URL = (process.env.PUBLIC_URL || 'https://lynxcoder.com.br').replace(/\/$/, '');
@@ -36,6 +38,16 @@ const fileOf = (id) => {
 const linkProposta = (p) => `${PUBLIC_URL}/proposta#${p.token}`;
 const linkConvite = (p) => (p.convite ? `${PUBLIC_URL}/comecar#${p.convite.token}` : null);
 
+// Comparação a tempo constante: evita que o tempo de resposta ajude a
+// adivinhar um token carácter a carácter. Ambos têm sempre 24 chars (TOKEN_RE
+// já validou o recebido; newToken() garante o guardado), mas o comprimento é
+// confirmado primeiro porque timingSafeEqual lança erro em buffers desiguais.
+function tokenEquals(a, b) {
+  const bufA = Buffer.from(a);
+  const bufB = Buffer.from(b);
+  return bufA.length === bufB.length && crypto.timingSafeEqual(bufA, bufB);
+}
+
 async function all() {
   const files = (await fsp.readdir(DIRS.propostas).catch(() => [])).filter((f) => f.endsWith('.json'));
   const out = [];
@@ -44,11 +56,11 @@ async function all() {
 }
 async function byToken(token) {
   if (!TOKEN_RE.test(token || '')) return null;
-  return (await all()).find((p) => p.token === token) || null;
+  return (await all()).find((p) => tokenEquals(p.token, token)) || null;
 }
 async function byConvite(token) {
   if (!TOKEN_RE.test(token || '')) return null;
-  return (await all()).find((p) => p.convite && p.convite.token === token) || null;
+  return (await all()).find((p) => p.convite && tokenEquals(p.convite.token, token)) || null;
 }
 const save = (p) => writeJson(fileOf(p.id), p);
 
@@ -66,7 +78,7 @@ function resumo(p) {
   const st = status(p);
   const fmt = (iso) => new Date(iso).toLocaleDateString('pt-BR', { timeZone: 'America/Sao_Paulo' });
   return {
-    tipo: 'proposta', id: p.id, recebidoEm: p.criadoEm, status: st,
+    tipo: 'proposta', id: p.id, recebidoEm: p.criadoEm, status: st, teste: !!p.teste,
     titulo: p.cliente.nome,
     subtitulo: p.cliente.negocio || 'Proposta',
     detalhe: p.aceite ? `Aceita: plano ${PLANOS[p.aceite.plano]}` : (st === 'expirada' ? `Expirou em ${fmt(p.expiraEm)}` : `Válida até ${fmt(p.expiraEm)}`),
@@ -140,8 +152,8 @@ async function publicRoutes(app) {
       ip: req.ip, navegador: str(req.headers['user-agent'] || '', 300),
     };
     await save(p);
-    req.log.info({ id: p.id, plano }, 'proposta aceite');
-    mail.notify({
+    req.log.info({ id: p.id, plano, teste: !!p.teste }, 'proposta aceite');
+    if (!p.teste) mail.notify({
       subject: `Proposta aceite: ${p.cliente.nome} (plano ${PLANOS[plano]})`,
       text: `${nome} aceitou a proposta para ${p.cliente.nome} no plano ${PLANOS[plano]}.\n\n` +
         `Próximo passo: enviar o link de pagamento e liberar o formulário no painel:\n` +
@@ -158,8 +170,10 @@ async function publicRoutes(app) {
     reply.header('cache-control', 'no-store');
     return {
       ok: true,
+      teste: !!p.teste,
       cliente: { nome: p.cliente.negocio || '', email: p.cliente.email || '', whatsapp: p.cliente.whatsapp || '' },
       plano: p.aceite ? p.aceite.plano : null,
+      opcoes: await formulario.load(),
     };
   });
 }
@@ -191,6 +205,8 @@ async function adminRoutes(app) {
       criadoEm: new Date().toISOString(),
       expiraEm: new Date(Date.now() + dias * DAY).toISOString(),
       cliente, valores,
+      texto: (await propostaTexto.load()).texto,
+      teste: b.teste === true,
       mensagem: str(b.mensagem, 1000),
       visualizacoes: [], aceite: null, convite: null, canceladaEm: null,
     };
@@ -226,6 +242,36 @@ async function adminRoutes(app) {
     };
     await save(p);
     return { ok: true, linkFormulario: linkConvite(p) };
+  });
+
+  // ---------- texto da proposta ----------
+  app.get('/adm/proposta-texto', async () => ({ ok: true, ...(await propostaTexto.load()), campos: AJUDA_CAMPOS }));
+  app.put('/adm/proposta-texto', async (req) => {
+    const texto = req.body && typeof req.body.texto === 'string' ? req.body.texto : null;
+    return { ok: true, ...(await propostaTexto.save(texto)) };
+  });
+
+  // ---------- opções do formulário /comecar ----------
+  app.get('/adm/formulario', async () => ({ ok: true, ...(await formulario.load()) }));
+  app.put('/adm/formulario', async (req) => {
+    if (req.body && req.body.restaurar === true) return { ok: true, ...(await formulario.restaurar()) };
+    return { ok: true, ...(await formulario.save(req.body || {})) };
+  });
+
+  // ---------- apagar todos os testes (propostas e pedidos de teste) ----------
+  app.delete('/adm/testes', async (req) => {
+    let propostasApagadas = 0, pedidosApagados = 0;
+    for (const p of await all()) {
+      if (!p.teste) continue;
+      await fsp.rm(fileOf(p.id), { force: true });
+      propostasApagadas++;
+    }
+    for (const id of (await fsp.readdir(DIRS.pedidos).catch(() => [])).filter((x) => ID_RE.test(x))) {
+      const d = await readJson(path.join(DIRS.pedidos, id, 'dados.json'));
+      if (d && d.teste) { await fsp.rm(path.join(DIRS.pedidos, id), { recursive: true, force: true }); pedidosApagados++; }
+    }
+    req.log.info({ propostasApagadas, pedidosApagados }, 'testes apagados no painel');
+    return { ok: true, propostasApagadas, pedidosApagados };
   });
 
   app.delete('/adm/propostas/:id', async (req) => {

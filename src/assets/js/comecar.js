@@ -126,15 +126,22 @@
   }
 
   // ---------- montagem dinâmica (extras, paletas, listas) ----------
-  $('#extrasList').innerHTML = EXTRAS.map(function (x) {
-    return '<label class="ob-check"><input type="checkbox" name="extras" value="' + esc(x.id) + '"><span><strong>' + esc(x.label) + '</strong></span></label>';
-  }).join('');
-
-  $('#paletteList').innerHTML = PALETTES.map(function (p, i) {
-    return '<label class="ob-palette"><input type="radio" name="paleta" value="' + p.id + '"' + (i === 0 ? ' checked' : '') + '>' +
-      '<span class="ob-palette-body"><span class="ob-palette-swatch"><i style="background:' + p.c1 + '"></i><i style="background:' + p.c2 + '"></i></span>' +
-      '<span>' + esc(p.label) + '</span></span></label>';
-  }).join('');
+  // Extras e paletas vêm do painel (resposta de /api/comecar); as listas acima
+  // são só o recurso se a resposta não as trouxer.
+  var isHex = function (c) { return /^#[0-9a-f]{6}$/i.test(c || ''); };
+  function renderOptions(opcoes) {
+    if (opcoes && Array.isArray(opcoes.extras)) EXTRAS = opcoes.extras;
+    if (opcoes && Array.isArray(opcoes.paletas) && opcoes.paletas.length) PALETTES = opcoes.paletas.filter(function (p) { return isHex(p.c1) && isHex(p.c2); });
+    $('#extrasList').innerHTML = EXTRAS.map(function (x) {
+      return '<label class="ob-check"><input type="checkbox" name="extras" value="' + esc(x.id) + '"><span><strong>' + esc(x.label) + '</strong></span></label>';
+    }).join('');
+    $('#extrasList').closest('fieldset').hidden = !EXTRAS.length;
+    $('#paletteList').innerHTML = PALETTES.map(function (p, i) {
+      return '<label class="ob-palette"><input type="radio" name="paleta" value="' + esc(p.id) + '"' + (i === 0 ? ' checked' : '') + '>' +
+        '<span class="ob-palette-body"><span class="ob-palette-swatch"><i style="background:' + p.c1 + '"></i><i style="background:' + p.c2 + '"></i></span>' +
+        '<span>' + esc(p.label) + '</span></span></label>';
+    }).join('');
+  }
 
   function renderList(kind) {
     var isService = kind === 'servicos';
@@ -772,6 +779,8 @@
   }
 
   function start(info) {
+    renderOptions(info && info.opcoes);
+    if (info && info.teste) $('#testBanner').hidden = false;
     var restored = loadDraft();
     if (!restored && info) {
       // Pré-preenche o que já sabemos da proposta.

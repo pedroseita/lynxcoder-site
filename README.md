@@ -13,6 +13,7 @@ src/                     ← tudo o que vai para o browser (um só COPY no Docke
 ├── terms.html             termos de uso (noindex)
 ├── 404.html               página de erro (servida pelo nginx via error_page)
 ├── obrigado.html          destino do formulário após envio
+├── manutencao.html        página de manutenção (painel e container de manutenção)
 ├── comecar.html           formulário de início de projeto (só abre com link de convite)
 ├── proposta.html          proposta individual (só abre com link; texto vem da API)
 ├── exemplos/              páginas de exemplo do portfólio (noindex, dados fictícios)
@@ -33,8 +34,7 @@ infra/
 ├── security-headers.conf  ← FONTE ÚNICA dos security headers (incluída pelos dois)
 ├── docker-compose.yml     serviço + labels Traefik (routers lynx-site, priority 10)
 └── maintenance/           modo de manutenção, container independente
-    ├── Dockerfile
-    ├── index.html
+    ├── Dockerfile         usa src/manutencao.html (fonte única)
     ├── nginx.conf         devolve 503 em tudo (routers lynx-maint, priority 100)
     └── docker-compose.yml
 
@@ -68,9 +68,12 @@ python -m http.server 8000 --directory src
 
 ```bash
 ./scripts/deploy.sh            # pull + rebuild
-./scripts/maintenance-on.sh    # põe a página de manutenção à frente
+./scripts/maintenance-on.sh    # manutenção pesada: para o site e sobe o container de manutenção
 ./scripts/maintenance-off.sh   # devolve o site ao ar
 ```
+
+Para uma manutenção normal, use o botão **Manutenção** no painel: liga e
+desliga na hora, sem parar containers (ver docs/runbook.md).
 
 Os scripts leem `LYNX_SITE_DIR` (default `/root/lynxcoder-site`).
 Detalhe completo, incluindo rollback e o que fazer quando algo falha, em

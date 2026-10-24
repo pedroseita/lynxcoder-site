@@ -13,6 +13,7 @@ const path = require('node:path');
 const Fastify = require('fastify');
 const multipart = require('@fastify/multipart');
 const { DIRS, HttpError } = require('./lib/common');
+const flags = require('./lib/flags');
 
 const PORT = Number(process.env.PORT || 3000);
 const MB = 1024 * 1024;
@@ -29,6 +30,22 @@ app.addContentTypeParser('application/x-www-form-urlencoded', { parseAs: 'string
 });
 
 app.get('/api/health', async () => ({ ok: true }));
+
+// Manutenção ligada no painel: os formulários públicos ficam indisponíveis
+// (o site mostra a página de manutenção). O painel e o health não são afetados.
+app.addHook('onRequest', async (req, reply) => {
+  const url = req.url.split('?')[0];
+  if (!url.startsWith('/api/') || url === '/api/health' || !flags.manutencaoAtiva()) return;
+  const message = 'O site está em manutenção neste momento. Tente de novo daqui a pouco.';
+  reply.code(503).header('retry-after', '3600');
+  if (url === '/api/contato') {
+    return reply.type('text/html; charset=utf-8').send(
+      `<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">` +
+      `<title>Em manutenção — LynxCoder</title><link rel="stylesheet" href="/assets/css/styles.css"></head><body><main class="state-page">` +
+      `<div class="state-inner"><h1>Em manutenção.</h1><p class="lead">${message} A sua mensagem não foi enviada.</p></div></main></body></html>`);
+  }
+  return reply.send({ ok: false, message });
+});
 
 app.register(require('./routes/onboarding'));
 app.register(require('./routes/contato'));
@@ -53,6 +70,7 @@ app.setNotFoundHandler((req, reply) => reply.status(404).send({ ok: false, messa
   for (const entry of await fsp.readdir(DIRS.tmp)) {
     await fsp.rm(path.join(DIRS.tmp, entry), { recursive: true, force: true });
   }
+  await flags.verificarEscrita(app.log);
   await app.listen({ host: '0.0.0.0', port: PORT });
 })().catch((err) => {
   console.error(err);

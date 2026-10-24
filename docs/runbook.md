@@ -38,6 +38,24 @@ cd /root/lynxcoder-site
 Faz `git pull origin main` e `docker compose up -d --build`. Se o modo de
 manutenção estiver activo, o script avisa e **não** o desliga sozinho.
 
+### Manutenção pelo painel (recomendado)
+
+Botão **Manutenção** no topo do painel (pede confirmação). A API cria a
+bandeira `/flags/manutencao` num volume partilhado (`site-flags`); o nginx do
+site passa a devolver `src/manutencao.html` com 503 + `Retry-After` em todas as
+páginas (assets continuam), e a API recusa os formulários públicos com 503.
+O painel continua a funcionar. Nenhum container é parado e o painel não tem
+acesso ao Docker.
+
+Pela linha de comandos, o mesmo efeito:
+
+```bash
+docker exec lynxcoder-onboarding sh -c 'echo "{}" > /flags/manutencao'   # ligar
+docker exec lynxcoder-onboarding rm -f /flags/manutencao                  # desligar
+```
+
+Os scripts abaixo são para manutenção pesada do servidor (parar o site de vez).
+
 ### Entrar em manutenção
 
 ```bash
@@ -229,6 +247,23 @@ Fluxo: painel → **+ Nova proposta** → enviar o link ao cliente (WhatsApp/e-m
 - Ao enviar o formulário, o cliente recebe um e-mail de confirmação com o
   resumo (requer o SMTP configurado).
 - Dados: `/data/propostas/<id>.json` e `/data/config/proposta.json` no volume.
+
+### Editar a proposta e o formulário pelo painel
+
+Painel → **Configurações**:
+
+- **Valores**: preços, prazos, contactos (`/data/config/proposta.json`).
+- **Texto da proposta**: formato simples (`## título`, `- lista`, `**negrito**`,
+  `| tabela |`, `[link](/caminho)`) com campos `{{…}}` trocados pelos valores.
+  Guardado em `/data/config/proposta-texto.md`; vazio volta ao texto padrão
+  (`api/lib/proposta-texto.js`). Cada proposta copia o texto ao ser criada.
+- **Formulário**: extras (etapa 2) e paletas (etapa 3) do `/comecar`
+  (`/data/config/formulario.json`).
+
+**Propostas de teste** (caixa "Proposta de teste" ou "Salvar e testar"):
+mostram uma faixa de teste, não enviam e-mails, não contam nos números, e o
+pedido feito a partir delas fica marcado `teste`. Filtro **Testes** na lista →
+**Apagar todos os testes**.
 
 ## Painel admin (`admin.lynxcoder.com.br`)
 

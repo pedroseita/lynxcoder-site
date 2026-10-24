@@ -64,7 +64,10 @@
 
   --text:      #eef0f3;
   --dim:       #9aa1ad;
-  --faint:     #5b626d;
+  /* 5.2:1 contra --bg/--bg-2 (WCAG AA, 4.5:1) — era #5b626d a 3.24:1, abaixo do
+     mínimo, e este token é usado como cor de texto real (hints, footer, datas),
+     não só decoração. */
+  --faint:     #7a8390;
 
   /* accent — switchable via data-accent on <html> */
   --accent:      #b6ff3d;
@@ -379,13 +382,13 @@ h3 { font-size: clamp(20px, 2.2vw, 26px); }
 }
 .pf-track::-webkit-scrollbar { display: none; }
 .pf-track:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; border-radius: 22px; }
-/* ~4 cartões por ecrã no desktop; deslizam na horizontal quando há mais */
-.pf-slide { flex: 0 0 clamp(230px, 21vw, 262px); scroll-snap-align: start; }
+/* ~3 cartões por ecrã no desktop (≈ 330 × 440); deslizam quando há mais */
+.pf-slide { flex: 0 0 clamp(280px, 29vw, 340px); scroll-snap-align: start; }
 
 .pf-card {
   position: relative; display: flex; flex-direction: column; align-items: center;
-  padding: 20px 18px 22px; overflow: hidden; isolation: isolate;
-  border-radius: 20px; border: 1px solid var(--border);
+  height: 440px; padding: 24px 24px 0; overflow: hidden; isolation: isolate;
+  border-radius: 18px; border: 1px solid var(--border);
   color: var(--text);
   transition: transform .25s ease, border-color .25s, box-shadow .25s;
 }
@@ -393,20 +396,21 @@ h3 { font-size: clamp(20px, 2.2vw, 26px); }
 .pf-amber { background: radial-gradient(120% 60% at 50% 100%, rgba(246,195,67,.26), transparent 62%), linear-gradient(180deg, #17222d, #0c1218); }
 .pf-card:hover, .pf-card:focus-visible { transform: translateY(-4px); border-color: var(--border-2); box-shadow: 0 30px 70px -36px rgba(0,0,0,.9); }
 
-.pf-text { align-self: stretch; display: grid; gap: 4px; margin-bottom: 16px; }
+.pf-text { align-self: stretch; display: grid; gap: 6px; }
 .pf-tag { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); }
 .pf-amber .pf-tag { color: #f6c343; }
-.pf-title { font-family: var(--font-display); font-size: 20px; font-weight: 600; line-height: 1.15; letter-spacing: -.01em; }
+.pf-title { font-family: var(--font-display); font-size: 22px; font-weight: 600; line-height: 1.15; letter-spacing: -.01em; }
+.pf-desc { color: var(--dim); font-size: 14.5px; line-height: 1.45; }
 
 /* maquete de celular centrada; a tela mostra a página e, ao passar o rato,
    desliza por ela até ao fim da captura */
 .pf-phone {
-  width: 84%; padding: 6px; border-radius: 26px; background: #05070a;
+  width: 150px; margin: auto 0; padding: 5px; border-radius: 22px; background: #05070a;
   box-shadow: 0 0 0 1px rgba(255,255,255,.12), 0 24px 50px -20px rgba(0,0,0,.9);
 }
 .pf-screen {
-  display: block; position: relative; overflow: hidden; border-radius: 20px;
-  aspect-ratio: 390 / 720; container-type: size; background: #0b0f14;
+  display: block; position: relative; overflow: hidden; border-radius: 17px;
+  aspect-ratio: 390 / 700; container-type: size; background: #0b0f14;
 }
 .pf-screen img {
   position: absolute; top: 0; left: 0; width: 100%; height: auto;
@@ -439,7 +443,7 @@ h3 { font-size: clamp(20px, 2.2vw, 26px); }
 .pf-btn:disabled { opacity: .35; cursor: default; }
 
 @media (max-width: 640px) {
-  .pf-slide { flex-basis: 66vw; }
+  .pf-slide { flex-basis: 80vw; }
 }
 @media (prefers-reduced-motion: reduce) {
   .pf-track { scroll-behavior: auto; }

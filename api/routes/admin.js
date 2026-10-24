@@ -3,7 +3,7 @@
 // Segurança:
 // - credenciais (hash scrypt + segredo TOTP) em /data/admin/credentials.json,
 //   criadas no VPS com `node tools/admin-setup.js`; nunca passam pelo git;
-// - login = utilizador + senha + código de 6 dígitos (verificação em 2 etapas);
+// - login = usuário + senha + código de 6 dígitos (verificação em 2 etapas);
 // - 5 falhas por IP em 15 min bloqueiam esse IP durante 15 min;
 // - sessão em memória, cookie __Host- (Secure, HttpOnly, SameSite=Strict),
 //   expira com 2 h sem uso ou 12 h no total; restart do container = logout;
@@ -154,6 +154,7 @@ module.exports = async function adminRoutes(app) {
     ['/', 'index.html', 'text/html; charset=utf-8'],
     ['/assets/admin.css', 'admin.css', 'text/css; charset=utf-8'],
     ['/assets/admin.js', 'admin.js', 'text/javascript; charset=utf-8'],
+    ['/assets/logo.png', 'logo.png', 'image/png'],
   ]) statics[url] = { body: fs.readFileSync(path.join(STATIC_DIR, file)), type };
 
   // Tudo o que chega por este host recebe os cabeçalhos de segurança.
@@ -206,7 +207,7 @@ module.exports = async function adminRoutes(app) {
       loginLimiter.hit(req.ip);
       req.log.warn({ ip: req.ip }, 'login falhado no painel');
       await new Promise((r) => setTimeout(r, 400));
-      throw new HttpError(401, 'Utilizador, senha ou código incorretos.');
+      throw new HttpError(401, 'Usuário, senha ou código incorretos.');
     }
     lastTotpCounter = counter;
     loginLimiter.reset(req.ip);

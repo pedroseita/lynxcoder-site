@@ -227,14 +227,14 @@ domínio). O certificado HTTPS é emitido sozinho pelo Traefik na primeira visit
 docker exec -it lynxcoder-onboarding node tools/admin-setup.js
 ```
 
-Pede utilizador e senha (mín. 12 caracteres), mostra um QR code para a app
+Pede usuário e senha (mín. 12 caracteres), mostra um QR code para o app
 autenticadora e só grava depois de um código válido. Correr de novo substitui o
 acesso (útil se perder o celular). As credenciais ficam em
 `/data/admin/credentials.json` (hash scrypt + segredo TOTP), no volume, nunca no git.
 
 ### Segurança
 
-- Login = utilizador + senha + código de 6 dígitos.
+- Login = usuário + senha + código de 6 dígitos.
 - 5 falhas por IP em 15 min bloqueiam esse IP 15 min.
 - Sessão em memória: expira com 2 h sem uso ou 12 h no total. Reiniciar o
   container termina todas as sessões.

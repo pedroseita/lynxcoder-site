@@ -264,6 +264,84 @@ acesso (útil se perder o celular). As credenciais ficam em
   `sandbox` (não correm scripts mesmo abertos diretamente).
 - Não sai do ar com o modo de manutenção (`maintenance-on.sh` só derruba o site).
 
+## Backups
+
+`scripts/backup.sh` corre todos os dias às 03:30 (cron) e guarda o volume
+`lynxcoder-site_onboarding-data` (pedidos, fotos, mensagens, propostas,
+configurações e acesso ao painel). O código não entra: está no GitHub.
+
+- Local: `/root/backups/lynxcoder/`, 14 dias.
+- Externo: Google Drive, pasta `lynxcoder-backups`, 60 dias, **criptografado**
+  pelo rclone (o Google só vê nomes e conteúdos embaralhados). O rclone corre
+  num container (`rclone/rclone:1.68`); nada é instalado no VPS.
+- Último backup bem-sucedido: `cat /root/backups/lynxcoder/.ultimo-backup-ok`
+- Log: `/var/log/lynxcoder-backup.log`
+
+### Configurar (uma vez)
+
+1. **No seu computador (Windows)**, instalar o rclone — só serve para autorizar
+   o Google Drive no browser:
+   ```powershell
+   winget install Rclone.Rclone
+   ```
+2. **No VPS**, criar a ligação ao Drive:
+   ```bash
+   mkdir -p /root/.config/rclone && chmod 700 /root/.config/rclone
+   docker run --rm -it -v /root/.config/rclone:/config/rclone rclone/rclone:1.68 config
+   ```
+   - `n` (novo) → nome **`gdrive`** → tipo **`drive`** (Google Drive)
+   - `client_id` e `client_secret`: Enter (vazio)
+   - `scope`: **`drive.file`** — o rclone só vê os ficheiros que ele próprio criou,
+     nunca o resto do seu Drive
+   - `service_account_file`: Enter · configuração avançada: `n`
+   - "Use web browser to automatically authenticate?": **`n`**. O rclone mostra um
+     comando `rclone authorize "drive" "…"`: copie-o, corra-o no **PowerShell do
+     seu computador**, entre na conta Google no browser que abrir e cole no VPS o
+     código que aparecer no PowerShell.
+   - "Configure this as a Shared Drive?": `n` · confirmar: `y`
+3. Ainda no mesmo `config`, criar a camada de criptografia:
+   - `n` → nome **`lynxbackup`** → tipo **`crypt`**
+   - `remote`: **`gdrive:lynxcoder-backups`**
+   - `filename_encryption`: `standard` · `directory_name_encryption`: `true`
+   - `password`: **`g`** (gerar, 1024 bits) e depois `password2`: **`g`** também
+   - **Guarde as duas senhas geradas num gestor de senhas.** Sem elas, os backups
+     do Drive não podem ser abertos por ninguém, incluindo você.
+   - confirmar: `y` · sair: `q`
+4. Ligar a cópia externa e testar:
+   ```bash
+   echo 'BACKUP_RCLONE_REMOTE=lynxbackup:' > /root/lynxcoder-site/infra/backup.env
+   chmod 600 /root/lynxcoder-site/infra/backup.env /root/.config/rclone/rclone.conf
+   bash /root/lynxcoder-site/scripts/backup.sh
+   ```
+   Deve terminar com `OK remoto` e `Backup concluído`; no Drive aparece a pasta
+   `lynxcoder-backups` com um ficheiro de nome embaralhado.
+5. Agendar:
+   ```bash
+   echo '30 3 * * * root bash /root/lynxcoder-site/scripts/backup.sh >> /var/log/lynxcoder-backup.log 2>&1' > /etc/cron.d/lynxcoder-backup
+   ```
+6. Guarde também uma cópia de `/root/.config/rclone/rclone.conf` no gestor de
+   senhas: é o que permite recuperar os backups se o VPS se perder.
+
+### Restaurar
+
+```bash
+cd /root/lynxcoder-site
+bash scripts/restore.sh            # lista os backups locais
+bash scripts/restore.sh latest     # restaura o mais recente (pede "RESTAURAR")
+```
+
+Antes de apagar, o restore guarda o estado atual em
+`lynxcoder-antes-de-restaurar-*.tar.gz`. Para restaurar uma cópia do Drive:
+
+```bash
+docker run --rm -v /root/.config/rclone:/config/rclone rclone/rclone:1.68 lsf lynxbackup:
+docker run --rm -v /root/.config/rclone:/config/rclone -v /root/backups/lynxcoder:/data   rclone/rclone:1.68 copy lynxbackup:<nome-do-ficheiro> /data
+bash scripts/restore.sh /root/backups/lynxcoder/<nome-do-ficheiro>
+```
+
+Num VPS novo: clonar o repositório, repor `/root/.config/rclone/rclone.conf`
+(da cópia no gestor de senhas), `bash scripts/deploy.sh` e restaurar como acima.
+
 ## Subir o HSTS
 
 Hoje está em `stsSeconds=300` de propósito, para poder reverter depressa.

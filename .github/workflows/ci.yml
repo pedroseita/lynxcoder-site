@@ -15,6 +15,9 @@ jobs:
       - name: Validar HTML
         run: npx --yes html-validate "src/**/*.html"
 
+      - name: Sintaxe dos scripts
+        run: for f in scripts/*.sh; do bash -n "$f"; done
+
       # Apanha href="#", âncoras inexistentes e ficheiros referenciados que não
       # existem — foi assim que os links mortos do footer passaram meses sem dar
       # por isso.

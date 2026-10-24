@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<meta name="theme-color" content="#08090b">
+<title>Painel — LynxCoder</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%2308090b'/%3E%3Cpath d='M9 8v16h14v-4h-10V8z' fill='%233df0ff'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="/assets/admin.css">
+</head>
+<body>
+
+<!-- ===== Login ===== -->
+<main id="loginView" class="login" hidden>
+  <form id="loginForm" class="login-card" novalidate>
+    <p class="brand"><span class="brand-mark">L</span> LynxCoder <span class="brand-sub">Painel</span></p>
+    <h1>Entrar</h1>
+    <label for="lUser">Utilizador</label>
+    <input id="lUser" name="user" type="text" autocomplete="username" autocapitalize="none" spellcheck="false" required>
+    <label for="lPass">Senha</label>
+    <input id="lPass" name="password" type="password" autocomplete="current-password" required>
+    <label for="lCode">Código da app autenticadora</label>
+    <input id="lCode" name="code" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="7" placeholder="000000" required>
+    <p class="form-error" id="loginError" role="alert"></p>
+    <button class="btn btn-primary" type="submit" id="loginBtn">Entrar</button>
+  </form>
+</main>
+
+<!-- ===== Painel ===== -->
+<div id="appView" hidden>
+  <header class="top">
+    <p class="brand"><span class="brand-mark">L</span> LynxCoder <span class="brand-sub">Painel</span></p>
+    <div class="top-right">
+      <span class="top-user" id="topUser"></span>
+      <button class="btn btn-ghost btn-sm" type="button" id="logoutBtn">Sair</button>
+    </div>
+  </header>
+
+  <main class="layout">
+    <section class="col-list" id="listCol" aria-label="Entradas">
+      <div class="stats">
+        <div class="stat"><span class="stat-n" id="statPedidos">–</span><span class="stat-l">pedidos novos</span></div>
+        <div class="stat"><span class="stat-n" id="statMensagens">–</span><span class="stat-l">mensagens novas</span></div>
+      </div>
+
+      <div class="filters">
+        <div class="tabs" role="tablist" id="typeTabs">
+          <button type="button" role="tab" data-type="todos" aria-selected="true">Todas</button>
+          <button type="button" role="tab" data-type="pedido" aria-selected="false">Pedidos</button>
+          <button type="button" role="tab" data-type="mensagem" aria-selected="false">Mensagens</button>
+        </div>
+        <label class="sr-only" for="statusFilter">Situação</label>
+        <select id="statusFilter">
+          <option value="abertos">Em aberto</option>
+          <option value="todos">Todas as situações</option>
+          <option value="arquivados">Arquivados</option>
+        </select>
+        <button class="btn btn-ghost btn-sm" type="button" id="refreshBtn" title="Atualizar">↻</button>
+      </div>
+
+      <ul class="items" id="items"></ul>
+      <p class="empty" id="emptyList" hidden>Nada por aqui.</p>
+
+      <section class="blog" aria-labelledby="blogTitle">
+        <div class="blog-head">
+          <h2 id="blogTitle">Blog</h2>
+          <a class="link" id="blogLink" href="https://hashnode.com/dashboard" target="_blank" rel="noopener noreferrer">Escrever no Hashnode ↗</a>
+        </div>
+        <ul class="blog-list" id="blogList"><li class="muted">A carregar…</li></ul>
+      </section>
+    </section>
+
+    <section class="col-detail" id="detailCol" aria-live="polite">
+      <div class="placeholder" id="detailEmpty">
+        <p>Escolha um pedido ou uma mensagem para ver os detalhes.</p>
+      </div>
+      <article id="detail" hidden></article>
+    </section>
+  </main>
+</div>
+
+<div class="lightbox" id="lightbox" hidden>
+  <button type="button" class="lightbox-close" id="lightboxClose" aria-label="Fechar">×</button>
+  <img id="lightboxImg" src="data:," alt="">
+</div>
+
+<div class="toast" id="toast" role="status" hidden></div>
+
+<script src="/assets/admin.js"></script>
+</body>
+</html>

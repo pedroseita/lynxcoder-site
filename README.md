@@ -35,7 +35,12 @@ infra/
     ├── nginx.conf         devolve 503 em tudo (routers lynx-maint, priority 100)
     └── docker-compose.yml
 
-api/                     ← API do /comecar (Node + Fastify), container lynxcoder-onboarding
+api/                     ← API (Node + Fastify), container lynxcoder-onboarding
+├── routes/onboarding.js   POST /api/onboarding (formulário /comecar)
+├── routes/contato.js      POST /api/contato (formulário de contato)
+├── routes/admin.js        painel admin.lynxcoder.com.br (login + 2 etapas)
+├── admin/                 interface do painel
+└── tools/admin-setup.js   cria o acesso ao painel (correr no VPS)
 scripts/                 ← deploy e manutenção (ver docs/runbook.md)
 docs/                    ← runbook operacional e rascunhos
 ```

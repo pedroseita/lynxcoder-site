@@ -16,7 +16,7 @@ docker compose -f infra/maintenance/docker-compose.yml up -d --build
 echo ">>> A aguardar que o Traefik a assuma..."
 sleep 3
 
-echo ">>> A derrubar o site principal..."
-docker compose -f infra/docker-compose.yml down
+echo ">>> A derrubar o site principal (a API e o painel admin continuam no ar)..."
+docker compose -f infra/docker-compose.yml rm -s -f site
 
 echo "✔ Modo manutenção activo — lynxcoder.com.br devolve 503 + página de manutenção"

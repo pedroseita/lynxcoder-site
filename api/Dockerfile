@@ -4,6 +4,10 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci --omit=dev && npm cache clean --force
 COPY server.js ./
+COPY lib ./lib
+COPY routes ./routes
+COPY tools ./tools
+COPY admin ./admin
 # /data é um volume: criado aqui com dono "node" para o volume herdar as permissões.
 RUN mkdir -p /data && chown node:node /data
 USER node

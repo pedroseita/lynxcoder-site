@@ -45,15 +45,19 @@ services:
     networks:
       - proxy
 
-  # API do formulário /comecar. Só responde em /api/ do domínio principal; o
-  # resto continua a ir para o nginx do site (priority 20 > 10).
-  # Durante a manutenção, o router da manutenção (priority 100) também apanha
-  # /api/, por isso ninguém consegue enviar pedidos com o site em baixo.
+  # API (formulários /comecar e contato) + painel admin.
+  # - lynxcoder.com.br/api/*  -> formulários (priority 20 > 10 do nginx do site).
+  #   Durante a manutenção o router da manutenção (100) também apanha /api/,
+  #   por isso ninguém envia pedidos com o site em baixo.
+  # - admin.lynxcoder.com.br -> painel com login + 2 etapas (routes/admin.js).
+  #   Continua no ar durante a manutenção (maintenance-on só derruba o site).
   onboarding:
     build:
       context: ../api
     container_name: lynxcoder-onboarding
     restart: unless-stopped
+    environment:
+      ADMIN_HOST: admin.lynxcoder.com.br
     env_file:
       # SMTP para o aviso por e-mail. Opcional: sem ficheiro, os pedidos são
       # gravados na mesma, só não chega o e-mail. Ver docs/runbook.md.
@@ -80,6 +84,7 @@ services:
       - "traefik.http.routers.lynx-api.tls.certresolver=letsencrypt"
       - "traefik.http.routers.lynx-api.priority=20"
       - "traefik.http.routers.lynx-api.middlewares=lynx-api-hsts,lynx-api-ratelimit,lynx-api-body"
+      - "traefik.http.routers.lynx-api.service=lynx-api"
       - "traefik.http.services.lynx-api.loadbalancer.server.port=3000"
       - "traefik.http.middlewares.lynx-api-hsts.headers.stsSeconds=300"
       # Travão grosso à frente da API (a API tem o seu limite por IP também).
@@ -88,6 +93,23 @@ services:
       - "traefik.http.middlewares.lynx-api-ratelimit.ratelimit.burst=10"
       # 14 ficheiros de até 8 MB + margem; acima disto o Traefik responde 413.
       - "traefik.http.middlewares.lynx-api-body.buffering.maxRequestBodyBytes=125000000"
+      # Painel: subdomínio próprio, servido pelo mesmo container.
+      - "traefik.http.routers.lynx-admin.rule=Host(`admin.lynxcoder.com.br`)"
+      - "traefik.http.routers.lynx-admin.entrypoints=websecure"
+      - "traefik.http.routers.lynx-admin.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.lynx-admin.service=lynx-api"
+      - "traefik.http.routers.lynx-admin.middlewares=lynx-api-hsts,lynx-admin-ratelimit,lynx-admin-body"
+      - "traefik.http.routers.lynx-admin-http.rule=Host(`admin.lynxcoder.com.br`)"
+      - "traefik.http.routers.lynx-admin-http.entrypoints=web"
+      - "traefik.http.routers.lynx-admin-http.service=lynx-api"
+      - "traefik.http.routers.lynx-admin-http.middlewares=lynx-admin-to-https"
+      - "traefik.http.middlewares.lynx-admin-to-https.redirectscheme.scheme=https"
+      - "traefik.http.middlewares.lynx-admin-to-https.redirectscheme.permanent=true"
+      # O painel carrega várias fotos de uma vez: limite mais largo que o da API.
+      - "traefik.http.middlewares.lynx-admin-ratelimit.ratelimit.average=300"
+      - "traefik.http.middlewares.lynx-admin-ratelimit.ratelimit.period=1m"
+      - "traefik.http.middlewares.lynx-admin-ratelimit.ratelimit.burst=100"
+      - "traefik.http.middlewares.lynx-admin-body.buffering.maxRequestBodyBytes=1048576"
     networks:
       - proxy
 

@@ -44,7 +44,7 @@ api/                     ← API (Node + Fastify), container lynxcoder-onboardin
 ├── routes/propostas.js    propostas e convites (públicas + painel)
 ├── lib/proposta-template.js  texto da proposta
 ├── routes/admin.js        painel admin.lynxcoder.com.br (login + 2 etapas)
-├── admin/                 interface do painel
+├── admin/                 interface do painel (fonts/ = cópia das fontes do site; manter iguais)
 └── tools/admin-setup.js   cria o acesso ao painel (correr no VPS)
 scripts/                 ← deploy, manutenção, backup e restauro (ver docs/runbook.md)
 docs/                    ← runbook operacional e rascunhos

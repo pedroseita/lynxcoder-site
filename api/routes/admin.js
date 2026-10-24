@@ -158,6 +158,12 @@ module.exports = async function adminRoutes(app) {
     ['/assets/admin.css', 'admin.css', 'text/css; charset=utf-8'],
     ['/assets/admin.js', 'admin.js', 'text/javascript; charset=utf-8'],
     ['/assets/logo.png', 'logo.png', 'image/png'],
+    ['/assets/fonts/space-grotesk-latin.woff2', 'fonts/space-grotesk-latin.woff2', 'font/woff2'],
+    ['/assets/fonts/space-grotesk-latin-ext.woff2', 'fonts/space-grotesk-latin-ext.woff2', 'font/woff2'],
+    ['/assets/fonts/manrope-latin.woff2', 'fonts/manrope-latin.woff2', 'font/woff2'],
+    ['/assets/fonts/manrope-latin-ext.woff2', 'fonts/manrope-latin-ext.woff2', 'font/woff2'],
+    ['/assets/fonts/jetbrains-mono-latin.woff2', 'fonts/jetbrains-mono-latin.woff2', 'font/woff2'],
+    ['/assets/fonts/jetbrains-mono-latin-ext.woff2', 'fonts/jetbrains-mono-latin-ext.woff2', 'font/woff2'],
   ]) statics[url] = { body: fs.readFileSync(path.join(STATIC_DIR, file)), type };
 
   // Tudo o que chega por este host recebe os cabeçalhos de segurança.
@@ -183,7 +189,11 @@ module.exports = async function adminRoutes(app) {
   });
 
   for (const [url, s] of Object.entries(statics)) {
-    app.get(url, async (req, reply) => reply.type(s.type).send(s.body));
+    app.get(url, async (req, reply) => {
+      // fontes e logo não mudam: cache longo (o resto do painel é no-store)
+      if (/\.(woff2|png)$/.test(url)) reply.header('cache-control', 'public, max-age=2592000');
+      return reply.type(s.type).send(s.body);
+    });
   }
   app.get('/robots.txt', async (req, reply) => reply.type('text/plain').send('User-agent: *\nDisallow: /\n'));
 

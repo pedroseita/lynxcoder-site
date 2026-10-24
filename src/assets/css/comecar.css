@@ -59,6 +59,13 @@
   outline: none; border-color: var(--accent); background: var(--surface);
 }
 .ob-field.invalid input, .ob-field.invalid textarea { border-color: #ff7b72; }
+/* Preenchimento automático do Chrome pinta o campo de azul-claro: manter o tema. */
+.ob-field input:-webkit-autofill, .ob-prefix input:-webkit-autofill {
+  -webkit-text-fill-color: var(--text);
+  caret-color: var(--text);
+  box-shadow: 0 0 0 1000px var(--bg-2) inset;
+  transition: background-color 9999s;
+}
 
 .ob-prefix, .ob-suffix {
   display: flex; align-items: stretch;

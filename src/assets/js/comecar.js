@@ -59,19 +59,29 @@
       .replace(/^-+|-+$/g, '').slice(0, 40).replace(/-+$/g, '');
   }
   function digits(s) { return (s || '').replace(/\D/g, ''); }
+  // O preenchimento automático do browser entrega "+55 21 9…" e há quem
+  // escreva o 55 ou o 0 da operadora à mão: tirar esse prefixo antes de
+  // contar os 11 dígitos, senão o 55 virava DDD e o número ficava cortado.
+  function nationalDigits(s) {
+    var d = digits(s);
+    if (d.length >= 12 && d.slice(0, 2) === '55') d = d.slice(2);
+    if (d.length >= 11 && d.charAt(0) === '0') d = d.slice(1);
+    return d.slice(0, 11);
+  }
   function maskPhone(s) {
-    var d = digits(s).slice(0, 11);
+    var d = nationalDigits(s);
     if (d.length <= 2) return d.length ? '(' + d : '';
     if (d.length <= 6) return '(' + d.slice(0, 2) + ') ' + d.slice(2);
     if (d.length <= 10) return '(' + d.slice(0, 2) + ') ' + d.slice(2, 6) + '-' + d.slice(6);
     return '(' + d.slice(0, 2) + ') ' + d.slice(2, 7) + '-' + d.slice(7);
   }
   function validPhone(s) {
-    var d = digits(s);
+    var d = nationalDigits(s);
     if (d.length !== 10 && d.length !== 11) return false;
     var ddd = parseInt(d.slice(0, 2), 10);
     if (ddd < 11 || ddd > 99) return false;
-    return d.length === 10 || d.charAt(2) === '9';
+    // fixo: 10 dígitos começando por 2–5; celular: 11 dígitos começando por 9
+    return d.length === 10 ? /[2-5]/.test(d.charAt(2)) : d.charAt(2) === '9';
   }
   function validEmail(s) { return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(s); }
   function cleanHandle(s) {
@@ -203,7 +213,9 @@
       check(val('nome').length >= 2, 'nome');
       check(val('especialidade').length >= 2, 'especialidade');
       check(val('cidade').length >= 2, 'cidade');
-      check(validPhone(val('whatsapp')), 'whatsapp');
+      check(validPhone(val('whatsapp')), 'whatsapp', nationalDigits(val('whatsapp')).slice(0, 2) === '55'
+        ? 'Parece que incluiu o código do país (55). Informe só o DDD e o número, ex.: (21) 97598-4112.'
+        : 'Informe um WhatsApp com DDD.');
       check(validEmail(val('email')), 'email');
     }
     if (step === 2) {
@@ -582,7 +594,7 @@
         especialidade: val('especialidade'),
         cidade: val('cidade'),
         area: val('area'),
-        whatsapp: digits(val('whatsapp')),
+        whatsapp: nationalDigits(val('whatsapp')),
         email: val('email').toLowerCase(),
         redes: {
           instagram: cleanHandle(val('instagram')),

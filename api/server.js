@@ -106,7 +106,8 @@ function validate(raw) {
   if (ng.nome.length < 2) fail('Informe o nome do negócio.');
   if (ng.especialidade.length < 2) fail('Informe a especialidade.');
   if (ng.cidade.length < 2) fail('Informe a cidade.');
-  if (!/^[1-9][1-9]\d{8,9}$/.test(ng.whatsapp)) fail('Informe um WhatsApp com DDD.');
+  // fixo: DDD + 8 dígitos começando por 2–5; celular: DDD + 9 + 8 dígitos
+  if (!/^[1-9][1-9](?:[2-5]\d{7}|9\d{8})$/.test(ng.whatsapp)) fail('Informe um WhatsApp com DDD.');
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(ng.email)) fail('Informe um e-mail válido.');
   if (out.plano.tipo === 'essencial') {
     const s = out.plano.subdominio;

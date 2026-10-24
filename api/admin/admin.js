@@ -5,9 +5,13 @@
 
   var STATUS = {
     pedido: [['novo', 'Novo'], ['producao', 'Em produção'], ['publicado', 'Publicado'], ['arquivado', 'Arquivado']],
-    mensagem: [['nova', 'Nova'], ['respondida', 'Respondida'], ['arquivada', 'Arquivada']]
+    mensagem: [['nova', 'Nova'], ['respondida', 'Respondida'], ['arquivada', 'Arquivada']],
+    proposta: [['enviada', 'Enviada'], ['aberta', 'Aberta'], ['aceita', 'Aceita'], ['formulario', 'Formulário liberado'],
+      ['concluida', 'Pedido recebido'], ['expirada', 'Expirada'], ['cancelada', 'Cancelada']]
   };
-  var ARCHIVED = ['arquivado', 'arquivada'];
+  var ARCHIVED = ['arquivado', 'arquivada', 'cancelada', 'expirada', 'concluida'];
+  var KIND = { pedido: 'Pedido', mensagem: 'Contato', proposta: 'Proposta' };
+  var PLANOS = { essencial: 'Essencial', profissional: 'Profissional' };
   var EXTRAS = { manutencao: 'Manutenção' };
   var PALETAS = { confianca: 'Confiança', natureza: 'Natureza', energia: 'Energia', elegante: 'Elegante', moderno: 'Moderno', claro: 'Claro', personalizada: 'Personalizada' };
 
@@ -120,6 +124,7 @@
       state.items = r.items;
       $('statPedidos').textContent = r.contagem.pedidosNovos;
       $('statMensagens').textContent = r.contagem.mensagensNovas;
+      $('statPropostas').textContent = r.contagem.propostasAceitas;
       renderList();
     }).catch(function (err) { if (err.message !== '401') toast(err.message, true); });
   }
@@ -142,7 +147,7 @@
         onclick: function () { location.hash = '#/' + it.tipo + '/' + it.id; }
       },
         h('span', { class: 'item-top' },
-          h('span', { class: 'kind', text: it.tipo === 'pedido' ? 'Pedido' : 'Contato' }),
+          h('span', { class: 'kind', text: KIND[it.tipo] }),
           h('span', { class: 'item-title', text: it.titulo }),
           badge(it.tipo, it.status)),
         h('span', { class: 'item-sub', text: it.subtitulo }),
@@ -181,9 +186,25 @@
   }
 
   // ---------- detalhe ----------
+  function showDetail() {
+    $('detailEmpty').hidden = true;
+    $('detail').hidden = false;
+    window.scrollTo(0, 0);
+  }
+
   function route() {
-    var m = /^#\/(pedido|mensagem)\/([\w-]+)$/.exec(location.hash);
     var layout = document.querySelector('.layout');
+    if (location.hash === '#/nova-proposta' || location.hash === '#/config') {
+      state.current = null;
+      layout.classList.add('showing-detail');
+      renderList();
+      api('GET', '/adm/config').then(function (r) {
+        if (location.hash === '#/config') renderConfig(r); else renderNovaProposta(r);
+        showDetail();
+      }).catch(function (err) { if (err.message !== '401') toast(err.message, true); });
+      return;
+    }
+    var m = /^#\/(pedido|mensagem|proposta)\/([\w-]+)$/.exec(location.hash);
     if (!m) {
       state.current = null;
       layout.classList.remove('showing-detail');
@@ -195,12 +216,12 @@
     state.current = { tipo: m[1], id: m[2] };
     layout.classList.add('showing-detail');
     renderList();
-    var url = m[1] === 'pedido' ? '/adm/pedidos/' + m[2] : '/adm/mensagens/' + m[2];
+    var url = { pedido: '/adm/pedidos/', mensagem: '/adm/mensagens/', proposta: '/adm/propostas/' }[m[1]] + m[2];
     api('GET', url).then(function (r) {
-      if (m[1] === 'pedido') renderPedido(m[2], r); else renderMensagem(r.mensagem);
-      $('detailEmpty').hidden = true;
-      $('detail').hidden = false;
-      window.scrollTo(0, 0);
+      if (m[1] === 'pedido') renderPedido(m[2], r);
+      else if (m[1] === 'mensagem') renderMensagem(r.mensagem);
+      else renderProposta(r.proposta);
+      showDetail();
     }).catch(function (err) {
       if (err.message === '401') return;
       toast(err.message, true);
@@ -242,8 +263,8 @@
         return;
       }
       clearTimeout(timer);
-      api('DELETE', (tipo === 'pedido' ? '/adm/pedidos/' : '/adm/mensagens/') + id).then(function () {
-        toast(tipo === 'pedido' ? 'Pedido excluído, com todos os ficheiros' : 'Mensagem excluída');
+      api('DELETE', { pedido: '/adm/pedidos/', mensagem: '/adm/mensagens/', proposta: '/adm/propostas/' }[tipo] + id).then(function () {
+        toast({ pedido: 'Pedido excluído, com todos os ficheiros', mensagem: 'Mensagem excluída', proposta: 'Proposta excluída' }[tipo]);
         location.hash = '';
         loadItems();
       }).catch(function (err) { toast(err.message, true); });
@@ -318,7 +339,8 @@
     el.appendChild(h('div', { class: 'd-head' },
       h('div', null,
         h('h1', { text: ng.nome }),
-        h('p', { class: 'd-meta', text: 'Pedido ' + id + ' · recebido em ' + fmtDate(d.recebidoEm) })),
+        h('p', { class: 'd-meta', text: 'Pedido ' + id + ' · recebido em ' + fmtDate(d.recebidoEm) }),
+        d.propostaId ? h('a', { class: 'link', href: '#/proposta/' + d.propostaId }, 'Ver a proposta deste cliente →') : null),
       h('div', { class: 'd-actions' },
         statusSelect('pedido', id, admin.status),
         h('a', { class: 'btn btn-primary btn-sm', href: wa, target: '_blank', rel: 'noopener noreferrer' }, 'WhatsApp'),
@@ -379,6 +401,191 @@
       h('section', { class: 'card wide' }, h('h2', { text: 'Mensagem' }), dl([['De', m.nome], ['E-mail', m.email]]),
         h('p', { class: 'prose', text: m.mensagem })),
       notesCard('mensagem', m.id, admin)));
+  }
+
+  // ---------- propostas ----------
+  function copyButton(text, label) {
+    var btn = h('button', { type: 'button', class: 'btn btn-ghost btn-sm' }, label || 'Copiar link');
+    btn.addEventListener('click', function () {
+      (navigator.clipboard ? navigator.clipboard.writeText(text) : Promise.reject())
+        .then(function () { toast('Link copiado'); })
+        .catch(function () { toast('Não foi possível copiar: selecione o link e copie à mão', true); });
+    });
+    return btn;
+  }
+  function waLink(phone, text) {
+    var d = String(phone || '').replace(/\D/g, '');
+    return 'https://wa.me/' + (d ? (d.length <= 11 ? '55' + d : d) : '') + '?text=' + encodeURIComponent(text);
+  }
+  function linkBox(url) {
+    var input = h('input', { type: 'text', readonly: true, class: 'link-input', 'aria-label': 'Link', value: url });
+    input.addEventListener('focus', function () { input.select(); });
+    return input;
+  }
+  function fmtDay(iso) { return new Date(iso).toLocaleDateString('pt-BR', { timeZone: 'America/Sao_Paulo' }); }
+
+  function cancelButton(id) {
+    var armed = false, timer;
+    var btn = h('button', { type: 'button', class: 'btn btn-danger btn-sm' }, 'Cancelar link');
+    btn.addEventListener('click', function () {
+      if (!armed) {
+        armed = true; btn.classList.add('confirm'); btn.textContent = 'Confirmar cancelamento';
+        timer = setTimeout(function () { armed = false; btn.classList.remove('confirm'); btn.textContent = 'Cancelar link'; }, 5000);
+        return;
+      }
+      clearTimeout(timer);
+      api('POST', '/adm/propostas/' + id + '/cancelar').then(function () { toast('Link cancelado'); route(); loadItems(); })
+        .catch(function (err) { toast(err.message, true); });
+    });
+    return btn;
+  }
+
+  function renderProposta(p) {
+    var el = $('detail');
+    var c = p.cliente;
+    var primeiro = c.nome.split(' ')[0];
+    var msgProposta = 'Olá, ' + primeiro + '! Segue a proposta da LynxCoder para a sua página. É só abrir o link, ler com calma e, se estiver de acordo, aceitar no fim da página: ' +
+      p.link + ' (válida até ' + fmtDay(p.expiraEm) + ').';
+    var vistas = p.visualizacoes || [];
+    var cancelada = p.status === 'cancelada';
+
+    el.textContent = '';
+    el.appendChild(backLink());
+    el.appendChild(h('div', { class: 'd-head' },
+      h('div', null,
+        h('h1', { text: c.nome }),
+        h('p', { class: 'd-meta', text: 'Proposta criada em ' + fmtDate(p.criadoEm) + ' · válida até ' + fmtDate(p.expiraEm) }),
+        badge('proposta', p.status)),
+      h('div', { class: 'd-actions' },
+        cancelada ? null : h('a', { class: 'btn btn-ghost btn-sm', href: p.link.replace('/proposta#', '/proposta?previa=1#'), target: '_blank', rel: 'noopener noreferrer' }, 'Ver como o cliente'),
+        cancelada ? null : cancelButton(p.id),
+        deleteButton('proposta', p.id))));
+
+    var conviteCard;
+    if (cancelada) {
+      conviteCard = h('section', { class: 'card wide' }, h('h2', { text: 'Formulário de início' }), h('p', { class: 'muted', text: 'Proposta cancelada.' }));
+    } else if (!p.convite) {
+      var lib = h('button', { type: 'button', class: 'btn btn-primary btn-sm' }, 'Liberar formulário');
+      lib.addEventListener('click', function () {
+        api('POST', '/adm/propostas/' + p.id + '/convite').then(function () { toast('Formulário liberado'); route(); loadItems(); })
+          .catch(function (err) { toast(err.message, true); });
+      });
+      conviteCard = h('section', { class: 'card wide' }, h('h2', { text: 'Formulário de início' }),
+        h('p', { class: 'muted', text: 'Depois do pagamento da implantação, libere o formulário: é gerado um link só deste cliente, válido 30 dias e para um único envio.' }),
+        lib);
+    } else {
+      var cv = p.convite;
+      var msgForm = 'Olá, ' + primeiro + '! Aqui está o formulário para montarmos a sua página. Leva cerca de 10 minutos e dá para enviar as fotos direto do celular: ' + p.linkFormulario;
+      conviteCard = h('section', { class: 'card wide' }, h('h2', { text: 'Formulário de início' }),
+        cv.usadoEm
+          ? h('p', null, 'Enviado em ' + fmtDate(cv.usadoEm) + '. ', h('a', { class: 'link', href: '#/pedido/' + cv.pedidoId }, 'Abrir o pedido →'))
+          : h('div', { class: 'link-row' },
+              linkBox(p.linkFormulario),
+              copyButton(p.linkFormulario),
+              h('a', { class: 'btn btn-primary btn-sm', href: waLink(c.whatsapp, msgForm), target: '_blank', rel: 'noopener noreferrer' }, 'Enviar pelo WhatsApp')),
+        cv.usadoEm ? null : h('p', { class: 'muted small', text: 'Válido até ' + fmtDate(cv.expiraEm) + '. Ainda não foi enviado.' }));
+    }
+
+    var v = p.valores || {};
+    var mailHref = c.email ? 'mailto:' + c.email + '?subject=' + encodeURIComponent('Proposta LynxCoder') + '&body=' + encodeURIComponent(msgProposta) : null;
+    el.appendChild(h('div', { class: 'd-grid' },
+      h('section', { class: 'card wide' }, h('h2', { text: 'Link da proposta' }),
+        cancelada ? h('p', { class: 'muted', text: 'Cancelado: o link já não abre.' }) :
+          h('div', { class: 'link-row' },
+            linkBox(p.link),
+            copyButton(p.link),
+            h('a', { class: 'btn btn-primary btn-sm', href: waLink(c.whatsapp, msgProposta), target: '_blank', rel: 'noopener noreferrer' }, 'Enviar pelo WhatsApp'),
+            mailHref ? h('a', { class: 'btn btn-ghost btn-sm', href: mailHref }, 'Enviar por e-mail') : null)),
+      h('section', { class: 'card' }, h('h2', { text: 'Cliente' }), dl([
+        ['Nome', c.nome], ['Negócio', c.negocio], ['WhatsApp', fmtPhone(c.whatsapp)], ['E-mail', c.email]
+      ])),
+      h('section', { class: 'card' }, h('h2', { text: 'Acompanhamento' }), dl([
+        ['Aberta', vistas.length ? vistas.length + (vistas.length === 1 ? ' vez' : ' vezes') : 'Ainda não'],
+        ['Última vez', vistas.length ? fmtDate(vistas[vistas.length - 1]) : ''],
+        ['Aceite', p.aceite ? 'Plano ' + PLANOS[p.aceite.plano] + ', por ' + p.aceite.nome : 'Ainda não'],
+        ['Aceite em', p.aceite ? fmtDate(p.aceite.em) : ''],
+        ['IP do aceite', p.aceite ? p.aceite.ip : '']
+      ])),
+      h('section', { class: 'card' }, h('h2', { text: 'Valores desta proposta' }), dl([
+        ['Essencial', (v.essencial_implantacao || '—') + ' + ' + (v.essencial_mensalidade || '—') + '/mês'],
+        ['Profissional', (v.profissional_implantacao || '—') + ' + ' + (v.profissional_mensalidade || '—') + '/mês']
+      ])),
+      p.mensagem ? h('section', { class: 'card' }, h('h2', { text: 'Mensagem no topo' }), h('p', { class: 'prose', text: p.mensagem })) : null,
+      conviteCard));
+  }
+
+  function formField(label, input, hint) {
+    return h('label', { class: 'f' }, h('span', { class: 'f-label', text: label }), input, hint ? h('span', { class: 'f-hint', text: hint }) : null);
+  }
+  function textInput(name, value, attrs) {
+    var i = h('input', Object.assign({ type: 'text', name: name }, attrs || {}));
+    i.value = value || '';
+    return i;
+  }
+
+  function renderNovaProposta(cfg) {
+    var v = cfg.valores;
+    var form = h('form', { class: 'form-grid', novalidate: true },
+      formField('Nome do cliente *', textInput('nome', '', { required: true, maxlength: '120', autocomplete: 'off' })),
+      formField('Negócio', textInput('negocio', '', { maxlength: '120', placeholder: 'Ex.: Duarte Elétrica' }), 'Pré-preenche o formulário quando for liberado.'),
+      formField('WhatsApp', textInput('whatsapp', '', { inputmode: 'tel', maxlength: '20', placeholder: '(21) 98765-4321' })),
+      formField('E-mail', textInput('email', '', { type: 'email', maxlength: '160' })),
+      formField('Essencial: implantação', textInput('essencial_implantacao', v.essencial_implantacao)),
+      formField('Essencial: mensalidade', textInput('essencial_mensalidade', v.essencial_mensalidade)),
+      formField('Profissional: implantação', textInput('profissional_implantacao', v.profissional_implantacao)),
+      formField('Profissional: mensalidade', textInput('profissional_mensalidade', v.profissional_mensalidade)),
+      formField('Validade (dias)', textInput('validade', v.validade_dias || '15', { inputmode: 'numeric', maxlength: '2' })),
+      h('label', { class: 'f wide' }, h('span', { class: 'f-label', text: 'Mensagem no topo da proposta (opcional)' }),
+        h('textarea', { name: 'mensagem', maxlength: '1000', placeholder: 'Ex.: Como combinamos por telefone, segue a proposta com 10% de desconto na implantação.' })),
+      h('div', { class: 'f wide form-actions' },
+        h('button', { type: 'submit', class: 'btn btn-primary' }, 'Criar proposta'),
+        h('a', { class: 'link', href: '#/config' }, 'Editar os valores padrão →')));
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var f = form.elements;
+      if (f.nome.value.trim().length < 2) { toast('Informe o nome do cliente', true); f.nome.focus(); return; }
+      api('POST', '/adm/propostas', {
+        cliente: { nome: f.nome.value, negocio: f.negocio.value, whatsapp: f.whatsapp.value, email: f.email.value },
+        precos: {
+          essencial_implantacao: f.essencial_implantacao.value, essencial_mensalidade: f.essencial_mensalidade.value,
+          profissional_implantacao: f.profissional_implantacao.value, profissional_mensalidade: f.profissional_mensalidade.value
+        },
+        validadeDias: f.validade.value,
+        mensagem: f.mensagem.value
+      }).then(function (r) { toast('Proposta criada'); loadItems(); location.hash = '#/proposta/' + r.id; })
+        .catch(function (err) { toast(err.message, true); });
+    });
+    var el = $('detail');
+    el.textContent = '';
+    el.appendChild(backLink());
+    el.appendChild(h('div', { class: 'd-head' }, h('div', null, h('h1', { text: 'Nova proposta' }),
+      h('p', { class: 'd-meta', text: 'O texto é o da proposta padrão; aqui você define o cliente e, se quiser, preços só para ele.' }))));
+    el.appendChild(h('section', { class: 'card wide' }, form));
+    form.elements.nome.focus();
+  }
+
+  function renderConfig(cfg) {
+    var form = h('form', { class: 'form-grid', novalidate: true });
+    var grupo = null;
+    cfg.campos.forEach(function (c) {
+      if (c[0] !== grupo) { grupo = c[0]; form.appendChild(h('h2', { class: 'wide form-group', text: grupo })); }
+      var ph = c[3] === 'dinheiro' ? 'Ex.: 490' : (c[3] === 'numero' ? 'Ex.: 5' : '');
+      form.appendChild(formField(c[2], textInput(c[1], cfg.valores[c[1]], { maxlength: '120', placeholder: ph })));
+    });
+    form.appendChild(h('div', { class: 'f wide form-actions' }, h('button', { type: 'submit', class: 'btn btn-primary' }, 'Salvar valores')));
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var out = {};
+      cfg.campos.forEach(function (c) { out[c[1]] = form.elements[c[1]].value; });
+      api('PUT', '/adm/config', out).then(function () { toast('Valores salvos'); })
+        .catch(function (err) { toast(err.message, true); });
+    });
+    var el = $('detail');
+    el.textContent = '';
+    el.appendChild(backLink());
+    el.appendChild(h('div', { class: 'd-head' }, h('div', null, h('h1', { text: 'Configurações da proposta' }),
+      h('p', { class: 'd-meta', text: 'Valores usados nas propostas novas. Em branco aparece "a combinar". Propostas já criadas não mudam.' }))));
+    el.appendChild(h('section', { class: 'card wide' }, form));
   }
 
   // ---------- arranque ----------

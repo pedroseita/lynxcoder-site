@@ -13,7 +13,8 @@ src/                     ← tudo o que vai para o browser (um só COPY no Docke
 ├── terms.html             termos de uso (noindex)
 ├── 404.html               página de erro (servida pelo nginx via error_page)
 ├── obrigado.html          destino do formulário após envio
-├── comecar.html           formulário de início de projeto (6 etapas + prévia)
+├── comecar.html           formulário de início de projeto (só abre com link de convite)
+├── proposta.html          proposta individual (só abre com link; texto vem da API)
 ├── exemplos/              páginas de exemplo do portfólio (noindex, dados fictícios)
 │   └── eletricista.html     usa assets/js/exemplo.js (WhatsApp em modo demonstração)
 ├── robots.txt
@@ -40,6 +41,8 @@ infra/
 api/                     ← API (Node + Fastify), container lynxcoder-onboarding
 ├── routes/onboarding.js   POST /api/onboarding (formulário /comecar)
 ├── routes/contato.js      POST /api/contato (formulário de contato)
+├── routes/propostas.js    propostas e convites (públicas + painel)
+├── lib/proposta-template.js  texto da proposta
 ├── routes/admin.js        painel admin.lynxcoder.com.br (login + 2 etapas)
 ├── admin/                 interface do painel
 └── tools/admin-setup.js   cria o acesso ao painel (correr no VPS)

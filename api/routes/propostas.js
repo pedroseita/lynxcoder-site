@@ -1,0 +1,238 @@
+// Propostas individuais e convites para o formulário /comecar.
+//
+// Cada proposta tem um link só do cliente (lynxcoder.com.br/proposta#<token>),
+// expira na validade configurada (15 dias por omissão), regista quando foi
+// aberta e o aceite. Depois, o painel "liberta" o formulário: gera um convite
+// (lynxcoder.com.br/comecar#<token>) de uso único, válido 30 dias.
+// Sem link válido, nem o texto da proposta nem o formulário ficam acessíveis.
+//
+// Os valores (preços, prazos…) são copiados da configuração no momento da
+// criação: mudar a tabela depois não altera propostas já enviadas.
+'use strict';
+
+const path = require('node:path');
+const fsp = require('node:fs/promises');
+const crypto = require('node:crypto');
+const { DIRS, HttpError, str, isEmail, newId, ID_RE, readJson, writeJson, createLimiter } = require('../lib/common');
+const config = require('../lib/config');
+const { render } = require('../lib/proposta-template');
+const mail = require('../lib/mail');
+
+const PUBLIC_URL = (process.env.PUBLIC_URL || 'https://lynxcoder.com.br').replace(/\/$/, '');
+const TOKEN_RE = /^[A-Za-z0-9_-]{24}$/;
+const CONVITE_DIAS = 30;
+const DAY = 24 * 60 * 60 * 1000;
+const PLANOS = { essencial: 'Essencial', profissional: 'Profissional' };
+const PRECOS = ['essencial_implantacao', 'essencial_mensalidade', 'profissional_implantacao', 'profissional_mensalidade'];
+
+const publicLimiter = createLimiter({ windowMs: 15 * 60 * 1000, maxTries: 120 });
+const emUso = new Set(); // convites com um envio do formulário a decorrer
+
+const newToken = () => crypto.randomBytes(18).toString('base64url');
+const fileOf = (id) => {
+  if (!ID_RE.test(id)) throw new HttpError(404, 'Proposta não encontrada.');
+  return path.join(DIRS.propostas, `${id}.json`);
+};
+const linkProposta = (p) => `${PUBLIC_URL}/proposta#${p.token}`;
+const linkConvite = (p) => (p.convite ? `${PUBLIC_URL}/comecar#${p.convite.token}` : null);
+
+async function all() {
+  const files = (await fsp.readdir(DIRS.propostas).catch(() => [])).filter((f) => f.endsWith('.json'));
+  const out = [];
+  for (const f of files) { const p = await readJson(path.join(DIRS.propostas, f)); if (p) out.push(p); }
+  return out;
+}
+async function byToken(token) {
+  if (!TOKEN_RE.test(token || '')) return null;
+  return (await all()).find((p) => p.token === token) || null;
+}
+async function byConvite(token) {
+  if (!TOKEN_RE.test(token || '')) return null;
+  return (await all()).find((p) => p.convite && p.convite.token === token) || null;
+}
+const save = (p) => writeJson(fileOf(p.id), p);
+
+function status(p) {
+  if (p.canceladaEm) return 'cancelada';
+  if (p.convite && p.convite.usadoEm) return 'concluida';
+  if (p.convite) return 'formulario';
+  if (p.aceite) return 'aceita';
+  if (Date.now() > Date.parse(p.expiraEm)) return 'expirada';
+  if ((p.visualizacoes || []).length) return 'aberta';
+  return 'enviada';
+}
+
+function resumo(p) {
+  const st = status(p);
+  const fmt = (iso) => new Date(iso).toLocaleDateString('pt-BR', { timeZone: 'America/Sao_Paulo' });
+  return {
+    tipo: 'proposta', id: p.id, recebidoEm: p.criadoEm, status: st,
+    titulo: p.cliente.nome,
+    subtitulo: p.cliente.negocio || 'Proposta',
+    detalhe: p.aceite ? `Aceita: plano ${PLANOS[p.aceite.plano]}` : (st === 'expirada' ? `Expirou em ${fmt(p.expiraEm)}` : `Válida até ${fmt(p.expiraEm)}`),
+  };
+}
+
+// ---------- uso pelo formulário (routes/onboarding.js) ----------
+async function conviteValido(token) {
+  const p = await byConvite(token);
+  if (!p || p.canceladaEm) throw new HttpError(403, 'Este link do formulário não é válido. Fale com a LynxCoder.');
+  if (p.convite.usadoEm) throw new HttpError(410, 'Este formulário já foi enviado. Se precisar de corrigir algo, fale com a LynxCoder.');
+  if (Date.now() > Date.parse(p.convite.expiraEm)) throw new HttpError(410, 'Este link do formulário expirou. Peça um novo à LynxCoder.');
+  return p;
+}
+// Garante que o mesmo convite não é usado em dois envios simultâneos.
+function reservar(token) {
+  if (emUso.has(token)) throw new HttpError(409, 'Já há um envio deste formulário a decorrer.');
+  emUso.add(token);
+  return () => emUso.delete(token);
+}
+async function marcarUsado(token, pedidoId) {
+  const p = await byConvite(token);
+  if (!p) return;
+  p.convite.usadoEm = new Date().toISOString();
+  p.convite.pedidoId = pedidoId;
+  await save(p);
+}
+
+// ---------- rotas públicas (lynxcoder.com.br/api/...) ----------
+async function publicRoutes(app) {
+  const guard = (req) => {
+    if (publicLimiter.blocked(req.ip)) throw new HttpError(429, 'Muitos pedidos. Tente de novo daqui a pouco.');
+    publicLimiter.hit(req.ip);
+  };
+
+  app.get('/api/proposta/:token', async (req, reply) => {
+    guard(req);
+    const p = await byToken(req.params.token);
+    if (!p || p.canceladaEm) throw new HttpError(404, 'Esta proposta não existe ou foi cancelada.');
+    if (!p.aceite && Date.now() > Date.parse(p.expiraEm)) throw new HttpError(410, 'Esta proposta expirou. Fale com a LynxCoder para receber uma atualizada.');
+    if (!req.query.previa) {
+      p.visualizacoes = [...(p.visualizacoes || []), new Date().toISOString()].slice(-50);
+      await save(p);
+    }
+    reply.header('cache-control', 'no-store');
+    reply.header('x-robots-tag', 'noindex, nofollow');
+    return {
+      ok: true,
+      html: render(p, p.valores || {}),
+      cliente: { nome: p.cliente.nome },
+      expiraEm: p.expiraEm,
+      aceite: p.aceite ? { em: p.aceite.em, plano: p.aceite.plano, nome: p.aceite.nome } : null,
+    };
+  });
+
+  app.post('/api/proposta/:token/aceitar', async (req, reply) => {
+    guard(req);
+    const p = await byToken(req.params.token);
+    if (!p || p.canceladaEm) throw new HttpError(404, 'Esta proposta não existe ou foi cancelada.');
+    if (p.aceite) return { ok: true, aceite: { em: p.aceite.em, plano: p.aceite.plano, nome: p.aceite.nome } };
+    if (Date.now() > Date.parse(p.expiraEm)) throw new HttpError(410, 'Esta proposta expirou.');
+    const body = req.body || {};
+    const plano = PLANOS[body.plano] ? body.plano : null;
+    const nome = str(body.nome, 120);
+    if (!plano) throw new HttpError(400, 'Escolha um dos planos.');
+    if (nome.length < 3) throw new HttpError(400, 'Escreva o seu nome completo.');
+    if (body.concordo !== true) throw new HttpError(400, 'Marque que leu e aceita os termos da proposta.');
+    // Registo do aceite: data, nome, plano, IP e navegador servem de prova do acordo.
+    p.aceite = {
+      em: new Date().toISOString(), plano, nome,
+      ip: req.ip, navegador: str(req.headers['user-agent'] || '', 300),
+    };
+    await save(p);
+    req.log.info({ id: p.id, plano }, 'proposta aceite');
+    mail.notify({
+      subject: `Proposta aceite: ${p.cliente.nome} (plano ${PLANOS[plano]})`,
+      text: `${nome} aceitou a proposta para ${p.cliente.nome} no plano ${PLANOS[plano]}.\n\n` +
+        `Próximo passo: enviar o link de pagamento e liberar o formulário no painel:\n` +
+        `https://admin.lynxcoder.com.br/#/proposta/${p.id}\n`,
+      replyTo: p.cliente.email || undefined,
+    }, req.log);
+    reply.header('cache-control', 'no-store');
+    return { ok: true, aceite: { em: p.aceite.em, plano, nome } };
+  });
+
+  app.get('/api/comecar/:token', async (req, reply) => {
+    guard(req);
+    const p = await conviteValido(req.params.token);
+    reply.header('cache-control', 'no-store');
+    return {
+      ok: true,
+      cliente: { nome: p.cliente.negocio || '', email: p.cliente.email || '', whatsapp: p.cliente.whatsapp || '' },
+      plano: p.aceite ? p.aceite.plano : null,
+    };
+  });
+}
+
+// ---------- rotas do painel (registadas dentro de routes/admin.js) ----------
+async function adminRoutes(app) {
+  app.get('/adm/config', async () => ({ ok: true, campos: config.CAMPOS, valores: await config.load() }));
+
+  app.put('/adm/config', async (req) => ({ ok: true, valores: await config.save(req.body || {}) }));
+
+  app.post('/adm/propostas', async (req) => {
+    const b = req.body || {};
+    const c = b.cliente || {};
+    const cliente = {
+      nome: str(c.nome, 120),
+      negocio: str(c.negocio, 120),
+      whatsapp: str(c.whatsapp, 20).replace(/\D/g, ''),
+      email: str(c.email, 160).toLowerCase(),
+    };
+    if (cliente.nome.length < 2) throw new HttpError(400, 'Informe o nome do cliente.');
+    if (cliente.email && !isEmail(cliente.email)) throw new HttpError(400, 'E-mail do cliente inválido.');
+    const valores = await config.load();
+    for (const k of PRECOS) {
+      if (b.precos && typeof b.precos[k] === 'string' && b.precos[k].trim()) valores[k] = str(b.precos[k], 40);
+    }
+    const dias = Math.min(90, Math.max(1, parseInt(b.validadeDias || valores.validade_dias || 15, 10) || 15));
+    const p = {
+      id: newId(), token: newToken(),
+      criadoEm: new Date().toISOString(),
+      expiraEm: new Date(Date.now() + dias * DAY).toISOString(),
+      cliente, valores,
+      mensagem: str(b.mensagem, 1000),
+      visualizacoes: [], aceite: null, convite: null, canceladaEm: null,
+    };
+    await save(p);
+    return { ok: true, id: p.id };
+  });
+
+  app.get('/adm/propostas/:id', async (req) => {
+    const p = await readJson(fileOf(req.params.id));
+    if (!p) throw new HttpError(404, 'Proposta não encontrada.');
+    return { ok: true, proposta: { ...p, status: status(p), link: linkProposta(p), linkFormulario: linkConvite(p) } };
+  });
+
+  app.post('/adm/propostas/:id/cancelar', async (req) => {
+    const p = await readJson(fileOf(req.params.id));
+    if (!p) throw new HttpError(404, 'Proposta não encontrada.');
+    p.canceladaEm = p.canceladaEm || new Date().toISOString();
+    await save(p);
+    return { ok: true };
+  });
+
+  // Gera (ou renova, se ainda não foi usado) o link do formulário /comecar.
+  app.post('/adm/propostas/:id/convite', async (req) => {
+    const p = await readJson(fileOf(req.params.id));
+    if (!p) throw new HttpError(404, 'Proposta não encontrada.');
+    if (p.canceladaEm) throw new HttpError(400, 'A proposta foi cancelada.');
+    if (p.convite && p.convite.usadoEm) throw new HttpError(400, 'O formulário deste cliente já foi enviado.');
+    p.convite = {
+      token: newToken(),
+      criadoEm: new Date().toISOString(),
+      expiraEm: new Date(Date.now() + CONVITE_DIAS * DAY).toISOString(),
+      usadoEm: null, pedidoId: null,
+    };
+    await save(p);
+    return { ok: true, linkFormulario: linkConvite(p) };
+  });
+
+  app.delete('/adm/propostas/:id', async (req) => {
+    await fsp.rm(fileOf(req.params.id), { force: true });
+    req.log.info({ id: req.params.id }, 'proposta excluída no painel');
+    return { ok: true };
+  });
+}
+
+module.exports = { publicRoutes, adminRoutes, all, resumo, status, conviteValido, reservar, marcarUsado, PLANOS };

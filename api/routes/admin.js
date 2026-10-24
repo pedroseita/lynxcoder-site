@@ -20,6 +20,7 @@ const { DIRS, HttpError, str, ID_RE, readJson, writeJson, createLimiter } = requ
 const { verifyPassword } = require('../lib/password');
 const totp = require('../lib/totp');
 const { zipStream } = require('../lib/zip');
+const propostas = require('./propostas');
 
 const ADMIN_HOST = (process.env.ADMIN_HOST || 'admin.lynxcoder.com.br').toLowerCase();
 const CREDENTIALS = path.join(DIRS.admin, 'credentials.json');
@@ -229,7 +230,7 @@ module.exports = async function adminRoutes(app) {
 
   // ---------- entradas ----------
   app.get('/adm/entradas', async () => {
-    const items = [...await listPedidos(), ...await listMensagens()]
+    const items = [...await listPedidos(), ...await listMensagens(), ...(await propostas.all()).map(propostas.resumo)]
       .sort((a, b) => String(b.recebidoEm).localeCompare(String(a.recebidoEm)));
     return {
       ok: true,
@@ -237,6 +238,7 @@ module.exports = async function adminRoutes(app) {
       contagem: {
         pedidosNovos: items.filter((i) => i.tipo === 'pedido' && i.status === 'novo').length,
         mensagensNovas: items.filter((i) => i.tipo === 'mensagem' && i.status === 'nova').length,
+        propostasAceitas: items.filter((i) => i.tipo === 'proposta' && i.status === 'aceita').length,
       },
     };
   });
@@ -329,6 +331,9 @@ module.exports = async function adminRoutes(app) {
     req.log.info({ id: req.params.id }, 'mensagem excluída no painel');
     return { ok: true };
   });
+
+  // ---------- propostas e configuração (routes/propostas.js) ----------
+  await propostas.adminRoutes(app);
 
   // ---------- blog ----------
   app.get('/adm/blog', async (req) => {

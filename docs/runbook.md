@@ -11,7 +11,7 @@ Três containers; site e manutenção nunca a servir ao mesmo tempo de forma amb
 |---|---|---|---|
 | `lynxcoder-site` | `lynx-site`, `lynx-site-http` | 10 | o site, 200 |
 | `lynxcoder-maintenance` | `lynx-maint`, `lynx-maint-http` | 100 | página de manutenção, **503** |
-| `lynxcoder-onboarding` | `lynx-api` (só `/api/` no apex) | 20 | API do formulário `/comecar` |
+| `lynxcoder-onboarding` | `lynx-api` (só `/api/` no apex), `lynx-admin` (`admin.`) | 20 | API dos formulários + painel admin |
 
 A API sobe e desce junto com o site (mesmo compose, `infra/docker-compose.yml`).
 Durante a manutenção o router `lynx-maint` (100) também apanha `/api/`, por isso
@@ -139,19 +139,16 @@ primeiro num quadrado: `-background none -gravity center -extent 484x484`.
 
 ## Formulário de contacto
 
-`src/index.html` tem um `<form>` que faz **POST nativo do browser** para o
-Web3Forms (`https://api.web3forms.com/submit`) — sem `fetch`, o que permite manter
-`connect-src 'none'` na CSP. A CSP autoriza `form-action https://api.web3forms.com`.
+`src/index.html` tem um `<form>` que faz **POST nativo do browser** (sem JS)
+para `/api/contato` (`api/routes/contato.js`). A mensagem é gravada em
+`/data/mensagens/<id>.json`, aparece no painel e, com SMTP configurado, chega
+por e-mail com `Reply-To` do remetente. Sucesso → `303` para `/obrigado.html`;
+erro → página HTML curta com o motivo e link de volta ao formulário.
 
-- `access_key`: chave do Web3Forms associada a devlynxcoder@gmail.com. Não é
-  segredo (só permite enviar para esse e-mail); para trocar o destino, gerar
-  nova chave em <https://web3forms.com>.
-- `redirect`: página de sucesso (`/obrigado.html`).
-- `botcheck`: honeypot anti-spam. Fica fora de ecrã via `.hp`, nunca com
-  `display:none` (muitos bots ignoram campos escondidos assim).
-
-Depois de qualquer alteração ao formulário, testar um envio a sério e confirmar
-a chegada do e-mail.
+- `website`: honeypot anti-spam. Fica fora de ecrã via `.hp`, nunca com
+  `display:none` (muitos bots ignoram campos escondidos assim). Se vier
+  preenchido, a API finge sucesso e descarta.
+- Limite por IP e por hora: 5 mensagens aceites e 20 tentativas.
 
 ## Formulário de início de projeto (`/comecar`)
 
@@ -173,7 +170,8 @@ e grava cada pedido numa pasta do volume `lynxcoder-site_onboarding-data`:
 > **Nunca correr `docker compose down -v`** — o `-v` apaga o volume e todos os
 > pedidos recebidos. `down` sem `-v` (o que os scripts usam) mantém-nos.
 
-Ver e copiar os pedidos no VPS:
+O normal é tratar tudo no painel (ver abaixo). Para ver e copiar os pedidos
+direto no VPS:
 
 ```bash
 docker exec lynxcoder-onboarding ls /data/pedidos
@@ -210,6 +208,40 @@ com o e-mail do cliente, por isso "Responder" vai direto para ele.
   corpo total até ~125 MB (acima disso o Traefik responde 413).
 - Os extras da etapa 2 estão no topo de `comecar.js` (`EXTRAS`); a API aceita
   qualquer id curto, por isso basta editar essa lista.
+
+## Painel admin (`admin.lynxcoder.com.br`)
+
+Servido pelo container `lynxcoder-onboarding` (`api/routes/admin.js` +
+`api/admin/`). Lista pedidos do `/comecar` e mensagens de contato, com
+situação, notas internas, fotos, download em ZIP e exclusão (direito de
+eliminação da LGPD). Mostra também os últimos posts do blog (Hashnode).
+
+### DNS
+
+Registo **A** `admin` → IP do VPS, no Registro.br (onde está o DNS do
+domínio). O certificado HTTPS é emitido sozinho pelo Traefik na primeira visita.
+
+### Criar / trocar o acesso
+
+```bash
+docker exec -it lynxcoder-onboarding node tools/admin-setup.js
+```
+
+Pede utilizador e senha (mín. 12 caracteres), mostra um QR code para a app
+autenticadora e só grava depois de um código válido. Correr de novo substitui o
+acesso (útil se perder o celular). As credenciais ficam em
+`/data/admin/credentials.json` (hash scrypt + segredo TOTP), no volume, nunca no git.
+
+### Segurança
+
+- Login = utilizador + senha + código de 6 dígitos.
+- 5 falhas por IP em 15 min bloqueiam esse IP 15 min.
+- Sessão em memória: expira com 2 h sem uso ou 12 h no total. Reiniciar o
+  container termina todas as sessões.
+- Só responde no host `admin.lynxcoder.com.br`; noutro host as rotas não existem.
+- CSP estrita, `noindex`, `no-store`; SVG enviados por clientes são servidos com
+  `sandbox` (não correm scripts mesmo abertos diretamente).
+- Não sai do ar com o modo de manutenção (`maintenance-on.sh` só derruba o site).
 
 ## Subir o HSTS
 

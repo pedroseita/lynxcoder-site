@@ -448,16 +448,11 @@
       </p>
 
       <!--
-        Formulário estático via Web3Forms: POST nativo do browser, sem JS e sem fetch,
-        o que mantém connect-src 'none' na CSP. O campo redirect define para onde o
-        Web3Forms redireciona após o envio. A access_key não é segredo: só permite
-        enviar mensagens para o e-mail associado (ver docs/runbook.md › Formulário).
+        POST nativo do browser (sem JS) para a nossa API (api/routes/contato.js):
+        a mensagem fica guardada no servidor, aparece no painel admin e, com SMTP
+        configurado, chega por e-mail. Sucesso redireciona para /obrigado.html.
       -->
-      <form class="contact-form" action="https://api.web3forms.com/submit" method="POST">
-        <input type="hidden" name="access_key" value="2d69fe7a-f700-4241-81a9-b36e246e16b2">
-        <input type="hidden" name="redirect" value="https://lynxcoder.com.br/obrigado.html">
-        <input type="hidden" name="subject" value="Novo contato pelo site lynxcoder.com.br">
-        <input type="hidden" name="from_name" value="Site Lynx Coder">
+      <form class="contact-form" action="/api/contato" method="POST">
 
         <div class="field">
           <label for="f-nome">Nome <span class="req" aria-hidden="true">*</span></label>
@@ -477,7 +472,7 @@
         <!-- honeypot: invisível para humanos, atrativo para bots -->
         <div class="hp" aria-hidden="true">
           <label for="f-gotcha">Deixe este campo vazio</label>
-          <input id="f-gotcha" type="checkbox" name="botcheck" tabindex="-1">
+          <input id="f-gotcha" type="text" name="website" tabindex="-1" autocomplete="off">
         </div>
 
         <button class="btn btn-primary" type="submit">Enviar mensagem ↗</button>

@@ -2,7 +2,7 @@
 # Tira o site do ar e mostra a página de manutenção
 
 SITE_DIR="/root/lynxcoder-site"
-PLACEHOLDER_DIR="/root/lynxcoder"
+PLACEHOLDER_DIR="/root/lynxcoder-site/placeholder"
 
 echo ">>> A parar o site principal..."
 cd "$SITE_DIR" && docker compose down

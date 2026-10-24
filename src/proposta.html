@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-accent="cyan" data-type="grotesk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<title>Proposta — LynxCoder</title>
+<meta name="theme-color" content="#08090b">
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="icon" type="image/png" href="/assets/img/logo.png" sizes="192x192">
+<link rel="stylesheet" href="/assets/css/styles.css?v=2">
+<link rel="stylesheet" href="/assets/css/proposta.css?v=2">
+</head>
+<body class="pp-body">
+
+<header class="nav scrolled">
+  <div class="wrap nav-inner">
+    <a class="brand" href="/">
+      <img src="/assets/img/logo.png" alt="LynxCoder" class="mark" width="44" height="44">
+      <span>LynxCoder</span>
+    </a>
+    <button type="button" class="btn btn-ghost btn-sm pp-print" id="printBtn" hidden>Imprimir ou salvar PDF</button>
+  </div>
+</header>
+
+<main class="wrap pp-main" id="main">
+  <p class="pp-status" id="loading">A carregar a proposta…</p>
+
+  <div class="pp-state" id="errorBox" hidden>
+    <p class="state-code" aria-hidden="true">!</p>
+    <h1 id="errorTitle">Esta proposta não está disponível.</h1>
+    <p class="lead" id="errorText"></p>
+    <a class="btn btn-primary" href="/#contato">Falar com a LynxCoder</a>
+  </div>
+
+  <article class="pp-doc" id="doc" hidden></article>
+
+  <section class="pp-accept" id="acceptBox" hidden aria-labelledby="acceptTitle">
+    <h2 id="acceptTitle">Aceitar a proposta</h2>
+    <form id="acceptForm" novalidate>
+      <fieldset class="pp-plans">
+        <legend>Plano escolhido</legend>
+        <label class="pp-plan"><input type="radio" name="plano" value="essencial"><span><strong>Essencial</strong><small>seunome.lynxcoder.com.br</small></span></label>
+        <label class="pp-plan"><input type="radio" name="plano" value="profissional"><span><strong>Profissional</strong><small>www.seunome.com.br</small></span></label>
+      </fieldset>
+      <label class="pp-label" for="aNome">Seu nome completo</label>
+      <input class="pp-input" id="aNome" name="nome" type="text" autocomplete="name" maxlength="120" required>
+      <label class="pp-check"><input type="checkbox" id="aConcordo"> <span>Li e aceito os termos desta proposta.</span></label>
+      <p class="pp-error" id="acceptError" role="alert"></p>
+      <button class="btn btn-primary" type="submit" id="acceptBtn">Aceitar proposta</button>
+    </form>
+  </section>
+
+  <section class="pp-accepted" id="acceptedBox" hidden>
+    <p class="pp-ok" aria-hidden="true">✔</p>
+    <h2>Proposta aceita.</h2>
+    <p id="acceptedText"></p>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="wrap">
+    <div class="foot-bottom bare">
+      <span>© 2026 LynxCoder — Pedro Seita</span>
+      <div class="foot-legal">
+        <a href="/privacy.html">Política de Privacidade</a>
+        <a href="/terms.html">Termos de Uso</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="/assets/js/proposta.js?v=2"></script>
+</body>
+</html>

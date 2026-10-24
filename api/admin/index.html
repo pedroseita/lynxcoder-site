@@ -13,7 +13,7 @@
 <body>
 
 <!-- ===== Login ===== -->
-<main id="loginView" class="login" hidden>
+<main id="loginView" class="login" aria-label="Entrar no painel" hidden>
   <form id="loginForm" class="login-card" novalidate>
     <img class="login-logo" src="/assets/logo.png" alt="" width="88" height="104">
     <p class="brand brand-center">LynxCoder <span class="brand-sub">Painel</span></p>
@@ -34,16 +34,19 @@
   <header class="top">
     <p class="brand"><img class="brand-logo" src="/assets/logo.png" alt="" width="30" height="36"> LynxCoder <span class="brand-sub">Painel</span></p>
     <div class="top-right">
+      <a class="btn btn-primary btn-sm" href="#/nova-proposta">+ Nova proposta</a>
+      <a class="btn btn-ghost btn-sm" href="#/config" title="Valores da proposta">Configurações</a>
       <span class="top-user" id="topUser"></span>
       <button class="btn btn-ghost btn-sm" type="button" id="logoutBtn">Sair</button>
     </div>
   </header>
 
-  <main class="layout">
+  <main class="layout" aria-label="Painel">
     <section class="col-list" id="listCol" aria-label="Entradas">
       <div class="stats">
         <div class="stat"><span class="stat-n" id="statPedidos">–</span><span class="stat-l">pedidos novos</span></div>
         <div class="stat"><span class="stat-n" id="statMensagens">–</span><span class="stat-l">mensagens novas</span></div>
+        <div class="stat"><span class="stat-n" id="statPropostas">–</span><span class="stat-l">aceitas a liberar</span></div>
       </div>
 
       <div class="filters">
@@ -51,6 +54,7 @@
           <button type="button" role="tab" data-type="todos" aria-selected="true">Todas</button>
           <button type="button" role="tab" data-type="pedido" aria-selected="false">Pedidos</button>
           <button type="button" role="tab" data-type="mensagem" aria-selected="false">Mensagens</button>
+          <button type="button" role="tab" data-type="proposta" aria-selected="false">Propostas</button>
         </div>
         <label class="sr-only" for="statusFilter">Situação</label>
         <select id="statusFilter">

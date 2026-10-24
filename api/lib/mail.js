@@ -25,4 +25,16 @@ function notify({ subject, text, replyTo }, log) {
   }).catch((err) => log.error({ err: err.message }, 'falha ao enviar e-mail de aviso'));
 }
 
-module.exports = { notify, enabled: !!transport };
+// E-mail para um destinatário externo (ex.: confirmação ao cliente).
+function sendTo({ to, subject, text, replyTo }, log) {
+  if (!transport || !to) return;
+  transport.sendMail({
+    from: process.env.NOTIFY_FROM || process.env.SMTP_USER,
+    to,
+    replyTo: replyTo || process.env.NOTIFY_TO || process.env.SMTP_USER,
+    subject,
+    text,
+  }).catch((err) => log.error({ err: err.message }, 'falha ao enviar e-mail ao cliente'));
+}
+
+module.exports = { notify, sendTo, enabled: !!transport };

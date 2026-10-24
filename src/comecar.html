@@ -27,7 +27,17 @@
   </div>
 </header>
 
-<main id="main" class="wrap ob-layout">
+<div class="wrap ob-gate" id="gate">
+  <p class="ob-gate-loading" id="gateLoading">A abrir o formulário…</p>
+  <div class="state-inner ob-gate-blocked" id="gateBlocked" hidden>
+    <p class="state-code" aria-hidden="true">!</p>
+    <h1 id="gateTitle">Este formulário é enviado pela LynxCoder.</h1>
+    <p class="lead" id="gateText"></p>
+    <a class="btn btn-primary" href="/#contato">Falar com a LynxCoder</a>
+  </div>
+</div>
+
+<main id="main" class="wrap ob-layout" hidden>
   <div class="ob-main">
 
     <div class="ob-progress" id="progress" aria-hidden="true">

@@ -209,6 +209,27 @@ com o e-mail do cliente, por isso "Responder" vai direto para ele.
 - Os extras da etapa 2 estão no topo de `comecar.js` (`EXTRAS`); a API aceita
   qualquer id curto, por isso basta editar essa lista.
 
+## Propostas e convites para o formulário
+
+Fluxo: painel → **+ Nova proposta** → enviar o link ao cliente (WhatsApp/e-mail)
+→ o cliente aceita na própria página → pagamento da implantação → painel →
+**Liberar formulário** → enviar o link do `/comecar`.
+
+- Proposta: `lynxcoder.com.br/proposta#<token>`. Expira na validade definida
+  (15 dias por omissão); aceite regista nome, plano, data, IP e navegador.
+  "Cancelar link" desativa-a. "Ver como o cliente" abre com `?previa=1`, que
+  não conta como visualização.
+- O texto da proposta está em `api/lib/proposta-template.js` (não no site
+  público). Os valores vêm de **Configurações** no painel e são copiados para a
+  proposta no momento em que é criada: mudar a tabela não altera propostas já
+  enviadas.
+- Formulário: `lynxcoder.com.br/comecar#<token>`, válido 30 dias e para um
+  único envio. Sem link válido o `/comecar` só mostra uma mensagem. O link
+  pré-preenche negócio, e-mail, WhatsApp e o plano aceite.
+- Ao enviar o formulário, o cliente recebe um e-mail de confirmação com o
+  resumo (requer o SMTP configurado).
+- Dados: `/data/propostas/<id>.json` e `/data/config/proposta.json` no volume.
+
 ## Painel admin (`admin.lynxcoder.com.br`)
 
 Servido pelo container `lynxcoder-onboarding` (`api/routes/admin.js` +

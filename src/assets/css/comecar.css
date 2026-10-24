@@ -6,6 +6,11 @@
 .ob-body { font-size: 16px; }
 /* Vários blocos têm display próprio (grid/flex), que ganharia ao [hidden]. */
 .ob-body [hidden] { display: none !important; }
+.ob-gate { display: grid; place-items: center; min-height: 60vh; padding-block: 40px; text-align: center; }
+.ob-gate .state-inner { justify-items: center; }
+.ob-gate h1 { font-size: clamp(26px, 4vw, 38px); }
+.ob-gate .lead { margin: 0; }
+.ob-gate-loading { font-family: var(--font-mono); font-size: 13px; color: var(--dim); }
 .ob-draft { margin: 0 0 0 auto; font-family: var(--font-mono); font-size: 12px; color: var(--faint); }
 
 .ob-layout {

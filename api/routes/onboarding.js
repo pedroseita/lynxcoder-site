@@ -10,6 +10,7 @@ const crypto = require('node:crypto');
 const { pipeline } = require('node:stream/promises');
 const { DIRS, HttpError, str, isEmail, newId, createLimiter } = require('../lib/common');
 const mail = require('../lib/mail');
+const propostas = require('./propostas');
 
 const MB = 1024 * 1024;
 const LIMITS = { logo: 5 * MB, fotos: 8 * MB, retrato: 8 * MB };
@@ -152,18 +153,27 @@ module.exports = async function onboardingRoutes(app) {
     const id = newId();
     const work = path.join(DIRS.tmp, id);
     await fsp.mkdir(work, { recursive: true });
+    let liberar = null;
 
     try {
       let rawData = null;
       let honeypot = '';
+      let convite = null;
+      let proposta = null;
       const saved = { logo: null, fotos: [], retrato: null };
 
       for await (const part of req.parts()) {
         if (part.type === 'field') {
-          if (part.fieldname === 'data') rawData = String(part.value);
+          if (part.fieldname === 'convite' && !convite) {
+            // Só quem recebeu o link (painel → "Liberar formulário") pode enviar.
+            convite = String(part.value);
+            proposta = await propostas.conviteValido(convite);
+            liberar = propostas.reservar(convite);
+          } else if (part.fieldname === 'data') rawData = String(part.value);
           else if (part.fieldname === 'website') honeypot = String(part.value);
           continue;
         }
+        if (!proposta) { part.file.resume(); throw new HttpError(400, 'Link do formulário em falta.'); }
         const kind = part.fieldname;
         if (!(kind in LIMITS)) { part.file.resume(); throw new HttpError(400, 'Ficheiro inesperado.'); }
         if (kind === 'fotos' && saved.fotos.length >= MAX_FOTOS) { part.file.resume(); throw new HttpError(400, `Máximo de ${MAX_FOTOS} fotos.`); }
@@ -192,19 +202,43 @@ module.exports = async function onboardingRoutes(app) {
         req.log.warn('honeypot preenchido — envio descartado');
         return reply.send({ ok: true, id });
       }
+      if (!proposta) throw new HttpError(400, 'Link do formulário em falta.');
       if (rawData === null) throw new HttpError(400, 'Dados do formulário em falta.');
       const data = validate(rawData);
       if (saved.fotos.length < MIN_FOTOS) throw new HttpError(400, `Envie pelo menos ${MIN_FOTOS} fotos de trabalhos.`);
 
       const files = [saved.logo, ...saved.fotos, saved.retrato].filter(Boolean);
-      const record = { id, recebidoEm: new Date().toISOString(), ...data, ficheiros: files };
+      const record = { id, recebidoEm: new Date().toISOString(), propostaId: proposta.id, ...data, ficheiros: files };
       await fsp.writeFile(path.join(work, 'dados.json'), JSON.stringify(record, null, 2));
       await fsp.writeFile(path.join(work, 'resumo.txt'), summary(id, data, files) + '\n');
 
       // Só depois de tudo validado e gravado o pedido aparece em pedidos/.
       await fsp.rename(work, path.join(DIRS.pedidos, id));
+      await propostas.marcarUsado(convite, id);
       limiter.ok(req.ip);
       req.log.info({ id, fotos: saved.fotos.length }, 'pedido recebido');
+
+      // Confirmação ao cliente (a proposta promete-a), com o resumo do que enviou.
+      mail.sendTo({
+        to: data.negocio.email,
+        subject: 'Recebemos as informações da sua página: LynxCoder',
+        text: `Olá!
+
+Recebemos as informações e as fotos da página de ${data.negocio.nome}. ` +
+          `Vamos começar o desenvolvimento e enviamos a prévia pelo WhatsApp.
+` +
+          `Se faltar alguma informação, entramos em contato.
+
+Código do pedido: ${id}
+
+` +
+          `Resumo do que recebemos:
+
+${summary(id, data, files)}
+
+LynxCoder · lynxcoder.com.br
+`,
+      }, req.log);
 
       mail.notify({
         subject: `Novo pedido de página: ${data.negocio.nome}`,
@@ -216,6 +250,8 @@ module.exports = async function onboardingRoutes(app) {
     } catch (err) {
       await fsp.rm(work, { recursive: true, force: true }).catch(() => {});
       throw err;
+    } finally {
+      if (liberar) liberar();
     }
   });
 };

@@ -2,7 +2,7 @@
 :root {
   --bg: #08090b; --bg-2: #0c0e11; --surface: #111419; --surface-2: #161a21;
   --border: rgba(255,255,255,.08); --border-2: rgba(255,255,255,.14);
-  --text: #eef0f3; --dim: #9aa1ad; --faint: #5b626d;
+  --text: #eef0f3; --dim: #9aa1ad; --faint: #7a8390; /* 5.2:1 em --bg, era 3.24:1 (falhava AA) */
   --accent: #3df0ff; --accent-ink: #04181b; --danger: #ff7b72; --ok: #3ecf8e; --warn: #f2b134;
   --mono: ui-monospace, "JetBrains Mono", "Cascadia Code", Consolas, monospace;
   --sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
@@ -27,7 +27,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .link { color: var(--accent); text-decoration: none; font-weight: 600; font-size: 13.5px; }
 .link:hover { text-decoration: underline; }
 
-input[type=text], input[type=password], select, textarea {
+input[type=text], input[type=password], input[type=email], select, textarea {
   background: var(--bg-2); border: 1px solid var(--border-2); border-radius: 10px; padding: 10px 12px; width: 100%;
 }
 input:focus, select:focus, textarea:focus { outline: none; border-color: var(--accent); }
@@ -50,16 +50,16 @@ textarea { resize: vertical; min-height: 110px; }
 
 /* ---------- topo ---------- */
 .top { position: sticky; top: 0; z-index: 10; display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 12px 24px; border-bottom: 1px solid var(--border); background: rgba(8,9,11,.9); backdrop-filter: blur(12px); }
-.top-right { display: flex; align-items: center; gap: 14px; }
+.top-right { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: flex-end; }
 .top-user { font: 13px var(--mono); color: var(--dim); }
 
 .layout { display: grid; grid-template-columns: 400px minmax(0, 1fr); min-height: calc(100vh - 57px); }
 .col-list { border-right: 1px solid var(--border); padding: 20px; display: grid; gap: 16px; align-content: start; }
 .col-detail { padding: 28px clamp(20px, 3vw, 40px); min-width: 0; }
 
-.stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
 .stat { display: grid; padding: 14px 16px; border-radius: 14px; border: 1px solid var(--border); background: var(--surface); }
-.stat-n { font-size: 28px; font-weight: 800; color: var(--accent); line-height: 1.1; }
+.stat-n { font-size: 26px; font-weight: 800; color: var(--accent); line-height: 1.1; }
 .stat-l { font-size: 13px; color: var(--dim); }
 
 .filters { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
@@ -83,6 +83,26 @@ textarea { resize: vertical; min-height: 110px; }
 .st-producao { background: rgba(242,177,52,.15); color: var(--warn); }
 .st-publicado, .st-respondida { background: rgba(62,207,142,.14); color: var(--ok); }
 .st-arquivado, .st-arquivada { background: rgba(255,255,255,.06); color: var(--faint); }
+.st-enviada { background: rgba(255,255,255,.08); color: var(--dim); }
+.st-aberta { background: rgba(61,240,255,.14); color: var(--accent); }
+.st-aceita { background: rgba(242,177,52,.15); color: var(--warn); }
+.st-formulario { background: rgba(169,139,255,.16); color: #b9a4ff; }
+.st-concluida { background: rgba(62,207,142,.14); color: var(--ok); }
+.st-expirada, .st-cancelada { background: rgba(255,255,255,.06); color: var(--faint); }
+
+/* ---------- propostas e configurações ---------- */
+.d-head .badge { display: inline-block; margin-top: 8px; }
+.link-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.link-input { flex: 1 1 320px; font: 13px var(--mono); color: var(--dim); }
+.small { font-size: 13px; margin: 10px 0 0; }
+.form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px 16px; align-items: start; }
+.form-grid .wide { grid-column: 1 / -1; }
+.form-group { font-size: 15px; margin: 10px 0 0; padding-top: 12px; border-top: 1px solid var(--border); }
+.form-group:first-child { margin-top: 0; padding-top: 0; border-top: 0; }
+.f { display: grid; gap: 6px; align-content: start; }
+.f-label { font-weight: 700; font-size: 13.5px; }
+.f-hint { font-size: 12px; color: var(--faint); }
+.form-actions { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; margin-top: 4px; }
 .empty { color: var(--faint); text-align: center; padding: 24px 0; margin: 0; }
 
 .blog { margin-top: 8px; padding-top: 16px; border-top: 1px solid var(--border); }
@@ -141,5 +161,6 @@ textarea { resize: vertical; min-height: 110px; }
   .layout:not(.showing-detail) .col-detail { display: none; }
   .back { display: inline-flex; }
   .top { padding: 10px 16px; }
+  .top-user { display: none; }
   .col-list, .col-detail { padding: 16px; }
 }

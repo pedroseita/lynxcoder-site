@@ -2,6 +2,7 @@
 //
 //   lynxcoder.com.br/api/onboarding   formulário de /comecar      (routes/onboarding.js)
 //   lynxcoder.com.br/api/contato      formulário de contato       (routes/contato.js)
+//   lynxcoder.com.br/api/proposta|comecar  links individuais       (routes/propostas.js)
 //   admin.lynxcoder.com.br            painel com login + 2 etapas (routes/admin.js)
 //
 // Os dados ficam no volume /data (ver docs/runbook.md).
@@ -31,6 +32,7 @@ app.get('/api/health', async () => ({ ok: true }));
 
 app.register(require('./routes/onboarding'));
 app.register(require('./routes/contato'));
+app.register(require('./routes/propostas').publicRoutes);
 app.register(require('./routes/admin'));
 
 app.setErrorHandler((err, req, reply) => {

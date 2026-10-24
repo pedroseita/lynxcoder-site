@@ -5,7 +5,11 @@
   'use strict';
 
   var API_URL = '/api/onboarding';
-  var DRAFT_KEY = 'lynx-onboarding-draft-v1';
+  // Link individual: /comecar#<convite>, gerado no painel ("Liberar formulário").
+  var CONVITE = (location.hash || '').replace(/^#/, '');
+  var DRAFT_KEY = 'lynx-onboarding-draft-v1:' + CONVITE;
+  // Mudar só o # (ex.: abrir /comecar e depois colar o link completo) não recarrega a página.
+  window.addEventListener('hashchange', function () { location.reload(); });
   var TOTAL_STEPS = 6;
   var MAX_PHOTOS = 12;
   var MIN_PHOTOS = 3;
@@ -693,6 +697,7 @@
   function submit() {
     var data = collect();
     var fd = new FormData();
+    fd.append('convite', CONVITE); // tem de ir antes das fotos (a API valida-o primeiro)
     fd.append('data', JSON.stringify(data));
     fd.append('website', val('website'));
     if (state.files.logo) fd.append('logo', state.files.logo.file, state.files.logo.file.name);
@@ -758,13 +763,45 @@
   }
 
   // ---------- arranque ----------
-  var restored = loadDraft();
-  renderList('servicos');
-  renderList('depoimentos');
-  syncPlan();
-  syncColors(!!val('paleta') && !restored);
-  renderFiles();
-  renderPreview();
-  goTo(state.step, { silent: true });
-  if (restored) $('#draftStatus').textContent = 'Rascunho recuperado deste aparelho';
+  // O formulário só aparece com um link válido; sem ele, só a mensagem.
+  function blocked(title, text) {
+    $('#gateLoading').hidden = true;
+    $('#gateTitle').textContent = title;
+    $('#gateText').textContent = text;
+    $('#gateBlocked').hidden = false;
+  }
+
+  function start(info) {
+    var restored = loadDraft();
+    if (!restored && info) {
+      // Pré-preenche o que já sabemos da proposta.
+      if (info.cliente.nome) { field('nome').value = info.cliente.nome; field('subdominio').value = slugify(info.cliente.nome); }
+      if (info.cliente.email) field('email').value = info.cliente.email;
+      if (info.cliente.whatsapp) field('whatsapp').value = maskPhone(info.cliente.whatsapp);
+      if (info.plano) $$('input[name=plano]').forEach(function (r) { r.checked = r.value === info.plano; });
+    }
+    renderList('servicos');
+    renderList('depoimentos');
+    syncPlan();
+    syncColors(!!val('paleta') && !restored);
+    renderFiles();
+    renderPreview();
+    $('#gate').hidden = true;
+    $('#main').hidden = false;
+    goTo(state.step, { silent: true });
+    if (restored) $('#draftStatus').textContent = 'Rascunho recuperado deste aparelho';
+  }
+
+  if (!/^[A-Za-z0-9_-]{24}$/.test(CONVITE)) {
+    blocked('Este formulário é enviado pela LynxCoder.', 'Ele faz parte da contratação da sua página. Se já contratou, abra o link exatamente como o recebeu no WhatsApp ou no e-mail.');
+  } else {
+    fetch('/api/comecar/' + CONVITE, { credentials: 'omit', cache: 'no-store' })
+      .then(function (res) { return res.json().catch(function () { return {}; }).then(function (d) { return { res: res, d: d }; }); })
+      .then(function (r) {
+        if (r.res.ok && r.d.ok) return start(r.d);
+        blocked(r.res.status === 410 ? 'Este link já não está ativo.' : 'Este link não é válido.',
+          r.d.message || 'Fale com a LynxCoder para receber um novo link.');
+      })
+      .catch(function () { blocked('Sem ligação com o servidor.', 'Verifique a internet e recarregue a página.'); });
+  }
 })();

@@ -250,21 +250,45 @@
       <p class="lead">Páginas que criamos para negócios locais. Abra, navegue e teste como um cliente faria. Os exemplos usam empresas e contatos fictícios.</p>
     </div>
 
-    <div class="pf-grid reveal">
-      <a class="pf-card" href="/exemplos/eletricista">
-        <span class="pf-shot"><img src="/assets/img/portfolio/eletricista.jpg" alt="Topo da página da Duarte Elétrica: faixa azul-escura com o título Luz que acende na primeira vez e o botão de orçamento no WhatsApp" width="1200" height="750" loading="lazy"></span>
-        <span class="pf-body">
-          <span class="pf-tag">Exemplo · Eletricista</span>
-          <span class="pf-title">Duarte Elétrica</span>
-          <span class="pf-desc">Página para profissional autônomo: serviços, galeria de trabalhos, depoimentos, área de atendimento e pedido de orçamento direto no WhatsApp.</span>
-          <span class="pf-link">Ver a página →</span>
-        </span>
-      </a>
-      <div class="pf-card pf-cta">
-        <span class="pf-tag">O seu negócio</span>
-        <h3>A próxima pode ser a sua.</h3>
-        <p>Conte sobre o seu negócio em cerca de 10 minutos e veja a prévia da sua página enquanto preenche.</p>
-        <a class="btn btn-primary" href="/comecar">Começar a minha página →</a>
+    <div class="pf-carousel reveal" id="pfCarousel">
+      <ul class="pf-track" id="pfTrack" tabindex="0" aria-label="Exemplos de páginas">
+        <li class="pf-slide">
+          <a class="pf-card pf-amber" href="/exemplos/eletricista">
+            <span class="pf-text">
+              <span class="pf-tag">Exemplo · Eletricista</span>
+              <span class="pf-title">Duarte Elétrica</span>
+              <span class="pf-desc">Página de um eletricista autônomo: serviços, trabalhos, depoimentos e orçamento direto no WhatsApp.</span>
+            </span>
+            <span class="pf-stage" aria-hidden="true">
+              <span class="pf-phone"><img src="/assets/img/portfolio/eletricista-celular.jpg" alt="" width="600" height="1298" loading="lazy"></span>
+              <span class="pf-chip pf-chip-wa">Olá! Quero um orçamento.</span>
+              <span class="pf-chip pf-chip-card"><b>90 dias</b>de garantia</span>
+            </span>
+            <span class="pf-arrow" aria-hidden="true">→</span>
+          </a>
+        </li>
+        <li class="pf-slide">
+          <a class="pf-card pf-cyan" href="/comecar">
+            <span class="pf-text">
+              <span class="pf-tag">O seu negócio</span>
+              <span class="pf-title">A próxima pode ser a sua</span>
+              <span class="pf-desc">Conte sobre o seu negócio em cerca de 10 minutos e veja a prévia da sua página enquanto preenche.</span>
+            </span>
+            <span class="pf-stage" aria-hidden="true">
+              <span class="pf-phone"><img src="/assets/img/portfolio/comecar-celular.jpg" alt="" width="600" height="1298" loading="lazy"></span>
+              <span class="pf-chip pf-chip-card"><b>6 etapas</b>com prévia ao vivo</span>
+              <span class="pf-chip pf-chip-ok">Rascunho salvo ✓</span>
+            </span>
+            <span class="pf-arrow" aria-hidden="true">→</span>
+          </a>
+        </li>
+      </ul>
+      <div class="pf-controls" id="pfControls" hidden>
+        <div class="pf-dots" id="pfDots"></div>
+        <div class="pf-nav">
+          <button type="button" class="pf-btn" id="pfPrev" aria-label="Exemplo anterior">←</button>
+          <button type="button" class="pf-btn" id="pfNext" aria-label="Próximo exemplo">→</button>
+        </div>
       </div>
     </div>
   </div>

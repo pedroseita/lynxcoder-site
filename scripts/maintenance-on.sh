@@ -1,4 +1,5 @@
 #!/bin/bash
+set -euo pipefail
 # Tira o site do ar e mostra a página de manutenção
 
 SITE_DIR="/root/lynxcoder-site"

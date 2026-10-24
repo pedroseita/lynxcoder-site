@@ -1,4 +1,5 @@
 #!/bin/bash
+set -euo pipefail
 # Faz pull das alterações do GitHub e reconstrói o container
 
 SITE_DIR="/root/lynxcoder-site"

@@ -45,6 +45,55 @@ services:
     networks:
       - proxy
 
+  # API do formulário /comecar. Só responde em /api/ do domínio principal; o
+  # resto continua a ir para o nginx do site (priority 20 > 10).
+  # Durante a manutenção, o router da manutenção (priority 100) também apanha
+  # /api/, por isso ninguém consegue enviar pedidos com o site em baixo.
+  onboarding:
+    build:
+      context: ../api
+    container_name: lynxcoder-onboarding
+    restart: unless-stopped
+    env_file:
+      # SMTP para o aviso por e-mail. Opcional: sem ficheiro, os pedidos são
+      # gravados na mesma, só não chega o e-mail. Ver docs/runbook.md.
+      - path: onboarding.env
+        required: false
+    volumes:
+      # NUNCA correr "docker compose down -v": apaga todos os pedidos recebidos.
+      - onboarding-data:/data
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.lynx-api.rule=Host(`lynxcoder.com.br`) && PathPrefix(`/api/`)"
+      - "traefik.http.routers.lynx-api.entrypoints=websecure"
+      - "traefik.http.routers.lynx-api.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.lynx-api.priority=20"
+      - "traefik.http.routers.lynx-api.middlewares=lynx-api-hsts,lynx-api-ratelimit,lynx-api-body"
+      - "traefik.http.services.lynx-api.loadbalancer.server.port=3000"
+      - "traefik.http.middlewares.lynx-api-hsts.headers.stsSeconds=300"
+      # Travão grosso à frente da API (a API tem o seu limite por IP também).
+      - "traefik.http.middlewares.lynx-api-ratelimit.ratelimit.average=30"
+      - "traefik.http.middlewares.lynx-api-ratelimit.ratelimit.period=1m"
+      - "traefik.http.middlewares.lynx-api-ratelimit.ratelimit.burst=10"
+      # 14 ficheiros de até 8 MB + margem; acima disto o Traefik responde 413.
+      - "traefik.http.middlewares.lynx-api-body.buffering.maxRequestBodyBytes=125000000"
+    networks:
+      - proxy
+
+volumes:
+  onboarding-data:
+
 networks:
   proxy:
     external: true

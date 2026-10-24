@@ -5,12 +5,17 @@ corre na rede Docker externa `proxy`.
 
 ## Topologia
 
-Dois containers, nunca os dois a servir ao mesmo tempo de forma ambígua:
+Três containers; site e manutenção nunca a servir ao mesmo tempo de forma ambígua:
 
 | Container | Routers Traefik | Prioridade | Serve |
 |---|---|---|---|
 | `lynxcoder-site` | `lynx-site`, `lynx-site-http` | 10 | o site, 200 |
 | `lynxcoder-maintenance` | `lynx-maint`, `lynx-maint-http` | 100 | página de manutenção, **503** |
+| `lynxcoder-onboarding` | `lynx-api` (só `/api/` no apex) | 20 | API do formulário `/comecar` |
+
+A API sobe e desce junto com o site (mesmo compose, `infra/docker-compose.yml`).
+Durante a manutenção o router `lynx-maint` (100) também apanha `/api/`, por isso
+não entram pedidos com o site em baixo.
 
 A prioridade é o mecanismo central: enquanto o container de manutenção existir,
 **ganha sempre**. Isto torna o estado determinístico e permite transições sem
@@ -147,6 +152,64 @@ Web3Forms (`https://api.web3forms.com/submit`) — sem `fetch`, o que permite ma
 
 Depois de qualquer alteração ao formulário, testar um envio a sério e confirmar
 a chegada do e-mail.
+
+## Formulário de início de projeto (`/comecar`)
+
+Página `src/comecar.html` + `src/assets/js/comecar.js`. Envia em multipart para
+`POST /api/onboarding`, servido pelo container `lynxcoder-onboarding` (`api/`).
+
+A API valida tudo de novo, confirma o tipo real de cada ficheiro pelos bytes,
+e grava cada pedido numa pasta do volume `lynxcoder-site_onboarding-data`:
+
+```
+/data/pedidos/<AAAAMMDD-HHMM-xxxxxx>/
+├── dados.json     tudo o que o cliente preencheu
+├── resumo.txt     o mesmo, legível
+├── logo.<ext>     se enviou
+├── foto-01.jpg …  3 a 12 fotos (já reduzidas no browser para ≤ 2400 px)
+└── retrato.<ext>  se enviou
+```
+
+> **Nunca correr `docker compose down -v`** — o `-v` apaga o volume e todos os
+> pedidos recebidos. `down` sem `-v` (o que os scripts usam) mantém-nos.
+
+Ver e copiar os pedidos no VPS:
+
+```bash
+docker exec lynxcoder-onboarding ls /data/pedidos
+docker exec lynxcoder-onboarding cat /data/pedidos/<id>/resumo.txt
+docker cp lynxcoder-onboarding:/data/pedidos/<id> /root/pedidos/
+```
+
+### Aviso por e-mail (opcional)
+
+Sem configuração, os pedidos são gravados na mesma, só não chega e-mail. Para
+receber o resumo no Gmail, criar uma **senha de app** na conta Google
+(Segurança → Verificação em duas etapas → Senhas de app) e, no VPS:
+
+```bash
+cat > /root/lynxcoder-site/infra/onboarding.env <<'ENV'
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=465
+SMTP_USER=devlynxcoder@gmail.com
+SMTP_PASS=<senha de app de 16 letras>
+NOTIFY_TO=devlynxcoder@gmail.com
+ENV
+chmod 600 /root/lynxcoder-site/infra/onboarding.env
+docker compose -f /root/lynxcoder-site/infra/docker-compose.yml up -d onboarding
+```
+
+O ficheiro está no `.gitignore`: nunca o commitar. O e-mail leva `Reply-To`
+com o e-mail do cliente, por isso "Responder" vai direto para ele.
+
+### Limites
+
+- Por IP e por hora: 5 pedidos aceites e 20 tentativas (na API) + 30 pedidos/min
+  no Traefik.
+- Logotipo até 5 MB (PNG, JPG, WEBP, SVG); fotos até 8 MB cada, máximo 12;
+  corpo total até ~125 MB (acima disso o Traefik responde 413).
+- Os extras da etapa 2 estão no topo de `comecar.js` (`EXTRAS`); a API aceita
+  qualquer id curto, por isso basta editar essa lista.
 
 ## Subir o HSTS
 

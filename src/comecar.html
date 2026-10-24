@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-accent="cyan" data-type="grotesk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>Começar a sua página — LynxCoder</title>
+<meta name="description" content="Envie as informações do seu negócio para a LynxCoder montar a sua página.">
+<meta name="theme-color" content="#08090b">
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="icon" type="image/png" href="/assets/img/logo.png" sizes="192x192">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="stylesheet" href="/assets/css/styles.css">
+<link rel="stylesheet" href="/assets/css/comecar.css">
+</head>
+<body class="ob-body">
+
+<a class="skip-link" href="#main">Ir para o conteúdo</a>
+
+<header class="nav scrolled">
+  <div class="wrap nav-inner">
+    <a class="brand" href="/">
+      <img src="/assets/img/logo.png" alt="LynxCoder" class="mark" width="44" height="44">
+      <span>LynxCoder</span>
+    </a>
+    <p class="ob-draft" id="draftStatus" aria-live="polite"></p>
+  </div>
+</header>
+
+<main id="main" class="wrap ob-layout">
+  <div class="ob-main">
+
+    <div class="ob-progress" id="progress" aria-hidden="true">
+      <span></span><span></span><span></span><span></span><span></span><span></span>
+    </div>
+    <p class="ob-step-label" id="stepLabel">Etapa 1 de 6: Seu negócio</p>
+
+    <form id="obForm" class="ob-card" novalidate>
+
+      <!-- honeypot: invisível para humanos, atrativo para bots -->
+      <div class="hp" aria-hidden="true">
+        <label for="f-website">Deixe este campo vazio</label>
+        <input id="f-website" type="text" name="website" tabindex="-1" autocomplete="off">
+      </div>
+
+      <!-- ===== Etapa 1 ===== -->
+      <section class="ob-step" data-step="1" data-title="Seu negócio">
+        <h1 class="ob-title">Vamos começar pelo seu negócio</h1>
+        <p class="ob-intro">São 6 etapas curtas, cerca de 10 minutos. Suas respostas ficam salvas neste aparelho se precisar parar no meio.</p>
+
+        <div class="ob-grid">
+          <div class="ob-field span-2">
+            <label for="f-nome">Nome do negócio ou profissional</label>
+            <input id="f-nome" name="nome" type="text" maxlength="80" autocomplete="organization" placeholder="Ex.: João Eletricista" required>
+            <p class="ob-error" data-error-for="nome">Informe o nome que vai aparecer na página.</p>
+          </div>
+          <div class="ob-field span-2">
+            <label for="f-especialidade">Especialidade</label>
+            <input id="f-especialidade" name="especialidade" type="text" maxlength="100" placeholder="Ex.: Eletricista residencial e comercial" required>
+            <p class="ob-error" data-error-for="especialidade">Informe sua especialidade.</p>
+          </div>
+          <div class="ob-field">
+            <label for="f-cidade">Cidade</label>
+            <input id="f-cidade" name="cidade" type="text" maxlength="80" autocomplete="address-level2" placeholder="Ex.: Campinas - SP" required>
+            <p class="ob-error" data-error-for="cidade">Informe a cidade.</p>
+          </div>
+          <div class="ob-field">
+            <label for="f-area">Área de atendimento <span class="opt">(opcional)</span></label>
+            <input id="f-area" name="area" type="text" maxlength="120" placeholder="Ex.: Campinas e região">
+          </div>
+          <div class="ob-field">
+            <label for="f-whatsapp">WhatsApp</label>
+            <input id="f-whatsapp" name="whatsapp" type="tel" inputmode="numeric" maxlength="15" autocomplete="tel" placeholder="(11) 91234-5678" required>
+            <p class="ob-error" data-error-for="whatsapp">Informe um WhatsApp com DDD.</p>
+          </div>
+          <div class="ob-field">
+            <label for="f-email">E-mail</label>
+            <input id="f-email" name="email" type="email" maxlength="120" autocomplete="email" placeholder="voce@exemplo.com" required>
+            <p class="ob-error" data-error-for="email">Informe um e-mail válido.</p>
+          </div>
+          <div class="ob-field">
+            <label for="f-instagram">Instagram <span class="opt">(opcional)</span></label>
+            <div class="ob-prefix"><span>@</span><input id="f-instagram" name="instagram" type="text" maxlength="40" autocapitalize="none" spellcheck="false"></div>
+          </div>
+          <div class="ob-field">
+            <label for="f-facebook">Facebook <span class="opt">(opcional)</span></label>
+            <input id="f-facebook" name="facebook" type="url" maxlength="200" placeholder="Link da página">
+          </div>
+          <div class="ob-field">
+            <label for="f-tiktok">TikTok <span class="opt">(opcional)</span></label>
+            <div class="ob-prefix"><span>@</span><input id="f-tiktok" name="tiktok" type="text" maxlength="40" autocapitalize="none" spellcheck="false"></div>
+          </div>
+          <div class="ob-field">
+            <label for="f-youtube">YouTube <span class="opt">(opcional)</span></label>
+            <input id="f-youtube" name="youtube" type="url" maxlength="200" placeholder="Link do canal">
+          </div>
+        </div>
+        <p class="ob-hint">As redes informadas aparecem como links na página, sem custo extra.</p>
+      </section>
+
+      <!-- ===== Etapa 2 ===== -->
+      <section class="ob-step" data-step="2" data-title="Plano e endereço" hidden>
+        <h2 class="ob-title">Escolha o plano e o endereço</h2>
+        <p class="ob-intro">A página é a mesma nos dois planos. Muda o endereço e quem é dono do domínio.</p>
+
+        <fieldset class="ob-field">
+          <legend>Plano</legend>
+          <div class="ob-options two">
+            <label class="ob-option">
+              <input type="radio" name="plano" value="essencial" checked>
+              <span class="ob-option-body">
+                <strong>Essencial</strong>
+                <span>Endereço da LynxCoder, sem registrar nada.</span>
+                <code>seunome.lynxcoder.com.br</code>
+              </span>
+            </label>
+            <label class="ob-option">
+              <input type="radio" name="plano" value="profissional">
+              <span class="ob-option-body">
+                <strong>Profissional</strong>
+                <span>Seu próprio domínio, registrado em seu nome.</span>
+                <code>www.seunome.com.br</code>
+              </span>
+            </label>
+          </div>
+        </fieldset>
+
+        <div class="ob-field" data-show-plan="essencial">
+          <label for="f-subdominio">Seu endereço</label>
+          <div class="ob-suffix"><input id="f-subdominio" name="subdominio" type="text" maxlength="40" autocapitalize="none" spellcheck="false"><span>.lynxcoder.com.br</span></div>
+          <p class="ob-hint">Só letras minúsculas, números e hífen. Sugerimos a partir do nome do negócio.</p>
+          <p class="ob-error" data-error-for="subdominio">Use de 3 a 40 caracteres: letras minúsculas, números e hífen, sem hífen no começo ou no fim.</p>
+        </div>
+
+        <div data-show-plan="profissional" hidden>
+          <fieldset class="ob-field">
+            <legend>Você já tem o domínio?</legend>
+            <div class="ob-pills">
+              <label class="ob-pill"><input type="radio" name="dominioRegistrado" value="sim" checked><span>Já registrei</span></label>
+              <label class="ob-pill"><input type="radio" name="dominioRegistrado" value="nao"><span>Ainda vou registrar</span></label>
+            </div>
+          </fieldset>
+          <div class="ob-field">
+            <label for="f-dominio">Domínio</label>
+            <input id="f-dominio" name="dominio" type="text" maxlength="100" autocapitalize="none" spellcheck="false" placeholder="joaoeletricista.com.br">
+            <p class="ob-hint" id="dominioHint">Depois do envio, mandamos os dois apontamentos para você criar no Registro.br.</p>
+            <p class="ob-error" data-error-for="dominio">Informe um domínio válido, por exemplo joaoeletricista.com.br.</p>
+          </div>
+        </div>
+
+        <fieldset class="ob-field">
+          <legend>Extras <span class="opt">(opcional, cobrados à parte)</span></legend>
+          <p class="ob-hint top">Marque o que tiver interesse. Confirmamos os valores antes de começar. Precisa de agendamento, catálogo ou loja? <a href="/#contato">Fale com a gente</a> sobre um site completo.</p>
+          <div class="ob-checks" id="extrasList"></div>
+        </fieldset>
+      </section>
+
+      <!-- ===== Etapa 3 ===== -->
+      <section class="ob-step" data-step="3" data-title="Logotipo e cores" hidden>
+        <h2 class="ob-title">Logotipo e cores</h2>
+        <p class="ob-intro">Sem logotipo? Sem problema: usamos o nome do negócio com uma tipografia forte.</p>
+
+        <div class="ob-field">
+          <span class="ob-label">Logotipo <span class="opt">(opcional)</span></span>
+          <label class="ob-drop">
+            <input id="f-logo" type="file" accept="image/png,image/jpeg,image/svg+xml,image/webp">
+            <strong>Toque para enviar o logotipo</strong>
+            <span>PNG, JPG, SVG ou WEBP, até 5 MB</span>
+          </label>
+          <div class="ob-logo-preview" id="logoPreview" hidden>
+            <img src="data:," alt="Pré-visualização do logotipo">
+            <button type="button" class="ob-link" id="logoRemove">Remover</button>
+          </div>
+          <p class="ob-error" data-error-for="logo">Envie uma imagem PNG, JPG, SVG ou WEBP de até 5 MB.</p>
+        </div>
+
+        <fieldset class="ob-field">
+          <legend>Estilo de cores</legend>
+          <div class="ob-palettes" id="paletteList"></div>
+        </fieldset>
+
+        <div class="ob-grid">
+          <div class="ob-field">
+            <label for="f-cor1">Cor principal</label>
+            <div class="ob-color"><input id="f-cor1" name="corPrincipal" type="color" value="#1e3a5f"><code id="cor1Code">#1E3A5F</code></div>
+          </div>
+          <div class="ob-field">
+            <label for="f-cor2">Cor de destaque</label>
+            <div class="ob-color"><input id="f-cor2" name="corDestaque" type="color" value="#f2b134"><code id="cor2Code">#F2B134</code></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== Etapa 4 ===== -->
+      <section class="ob-step" data-step="4" data-title="Seus serviços" hidden>
+        <h2 class="ob-title">Seus serviços</h2>
+        <p class="ob-intro">Liste os principais, do mais procurado para o menos. Entre 3 e 6 funciona melhor.</p>
+        <div id="servicesList" class="ob-list"></div>
+        <button type="button" class="btn btn-ghost btn-sm" id="addService">+ Adicionar serviço</button>
+        <p class="ob-error" data-error-for="servicos">Adicione pelo menos um serviço com nome.</p>
+      </section>
+
+      <!-- ===== Etapa 5 ===== -->
+      <section class="ob-step" data-step="5" data-title="Fotos e depoimentos" hidden>
+        <h2 class="ob-title">Fotos e depoimentos</h2>
+        <p class="ob-intro">Fotos nítidas, com boa luz e na horizontal fazem mais diferença do que qualquer outro detalhe.</p>
+
+        <div class="ob-field">
+          <span class="ob-label">Fotos de trabalhos realizados</span>
+          <label class="ob-drop">
+            <input id="f-fotos" type="file" accept="image/png,image/jpeg,image/webp" multiple>
+            <strong>Toque para escolher fotos</strong>
+            <span>Até 12 fotos, 8 MB cada</span>
+          </label>
+          <div class="ob-thumbs" id="photoThumbs"></div>
+          <p class="ob-error" data-error-for="fotos">Envie pelo menos 3 fotos de trabalhos.</p>
+        </div>
+
+        <div class="ob-field">
+          <span class="ob-label">Foto sua <span class="opt">(opcional)</span></span>
+          <label class="ob-drop compact">
+            <input id="f-retrato" type="file" accept="image/png,image/jpeg,image/webp">
+            <strong>Toque para enviar</strong>
+            <span>Para a seção "Sobre"</span>
+          </label>
+          <div class="ob-thumbs" id="portraitThumb"></div>
+        </div>
+
+        <div class="ob-field">
+          <label for="f-historia">Conte sua história <span class="opt">(opcional)</span></label>
+          <textarea id="f-historia" name="historia" maxlength="1500" rows="5" placeholder="Há quanto tempo trabalha na área, o que o diferencia, como gosta de atender."></textarea>
+        </div>
+
+        <div class="ob-field">
+          <span class="ob-label">Depoimentos de clientes <span class="opt">(opcional)</span></span>
+          <div id="testimonialsList" class="ob-list"></div>
+          <button type="button" class="btn btn-ghost btn-sm" id="addTestimonial">+ Adicionar depoimento</button>
+        </div>
+      </section>
+
+      <!-- ===== Etapa 6 ===== -->
+      <section class="ob-step" data-step="6" data-title="Confira e envie" hidden>
+        <h2 class="ob-title">Confira e envie</h2>
+        <p class="ob-intro">Toque em "Editar" para corrigir qualquer etapa.</p>
+        <div id="review" class="ob-review"></div>
+
+        <div class="ob-consents">
+          <label class="ob-check">
+            <input type="checkbox" name="consentUso" id="f-consentUso">
+            <span>Autorizo a LynxCoder a usar estas informações e fotos para criar e publicar minha página, conforme a <a href="/privacy.html" target="_blank" rel="noopener">política de privacidade</a>.</span>
+          </label>
+          <label class="ob-check">
+            <input type="checkbox" name="consentTermos" id="f-consentTermos">
+            <span>Li e aceito os <a href="/terms.html" target="_blank" rel="noopener">termos</a> da proposta (mensalidade, alterações incluídas e cancelamento).</span>
+          </label>
+          <p class="ob-error" data-error-for="consent">Marque as duas autorizações para enviar.</p>
+        </div>
+
+        <div class="ob-upload" id="uploadBox" hidden>
+          <div class="ob-upload-bar"><span id="uploadBar"></span></div>
+          <p id="uploadText">A preparar o envio…</p>
+        </div>
+        <p class="ob-error ob-submit-error" id="submitError" role="alert"></p>
+      </section>
+
+      <!-- ===== Sucesso ===== -->
+      <section class="ob-step ob-done" data-step="done" hidden>
+        <p class="ob-done-mark" aria-hidden="true">✔</p>
+        <h2 class="ob-title">Obrigado! Já recebemos tudo.</h2>
+        <p class="ob-intro">Vamos analisar as suas informações e falar com você pelo WhatsApp. Guarde o código do seu pedido:</p>
+        <p class="ob-protocol" id="protocol"></p>
+        <a class="btn btn-primary" href="/">Voltar ao site</a>
+      </section>
+
+      <div class="ob-nav" id="stepNav">
+        <button type="button" class="btn btn-ghost" id="prevBtn" hidden>← Voltar</button>
+        <button type="submit" class="btn btn-primary" id="nextBtn">Continuar →</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- ===== Prévia ao vivo ===== -->
+  <aside class="ob-aside" id="previewPanel" aria-label="Prévia da sua página">
+    <div class="ob-aside-head">
+      <p class="ob-aside-title">Prévia da sua página</p>
+      <button type="button" class="ob-link ob-aside-close" id="previewClose">Fechar</button>
+    </div>
+    <div class="pv" id="preview">
+      <div class="pv-bar"><span class="pv-lock" aria-hidden="true"></span><span id="pvUrl">seunome.lynxcoder.com.br</span></div>
+      <div class="pv-hero" id="pvHero">
+        <img class="pv-logo" id="pvLogo" src="data:," alt="" hidden>
+        <p class="pv-name" id="pvName">Seu negócio</p>
+        <p class="pv-tag" id="pvTag">Sua especialidade em sua cidade</p>
+        <span class="pv-cta" id="pvCta">Pedir orçamento no WhatsApp</span>
+      </div>
+      <div class="pv-body">
+        <p class="pv-h">Serviços</p>
+        <div class="pv-chips" id="pvServices"><span class="pv-chip muted">Seus serviços aparecem aqui</span></div>
+        <p class="pv-h">Trabalhos</p>
+        <div class="pv-photos" id="pvPhotos"><span></span><span></span><span></span></div>
+        <div class="pv-about" id="pvAbout" hidden>
+          <p class="pv-h">Sobre</p>
+          <div class="pv-about-row"><img id="pvPortrait" src="data:," alt="" hidden><p id="pvStory"></p></div>
+        </div>
+        <div class="pv-social" id="pvSocial" hidden></div>
+      </div>
+    </div>
+  </aside>
+  <button type="button" class="ob-preview-fab" id="previewOpen">Ver prévia</button>
+</main>
+
+<footer class="footer">
+  <div class="wrap">
+    <div class="foot-bottom bare">
+      <span>© 2026 LynxCoder — Pedro Seita</span>
+      <div class="foot-legal">
+        <a href="/privacy.html">Política de Privacidade</a>
+        <a href="/terms.html">Termos de Uso</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="/assets/js/comecar.js"></script>
+</body>
+</html>

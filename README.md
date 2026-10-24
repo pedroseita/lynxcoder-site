@@ -13,11 +13,14 @@ src/                     ← tudo o que vai para o browser (um só COPY no Docke
 ├── terms.html             termos de uso (noindex)
 ├── 404.html               página de erro (servida pelo nginx via error_page)
 ├── obrigado.html          destino do formulário após envio
+├── comecar.html           formulário de início de projeto (6 etapas + prévia)
 ├── robots.txt
 ├── sitemap.xml
 └── assets/
     ├── css/styles.css     design system completo
+    ├── css/comecar.css    estilos do /comecar
     ├── js/app.js          nav, menu mobile, animação do terminal
+    ├── js/comecar.js      lógica do /comecar (validação, rascunho, prévia, envio)
     ├── fonts/*.woff2      self-hosted, sem pedidos à Google
     └── img/logo.png
 
@@ -32,6 +35,7 @@ infra/
     ├── nginx.conf         devolve 503 em tudo (routers lynx-maint, priority 100)
     └── docker-compose.yml
 
+api/                     ← API do /comecar (Node + Fastify), container lynxcoder-onboarding
 scripts/                 ← deploy e manutenção (ver docs/runbook.md)
 docs/                    ← runbook operacional e rascunhos
 ```

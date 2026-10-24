@@ -41,6 +41,27 @@ jobs:
       - name: Build da imagem de manutenção
         run: docker build -f infra/maintenance/Dockerfile -t lynx-maint:ci .
 
+      # A API do /comecar: arranca, responde ao health e recusa envios inválidos.
+      - name: Testar a API de onboarding
+        run: |
+          docker build -t lynx-api:ci api
+          docker run -d --name lynx-api-ci -p 3000:3000 lynx-api:ci
+          for i in $(seq 1 15); do
+            curl -sf http://localhost:3000/api/health >/dev/null && break || sleep 1
+          done
+
+          echo "— health deve ser 200"
+          test "$(curl -s -o /dev/null -w '%{http_code}' http://localhost:3000/api/health)" = "200"
+
+          echo "— envio sem dados nem fotos deve ser recusado com 400"
+          test "$(curl -s -o /dev/null -w '%{http_code}' -F website= http://localhost:3000/api/onboarding)" = "400"
+
+          echo "— ficheiro que nao e imagem deve ser recusado"
+          printf 'nao sou imagem' > /tmp/falso.jpg
+          curl -s -F fotos=@/tmp/falso.jpg http://localhost:3000/api/onboarding | grep -q '"ok":false'
+
+          docker rm -f lynx-api-ci
+
       # Confirma no container real aquilo que mais vezes se quebrou aqui:
       # o 404 a devolver 404 (e não a homepage com 200) e os headers nos assets.
       - name: Testar o site servido

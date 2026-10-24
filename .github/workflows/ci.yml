@@ -18,13 +18,20 @@ jobs:
       # Apanha href="#", âncoras inexistentes e ficheiros referenciados que não
       # existem — foi assim que os links mortos do footer passaram meses sem dar
       # por isso.
+      # Versão do lychee pinada: entre versões mudam flags (--exclude-mail foi
+      # removida; e-mails já são ignorados por omissão).
+      # --root-dir/--index-files resolvem links "/..." e "/#ancora" como o nginx.
+      # O endpoint do Web3Forms só aceita POST, por isso o GET do lychee dá 405.
       - name: Verificar links
         uses: lycheeverse/lychee-action@v2
         with:
+          lycheeVersion: v0.24.2
           args: >-
             --no-progress
             --include-fragments
-            --exclude-mail
+            --root-dir "${{ github.workspace }}/src"
+            --index-files index.html
+            --exclude '^https://api\.web3forms\.com/'
             "src/**/*.html"
           fail: true
 

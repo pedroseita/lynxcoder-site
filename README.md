@@ -46,7 +46,7 @@ api/                     ← API (Node + Fastify), container lynxcoder-onboardin
 ├── routes/admin.js        painel admin.lynxcoder.com.br (login + 2 etapas)
 ├── admin/                 interface do painel
 └── tools/admin-setup.js   cria o acesso ao painel (correr no VPS)
-scripts/                 ← deploy e manutenção (ver docs/runbook.md)
+scripts/                 ← deploy, manutenção, backup e restauro (ver docs/runbook.md)
 docs/                    ← runbook operacional e rascunhos
 ```
 

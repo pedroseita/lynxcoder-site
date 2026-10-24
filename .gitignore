@@ -4,3 +4,4 @@ Lynx Coder.zip
 Thumbs.db
 node_modules/
 infra/onboarding.env
+infra/backup.env

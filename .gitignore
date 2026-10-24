@@ -1,1 +1,4 @@
 Lynx Coder.zip
+*.zip
+.DS_Store
+Thumbs.db

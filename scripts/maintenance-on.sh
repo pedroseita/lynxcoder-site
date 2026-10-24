@@ -1,14 +1,22 @@
 #!/bin/bash
 set -euo pipefail
-# Tira o site do ar e mostra a página de manutenção
+# Põe a página de manutenção à frente do site.
+#
+# Ordem deliberada: SOBE a manutenção primeiro, só depois derruba o site.
+# Como a manutenção tem priority 100 e o site 10, o Traefik passa a servi-la no
+# instante em que fica saudável — zero segundos sem resposta. A ordem inversa
+# (down do site primeiro) deixava o domínio a dar erro durante o build.
 
-SITE_DIR="/root/lynxcoder-site"
-PLACEHOLDER_DIR="/root/lynxcoder-site/placeholder"
+SITE_DIR="${LYNX_SITE_DIR:-/root/lynxcoder-site}"
+cd "$SITE_DIR"
 
-echo ">>> A parar o site principal..."
-cd "$SITE_DIR" && docker compose down
+echo ">>> A subir a página de manutenção (ganha o routing por prioridade)..."
+docker compose -f infra/maintenance/docker-compose.yml up -d --build
 
-echo ">>> A iniciar página de manutenção..."
-cd "$PLACEHOLDER_DIR" && docker compose up -d
+echo ">>> A aguardar que o Traefik a assuma..."
+sleep 3
 
-echo "✔ Modo manutenção activo — lynxcoder.com.br mostra página de construção"
+echo ">>> A derrubar o site principal..."
+docker compose -f infra/docker-compose.yml down
+
+echo "✔ Modo manutenção activo — lynxcoder.com.br devolve 503 + página de manutenção"

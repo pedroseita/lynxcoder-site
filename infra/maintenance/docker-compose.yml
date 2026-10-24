@@ -1,0 +1,38 @@
+name: lynxcoder-maintenance
+services:
+  site:
+    build:
+      context: ../..
+      dockerfile: infra/maintenance/Dockerfile
+    container_name: lynxcoder-maintenance
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    labels:
+      - "traefik.enable=true"
+      # priority 100 > 10 do site: enquanto este container estiver no ar, ganha
+      # sempre. Torna a manutenção determinística e permite subir a manutenção
+      # ANTES de derrubar o site (zero downtime na transição).
+      - "traefik.http.routers.lynx-maint.rule=Host(`lynxcoder.com.br`) || Host(`www.lynxcoder.com.br`)"
+      - "traefik.http.routers.lynx-maint.entrypoints=websecure"
+      - "traefik.http.routers.lynx-maint.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.lynx-maint.middlewares=lynx-maint-hsts"
+      - "traefik.http.routers.lynx-maint.priority=100"
+      - "traefik.http.services.lynx-maint.loadbalancer.server.port=80"
+      # HTTP -> HTTPS
+      - "traefik.http.routers.lynx-maint-http.rule=Host(`lynxcoder.com.br`) || Host(`www.lynxcoder.com.br`)"
+      - "traefik.http.routers.lynx-maint-http.entrypoints=web"
+      - "traefik.http.routers.lynx-maint-http.middlewares=lynx-maint-to-https"
+      - "traefik.http.routers.lynx-maint-http.priority=100"
+      - "traefik.http.middlewares.lynx-maint-to-https.redirectscheme.scheme=https"
+      - "traefik.http.middlewares.lynx-maint-to-https.redirectscheme.permanent=true"
+      - "traefik.http.middlewares.lynx-maint-hsts.headers.stsSeconds=300"
+    networks:
+      - proxy
+
+networks:
+  proxy:
+    external: true

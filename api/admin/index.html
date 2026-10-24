@@ -34,12 +34,18 @@
   <header class="top">
     <p class="brand"><img class="brand-logo" src="/assets/logo.png" alt="" width="30" height="36"> LynxCoder <span class="brand-sub">Painel</span></p>
     <div class="top-right">
+      <button type="button" class="btn btn-ghost btn-sm" id="maintBtn" aria-pressed="false">Manutenção</button>
       <a class="btn btn-primary btn-sm" href="#/nova-proposta">+ Nova proposta</a>
       <a class="btn btn-ghost btn-sm" href="#/config" title="Valores da proposta">Configurações</a>
       <span class="top-user" id="topUser"></span>
       <button class="btn btn-ghost btn-sm" type="button" id="logoutBtn">Sair</button>
     </div>
   </header>
+
+  <div class="maint-banner" id="maintBanner" hidden role="status">
+    <span><strong>O site está em manutenção</strong><span id="maintSince"></span>: os visitantes veem a página de manutenção e os formulários estão parados.</span>
+    <button type="button" class="btn btn-sm" id="maintOff">Tirar de manutenção</button>
+  </div>
 
   <main class="layout" aria-label="Painel">
     <section class="col-list" id="listCol" aria-label="Entradas">
@@ -61,10 +67,12 @@
           <option value="abertos">Em aberto</option>
           <option value="todos">Todas as situações</option>
           <option value="arquivados">Arquivados</option>
+          <option value="testes">Testes</option>
         </select>
         <button class="btn btn-ghost btn-sm" type="button" id="refreshBtn" title="Atualizar">↻</button>
       </div>
 
+      <button type="button" class="btn btn-danger btn-sm" id="clearTests" hidden>Apagar todos os testes</button>
       <ul class="items" id="items"></ul>
       <p class="empty" id="emptyList" hidden>Nada por aqui.</p>
 

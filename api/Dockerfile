@@ -9,7 +9,8 @@ COPY routes ./routes
 COPY tools ./tools
 COPY admin ./admin
 # /data é um volume: criado aqui com dono "node" para o volume herdar as permissões.
-RUN mkdir -p /data && chown node:node /data
+# /flags: volume partilhado com o nginx do site (bandeira de manutenção).
+RUN mkdir -p /data /flags && chown node:node /data /flags
 USER node
 EXPOSE 3000
 CMD ["node", "server.js"]

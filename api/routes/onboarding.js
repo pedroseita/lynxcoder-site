@@ -208,7 +208,7 @@ module.exports = async function onboardingRoutes(app) {
       if (saved.fotos.length < MIN_FOTOS) throw new HttpError(400, `Envie pelo menos ${MIN_FOTOS} fotos de trabalhos.`);
 
       const files = [saved.logo, ...saved.fotos, saved.retrato].filter(Boolean);
-      const record = { id, recebidoEm: new Date().toISOString(), propostaId: proposta.id, ...data, ficheiros: files };
+      const record = { id, recebidoEm: new Date().toISOString(), propostaId: proposta.id, ...(proposta.teste ? { teste: true } : {}), ...data, ficheiros: files };
       await fsp.writeFile(path.join(work, 'dados.json'), JSON.stringify(record, null, 2));
       await fsp.writeFile(path.join(work, 'resumo.txt'), summary(id, data, files) + '\n');
 
@@ -219,7 +219,8 @@ module.exports = async function onboardingRoutes(app) {
       req.log.info({ id, fotos: saved.fotos.length }, 'pedido recebido');
 
       // Confirmação ao cliente (a proposta promete-a), com o resumo do que enviou.
-      mail.sendTo({
+      // Pedidos de teste (feitos a partir de uma proposta de teste) não enviam e-mails.
+      if (!proposta.teste) mail.sendTo({
         to: data.negocio.email,
         subject: 'Recebemos as informações da sua página: LynxCoder',
         text: `Olá!
@@ -240,7 +241,7 @@ LynxCoder · lynxcoder.com.br
 `,
       }, req.log);
 
-      mail.notify({
+      if (!proposta.teste) mail.notify({
         subject: `Novo pedido de página: ${data.negocio.nome}`,
         text: summary(id, data, files) + `\n\nVer no painel: https://admin.lynxcoder.com.br/#/pedido/${id}\n`,
         replyTo: data.negocio.email,

@@ -120,7 +120,7 @@ jobs:
           test "$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8081/servicos)" = "503"
 
           echo "— o logo tem de sair 200, senao a pagina aparece sem imagem"
-          test "$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8081/logo.png)" = "200"
+          test "$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8081/assets/img/logo.png)" = "200"
 
           echo "— Retry-After presente"
           curl -sI http://localhost:8081/ | grep -iq 'retry-after'

@@ -448,14 +448,16 @@
       </p>
 
       <!--
-        Formulário estático via Formspree: POST nativo do browser, sem JS e sem fetch,
-        o que mantém connect-src 'none' na CSP. O campo _next define para onde o
-        Formspree redireciona após o envio.
-        TODO: substituir YOUR_FORM_ID pelo ID real (ver docs/runbook.md › Formulário).
+        Formulário estático via Web3Forms: POST nativo do browser, sem JS e sem fetch,
+        o que mantém connect-src 'none' na CSP. O campo redirect define para onde o
+        Web3Forms redireciona após o envio. A access_key não é segredo: só permite
+        enviar mensagens para o e-mail associado (ver docs/runbook.md › Formulário).
       -->
-      <form class="contact-form" action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
-        <input type="hidden" name="_next" value="https://lynxcoder.com.br/obrigado.html">
-        <input type="hidden" name="_subject" value="Novo contato pelo site lynxcoder.com.br">
+      <form class="contact-form" action="https://api.web3forms.com/submit" method="POST">
+        <input type="hidden" name="access_key" value="2d69fe7a-f700-4241-81a9-b36e246e16b2">
+        <input type="hidden" name="redirect" value="https://lynxcoder.com.br/obrigado.html">
+        <input type="hidden" name="subject" value="Novo contato pelo site lynxcoder.com.br">
+        <input type="hidden" name="from_name" value="Site Lynx Coder">
 
         <div class="field">
           <label for="f-nome">Nome <span class="req" aria-hidden="true">*</span></label>
@@ -475,7 +477,7 @@
         <!-- honeypot: invisível para humanos, atrativo para bots -->
         <div class="hp" aria-hidden="true">
           <label for="f-gotcha">Deixe este campo vazio</label>
-          <input id="f-gotcha" type="text" name="_gotcha" tabindex="-1" autocomplete="off">
+          <input id="f-gotcha" type="checkbox" name="botcheck" tabindex="-1" autocomplete="off">
         </div>
 
         <button class="btn btn-primary" type="submit">Enviar mensagem ↗</button>

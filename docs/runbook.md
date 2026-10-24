@@ -135,22 +135,18 @@ devolve 404 nesses dois caminhos. Não quebra nada visível, mas aparece no log 
 ## Formulário de contacto
 
 `src/index.html` tem um `<form>` que faz **POST nativo do browser** para o
-Formspree — sem `fetch`, o que permite manter `connect-src 'none'` na CSP. A CSP
-já autoriza `form-action https://formspree.io`.
+Web3Forms (`https://api.web3forms.com/submit`) — sem `fetch`, o que permite manter
+`connect-src 'none'` na CSP. A CSP autoriza `form-action https://api.web3forms.com`.
 
-Para activar:
+- `access_key`: chave do Web3Forms associada a devlynxcoder@gmail.com. Não é
+  segredo (só permite enviar para esse e-mail); para trocar o destino, gerar
+  nova chave em <https://web3forms.com>.
+- `redirect`: página de sucesso (`/obrigado.html`).
+- `botcheck`: honeypot anti-spam. Fica fora de ecrã via `.hp`, nunca com
+  `display:none` (muitos bots ignoram campos escondidos assim).
 
-1. Criar form em <https://formspree.io> (plano gratuito: 50 envios/mês).
-2. Substituir `YOUR_FORM_ID` em `src/index.html` pelo ID real.
-3. Confirmar que o campo `_next` aponta para `https://lynxcoder.com.br/obrigado.html`.
-4. Testar um envio a sério e confirmar a chegada do e-mail.
-
-O campo `_gotcha` é o honeypot anti-spam: fica fora de ecrã via `.hp`, nunca com
-`display:none` (muitos bots ignoram campos escondidos assim).
-
-Enquanto o ID não for substituído, o formulário faz POST para um endpoint
-inválido e o visitante vê um erro do Formspree. Até lá, o botão "Enviar e-mail
-direto" ao lado continua a funcionar.
+Depois de qualquer alteração ao formulário, testar um envio a sério e confirmar
+a chegada do e-mail.
 
 ## Subir o HSTS
 

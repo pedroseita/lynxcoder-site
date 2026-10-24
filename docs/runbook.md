@@ -128,9 +128,9 @@ Depois de gerar a capa, trocar as metas `og:image` e `twitter:image` em
 `src/index.html` (estão marcadas com `TODO`) para
 `https://lynxcoder.com.br/assets/img/og-cover.png`.
 
-Nota: enquanto o `favicon.ico` e o `apple-touch-icon.png` não existirem, o nginx
-devolve 404 nesses dois caminhos. Não quebra nada visível, mas aparece no log —
-é esperado até gerares os ficheiros.
+`src/favicon.ico` (16/32/48) e `src/apple-touch-icon.png` (180, fundo #08090b) já
+existem. Para os regenerar sem distorcer o logo (que não é quadrado), centrar
+primeiro num quadrado: `-background none -gravity center -extent 484x484`.
 
 ## Formulário de contacto
 

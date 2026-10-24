@@ -67,6 +67,5 @@ Detalhe completo, incluindo rollback e o que fazer quando algo falha, em
 | O que | Onde | Porquê está pendente |
 |---|---|---|
 | Capa Open Graph 1200×630 | `src/assets/img/` | hoje o `og:image` aponta para o logo quadrado |
-| `favicon.ico`, `apple-touch-icon.png` | `src/` | gerar a partir do logo — comandos no runbook |
 | HSTS a 300s | `infra/docker-compose.yml` | subir para 31536000 depois de validar HTTPS no blog |
 | Perfis sociais | `src/index.html` (footer) | só o GitHub está ligado; links mortos foram removidos |

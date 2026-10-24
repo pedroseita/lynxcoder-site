@@ -14,6 +14,8 @@ src/                     ← tudo o que vai para o browser (um só COPY no Docke
 ├── 404.html               página de erro (servida pelo nginx via error_page)
 ├── obrigado.html          destino do formulário após envio
 ├── comecar.html           formulário de início de projeto (6 etapas + prévia)
+├── exemplos/              páginas de exemplo do portfólio (noindex, dados fictícios)
+│   └── eletricista.html     usa assets/js/exemplo.js (WhatsApp em modo demonstração)
 ├── robots.txt
 ├── sitemap.xml
 └── assets/

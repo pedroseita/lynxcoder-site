@@ -36,7 +36,7 @@ services:
       - "traefik.http.middlewares.lynx-to-https.redirectscheme.scheme=https"
       - "traefik.http.middlewares.lynx-to-https.redirectscheme.permanent=true"
       # www -> apex: elimina o conteúdo duplicado em dois hostnames
-      - "traefik.http.middlewares.lynx-www-to-apex.redirectregex.regex=^https://www\.lynxcoder\.com\.br/(.*)"
+      - 'traefik.http.middlewares.lynx-www-to-apex.redirectregex.regex=^https://www\.lynxcoder\.com\.br/(.*)'
       - "traefik.http.middlewares.lynx-www-to-apex.redirectregex.replacement=https://lynxcoder.com.br/$${1}"
       - "traefik.http.middlewares.lynx-www-to-apex.redirectregex.permanent=true"
       # HSTS — max-age curto de propósito; subir para 31536000 após validar.

@@ -149,3 +149,48 @@
     if (e.matches && isOpen()) setOpen(false);
   });
 })();
+
+/* ---------- portfólio: carrossel de cartões ----------
+   O deslizar é CSS (scroll-snap); aqui só setas, pontos e o caso de todos os
+   cartões caberem no ecrã (controlos escondidos e cartões centrados). */
+(function () {
+  var root = document.getElementById('pfCarousel');
+  if (!root) return;
+  var track = document.getElementById('pfTrack');
+  var slides = Array.prototype.slice.call(track.querySelectorAll('.pf-slide'));
+  var controls = document.getElementById('pfControls');
+  var dotsBox = document.getElementById('pfDots');
+  var prev = document.getElementById('pfPrev');
+  var next = document.getElementById('pfNext');
+
+  var dots = slides.map(function (slide, i) {
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.setAttribute('aria-label', 'Ir para o exemplo ' + (i + 1));
+    b.addEventListener('click', function () { go(i); });
+    dotsBox.appendChild(b);
+    return b;
+  });
+
+  function step() { return slides.length > 1 ? slides[1].offsetLeft - slides[0].offsetLeft : track.clientWidth; }
+  function index() { return Math.round(track.scrollLeft / step()); }
+  function go(i) { track.scrollTo({ left: Math.max(0, Math.min(i, slides.length - 1)) * step() }); }
+
+  function update() {
+    var fits = track.scrollWidth <= track.clientWidth + 2;
+    root.classList.toggle('fits', fits);
+    controls.hidden = fits;
+    if (fits) return;
+    var i = index();
+    var atEnd = track.scrollLeft + track.clientWidth >= track.scrollWidth - 2;
+    dots.forEach(function (d, k) { d.setAttribute('aria-current', String(atEnd ? k === slides.length - 1 : k === i)); });
+    prev.disabled = track.scrollLeft <= 2;
+    next.disabled = atEnd;
+  }
+
+  prev.addEventListener('click', function () { go(index() - 1); });
+  next.addEventListener('click', function () { go(index() + 1); });
+  track.addEventListener('scroll', function () { window.requestAnimationFrame(update); }, { passive: true });
+  window.addEventListener('resize', update);
+  update();
+})();

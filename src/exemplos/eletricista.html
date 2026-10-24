@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<!-- Exemplo de portfólio: empresa e contatos fictícios, por isso fora do Google. -->
+<meta name="robots" content="noindex">
+<title>Duarte Elétrica · Eletricista em Campinas</title>
+<meta name="description" content="Eletricista residencial e comercial em Campinas e região. Instalações, quadros de distribuição, iluminação LED e atendimento de emergência. Orçamento pelo WhatsApp.">
+<meta property="og:title" content="Duarte Elétrica · Eletricista em Campinas">
+<meta property="og:description" content="Instalações elétricas com garantia. Orçamento pelo WhatsApp.">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#15202B">
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<script type="application/ld+json">
+{
+  "@context":"https://schema.org",
+  "@type":"Electrician",
+  "name":"Duarte Elétrica",
+  "description":"Eletricista residencial e comercial em Campinas e região.",
+  "telephone":"+55 19 90000-0000",
+  "areaServed":["Campinas","Valinhos","Vinhedo","Hortolândia","Sumaré","Paulínia"],
+  "address":{"@type":"PostalAddress","addressLocality":"Campinas","addressRegion":"SP","addressCountry":"BR"},
+  "openingHours":["Mo-Fr 08:00-18:00","Sa 08:00-12:00"]
+}
+</script>
+<style>
+/* Archivo self-hosted (fontsource-variable 5.3.0, eixos largura + peso) */
+@font-face{font-family:"Archivo";font-style:normal;font-display:swap;font-weight:100 900;font-stretch:62% 125%;
+  src:url(/assets/fonts/archivo-latin-ext.woff2) format("woff2-variations");
+  unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+@font-face{font-family:"Archivo";font-style:normal;font-display:swap;font-weight:100 900;font-stretch:62% 125%;
+  src:url(/assets/fonts/archivo-latin.woff2) format("woff2-variations");
+  unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+
+:root{
+  --ink:#15202B; --ink-2:#44505C; --muted:#69747F;
+  --paper:#F5F6F2; --surface:#FFFFFF; --line:#D9DDD3; --band:#15202B; --band-ink:#F5F6F2; --band-muted:#AEB8C2;
+  --yellow:#F6C343; --yellow-ink:#15202B; --blue:#1E5AA8; --wa:#25D366; --wa-ink:#06301A;
+  --focus:#1E5AA8;
+  --wrap:1160px;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ink:#ECEFE8; --ink-2:#BCC4CC; --muted:#93A0AC;
+    --paper:#0F161D; --surface:#17212B; --line:#2A3743; --band:#0A1016; --band-ink:#ECEFE8; --band-muted:#93A0AC;
+    --blue:#7FAEEB; --focus:#7FAEEB;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --ink:#ECEFE8; --ink-2:#BCC4CC; --muted:#93A0AC;
+  --paper:#0F161D; --surface:#17212B; --line:#2A3743; --band:#0A1016; --band-ink:#ECEFE8; --band-muted:#93A0AC;
+  --blue:#7FAEEB; --focus:#7FAEEB;
+  color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-behavior:smooth;scroll-padding-top:calc(72px + env(safe-area-inset-top,0px))}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{margin:0;background:var(--paper);color:var(--ink);font:400 17px/1.6 "Archivo",system-ui,-apple-system,"Segoe UI",sans-serif;font-stretch:100%}
+img{max-width:100%}
+a{color:inherit}
+h1,h2,h3{font-family:"Archivo",system-ui,sans-serif;font-stretch:125%;font-weight:800;line-height:1.05;letter-spacing:-.015em;margin:0}
+h2{font-size:clamp(30px,4.6vw,46px);margin-bottom:14px}
+h3{font-size:19px;font-stretch:112%;font-weight:700;line-height:1.25}
+p{margin:0 0 1em}
+.wrap{max-width:var(--wrap);margin:0 auto;padding:0 20px}
+section{padding:76px 0}
+section.pt0{padding-top:0}
+.lead{font-size:19px;color:var(--ink-2);max-width:60ch}
+:focus-visible{outline:3px solid var(--focus);outline-offset:3px}
+
+/* header */
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--band)}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--band);color:var(--band-ink)}
+.top .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;height:64px}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none;font-stretch:125%;font-weight:800;font-size:19px;letter-spacing:-.01em}
+.logo svg{width:28px;height:28px;flex:none}
+.top nav{display:none;gap:26px;font-size:15px}
+.top nav a{text-decoration:none;color:var(--band-muted)}
+.top nav a:hover{color:var(--band-ink)}
+@media (min-width:880px){.top nav{display:flex}}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:52px;padding:0 22px;border-radius:8px;font:inherit;font-weight:700;font-size:16.5px;text-decoration:none;border:2px solid transparent;cursor:pointer}
+.btn svg{width:20px;height:20px;flex:none}
+.btn.y{background:var(--yellow);color:var(--yellow-ink)}
+.btn.y:hover{background:#FFD566}
+.btn.o{border-color:currentColor;background:transparent}
+.btn.sm{min-height:42px;padding:0 14px;font-size:15px}
+
+/* hero */
+.hero{background:var(--band);color:var(--band-ink);padding:56px 0 0;overflow:hidden}
+.hero .wrap{display:grid;gap:40px;grid-template-columns:1fr}
+@media (min-width:920px){.hero .wrap{grid-template-columns:1.1fr .9fr;align-items:end}}
+.hero .tag{display:inline-block;font-size:15px;color:var(--band-muted);margin-bottom:18px}
+.hero h1{font-size:clamp(40px,7.4vw,80px);margin-bottom:20px}
+.hero p.sub{font-size:19px;color:var(--band-muted);max-width:44ch;margin-bottom:28px}
+.hero .ctas{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:36px}
+.hero .btn.o{color:var(--band-ink)}
+.facts{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid #2C3A47;margin-top:8px}
+.facts div{padding:18px 14px 26px 0}
+.facts b{display:block;font-stretch:125%;font-size:26px;line-height:1.1;color:var(--yellow)}
+.facts span{font-size:14px;color:var(--band-muted)}
+.circuit{width:100%;max-width:520px;justify-self:center;display:block}
+.circuit .w{fill:none;stroke-width:5;stroke-linecap:round;stroke-linejoin:round}
+.circuit .w1{--len:620}.circuit .w2{--len:560}.circuit .w3{--len:520}
+@media (prefers-reduced-motion:no-preference){
+  .circuit .w{stroke-dasharray:var(--len);stroke-dashoffset:var(--len);animation:draw 1.6s cubic-bezier(.6,0,.2,1) forwards}
+  .circuit .w2{animation-delay:.25s}.circuit .w3{animation-delay:.5s}
+  .circuit .bulb{opacity:.15;animation:on .5s ease-out 1.75s forwards}
+  @keyframes draw{to{stroke-dashoffset:0}}
+  @keyframes on{to{opacity:1}}
+}
+
+/* services */
+.svc{display:grid;gap:1px;background:var(--line);border:1px solid var(--line);border-radius:12px;overflow:hidden;grid-template-columns:1fr;margin-top:36px}
+@media (min-width:640px){.svc{grid-template-columns:1fr 1fr}}
+@media (min-width:980px){.svc{grid-template-columns:repeat(3,1fr)}}
+.svc article{background:var(--surface);padding:26px 24px 24px}
+.svc svg{width:34px;height:34px;color:var(--blue);margin-bottom:14px}
+.svc h3{margin-bottom:6px}
+.svc p{color:var(--ink-2);font-size:16px;margin:0}
+
+/* steps */
+.steps{background:var(--surface);border-block:1px solid var(--line)}
+.steps ol{list-style:none;padding:0;margin:36px 0 0;display:grid;gap:28px;grid-template-columns:1fr;counter-reset:s}
+@media (min-width:820px){.steps ol{grid-template-columns:repeat(3,1fr)}}
+.steps li{counter-increment:s;padding-top:18px;border-top:4px solid var(--yellow)}
+.steps li::before{content:counter(s);display:block;font-stretch:125%;font-weight:800;font-size:40px;line-height:1;margin-bottom:12px}
+.steps h3{margin-bottom:6px}
+.steps p{color:var(--ink-2);font-size:16px;margin:0}
+
+/* gallery */
+.gal{display:grid;gap:12px;grid-template-columns:repeat(2,1fr);margin-top:36px}
+@media (min-width:880px){.gal{grid-template-columns:repeat(3,1fr)}}
+.gal figure{margin:0}
+.gal .ph{aspect-ratio:4/3;border-radius:10px;display:grid;place-items:center;overflow:hidden}
+.gal .ph svg{width:62%;height:auto}
+.gal .ph.blue{background:#E6ECF4}.gal .ph.yellow{background:#FBF0D3}.gal .ph.green{background:#E3EEE5}.gal .ph.purple{background:#ECE8F4}
+.gal figcaption{font-size:14.5px;color:var(--ink-2);padding:8px 2px 0}
+
+/* about */
+.about .wrap{display:grid;gap:40px;grid-template-columns:1fr}
+@media (min-width:920px){.about .wrap{grid-template-columns:.8fr 1.2fr;align-items:center}}
+.portrait{aspect-ratio:4/5;border-radius:12px;background:var(--band);display:grid;place-items:center;max-width:420px}
+.portrait svg{width:56%;color:var(--band-muted)}
+.creds{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px;padding:0;list-style:none}
+.creds li{border:1.5px solid var(--line);border-radius:6px;padding:6px 12px;font-size:15px;font-weight:600;background:var(--surface)}
+
+/* testimonials */
+.quotes{display:grid;gap:16px;grid-template-columns:1fr;margin-top:36px}
+@media (min-width:880px){.quotes{grid-template-columns:repeat(3,1fr)}}
+.quotes figure{margin:0;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:24px}
+.quotes blockquote{margin:0 0 16px;font-size:17px}
+.quotes figcaption{font-size:14.5px;color:var(--muted)}
+.quotes figcaption b{color:var(--ink);font-weight:600}
+
+/* area + contact */
+.contact{background:var(--band);color:var(--band-ink)}
+.contact .wrap{display:grid;gap:44px;grid-template-columns:1fr}
+@media (min-width:920px){.contact .wrap{grid-template-columns:1fr 1fr}}
+.contact .lead{color:var(--band-muted)}
+.contact h3.small{font-size:16px;margin-top:28px}
+.cities{display:flex;flex-wrap:wrap;gap:8px;padding:0;list-style:none;margin:20px 0 28px}
+.cities li{border:1.5px solid #2C3A47;border-radius:6px;padding:6px 12px;font-size:15px}
+.hours{font-size:16px;color:var(--band-muted)}
+.hours b{color:var(--band-ink);font-weight:600}
+form.quote{background:var(--surface);color:var(--ink);border-radius:12px;padding:26px 22px}
+@media (min-width:600px){form.quote{padding:32px}}
+form.quote h3{font-size:22px;margin-bottom:18px}
+.f{margin-bottom:16px}
+.f label{display:block;font-weight:600;font-size:15px;margin-bottom:6px}
+.f label .opt{font-weight:400;color:var(--muted)}
+.f input,.f select,.f textarea{width:100%;font:inherit;font-size:16px;color:var(--ink);background:var(--surface);border:1.5px solid var(--line);border-radius:8px;padding:12px;min-height:48px}
+.f textarea{min-height:96px;resize:vertical}
+.f input:focus,.f select:focus,.f textarea:focus{outline:none;border-color:var(--focus);box-shadow:0 0 0 3px color-mix(in srgb,var(--focus) 25%,transparent)}
+.two{display:grid;gap:0 14px;grid-template-columns:1fr}
+@media (min-width:600px){.two{grid-template-columns:1fr 1fr}}
+.consent{display:flex;gap:10px;align-items:flex-start;font-size:14.5px;color:var(--ink-2);margin:4px 0 18px}
+.consent input{width:20px;height:20px;margin:2px 0 0;flex:none;accent-color:var(--blue)}
+.ferr{display:none;color:#B3412F;font-size:14px;margin:-8px 0 14px}
+.ferr.on{display:block}
+form.quote .btn{width:100%;background:var(--wa);color:var(--wa-ink)}
+
+/* faq */
+.faq details{border-bottom:1px solid var(--line);padding:4px 0}
+.faq details:first-of-type{border-top:1px solid var(--line);margin-top:28px}
+.faq summary{cursor:pointer;list-style:none;display:flex;justify-content:space-between;gap:16px;align-items:center;padding:18px 0;font-weight:700;font-size:18px}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"+";font-size:26px;font-weight:400;line-height:1;color:var(--muted)}
+.faq details[open] summary::after{content:"−"}
+.faq details p{color:var(--ink-2);max-width:68ch}
+
+footer{padding:36px 0 110px;font-size:14.5px;color:var(--muted)}
+footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px}
+footer a{color:var(--ink-2)}
+
+/* floating whatsapp */
+.wa{position:fixed;right:18px;bottom:calc(18px + env(safe-area-inset-bottom,0px));z-index:25;display:flex;align-items:center;gap:10px;background:var(--wa);color:var(--wa-ink);text-decoration:none;font-weight:700;border-radius:999px;padding:0 20px 0 16px;min-height:56px;box-shadow:0 6px 20px rgba(0,0,0,.25)}
+.wa svg{width:26px;height:26px}
+@media (max-width:520px){.wa span{display:none}.wa{padding:0;width:60px;justify-content:center}}
+
+.demo{background:var(--yellow);color:var(--yellow-ink);font-size:14px;text-align:center;padding:8px 16px}
+.demo a{font-weight:700}
+
+/* Diálogo do modo de demonstração (o número é fictício: em vez de abrir o
+   WhatsApp, mostra a mensagem que o profissional receberia). */
+dialog.demo-dialog{width:min(480px,calc(100% - 32px));border:0;border-radius:14px;padding:0;background:var(--surface);color:var(--ink);box-shadow:0 30px 80px rgba(0,0,0,.45)}
+dialog.demo-dialog::backdrop{background:rgba(10,16,22,.6)}
+.dd-head{display:flex;align-items:center;gap:10px;padding:16px 20px;background:var(--wa);color:var(--wa-ink);font-weight:700;border-radius:14px 14px 0 0}
+.dd-head svg{width:22px;height:22px}
+.dd-body{padding:20px}
+.dd-body p{color:var(--ink-2);font-size:15.5px}
+.dd-body .dd-msg{white-space:pre-wrap;background:#DCF8C6;color:#111B21;border-radius:10px 10px 2px 10px;padding:12px 14px;margin:0 0 16px;font-size:15.5px;line-height:1.45}
+.dd-actions{display:flex;flex-wrap:wrap;gap:10px;justify-content:flex-end}
+.dd-actions .btn{min-height:46px}
+.dd-actions .btn.o{color:var(--ink)}
+</style>
+</head>
+<body data-wa-phone="5519900000000" data-demo="1">
+
+<div class="demo">Página de exemplo criada pela <a href="/">LynxCoder</a>. Empresa e contatos fictícios. <a href="/comecar">Quero uma assim →</a></div>
+
+<header class="top">
+  <div class="wrap">
+    <a class="logo" href="#inicio" aria-label="Duarte Elétrica, início">
+      <svg viewBox="0 0 28 28" aria-hidden="true"><rect width="28" height="28" rx="6" fill="#F6C343"/><path d="M15.5 4L8 15.5h5.5L12 24l8-12h-5.5z" fill="#15202B"/></svg>
+      Duarte Elétrica
+    </a>
+    <nav aria-label="Seções">
+      <a href="#servicos">Serviços</a><a href="#trabalhos">Trabalhos</a><a href="#sobre">Sobre</a><a href="#orcamento">Orçamento</a>
+    </nav>
+    <a class="btn y sm" href="tel:+5519900000000" data-tel>Ligar&nbsp;agora</a>
+  </div>
+</header>
+
+<main id="inicio">
+  <section class="hero" aria-labelledby="t-hero">
+    <div class="wrap">
+      <div>
+        <span class="tag">Eletricista residencial e comercial em Campinas e região</span>
+        <h1 id="t-hero">Luz que acende na primeira vez.</h1>
+        <p class="sub">Instalações, reformas e reparos elétricos feitos dentro da norma, com orçamento claro antes de começar e garantia de 90 dias no serviço.</p>
+        <div class="ctas">
+          <a class="btn y" href="#orcamento" data-wa="Olá! Vi o site e quero um orçamento.">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 00-8.6 15.1L2 22l5-1.3A10 10 0 1012 2zm5.3 14.1c-.2.6-1.3 1.2-1.8 1.3-.5 0-1 .3-3.3-.7-2.8-1.1-4.5-4-4.7-4.2-.1-.2-1.1-1.5-1.1-2.9s.7-2 1-2.3c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.4.6-.4.4c-.1.2-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.2 1 2.1 1.3 2.4 1.5.3.1.5.1.6-.1l.9-1.1c.2-.3.4-.2.7-.1l1.9.9c.3.1.5.2.5.3.1.2.1.7-.1 1.3z"/></svg>
+            Pedir orçamento no WhatsApp
+          </a>
+          <a class="btn o" href="#servicos">Ver serviços</a>
+        </div>
+        <div class="facts">
+          <div><b>12 anos</b><span>de experiência</span></div>
+          <div><b>NR-10</b><span>certificado</span></div>
+          <div><b>90 dias</b><span>de garantia</span></div>
+        </div>
+      </div>
+      <svg class="circuit" viewBox="0 0 520 460" role="img" aria-label="Ilustração de um circuito elétrico acendendo uma lâmpada">
+        <rect x="40" y="250" width="120" height="170" rx="8" fill="none" stroke="#2C3A47" stroke-width="3"/>
+        <rect x="62" y="276" width="14" height="34" rx="3" fill="#2C3A47"/><rect x="86" y="276" width="14" height="34" rx="3" fill="#2C3A47"/><rect x="110" y="276" width="14" height="34" rx="3" fill="#F6C343"/><rect x="134" y="276" width="14" height="34" rx="3" fill="#2C3A47"/>
+        <rect x="62" y="330" width="14" height="34" rx="3" fill="#2C3A47"/><rect x="86" y="330" width="14" height="34" rx="3" fill="#2C3A47"/><rect x="110" y="330" width="14" height="34" rx="3" fill="#2C3A47"/><rect x="134" y="330" width="14" height="34" rx="3" fill="#2C3A47"/>
+        <path class="w w1" stroke="#C0392B" d="M117 250 V170 Q117 120 167 120 H330 Q370 120 370 160 V210"/>
+        <path class="w w2" stroke="#4A8FE0" d="M100 250 V190 Q100 150 140 150 H300 Q345 150 345 195 V210"/>
+        <path class="w w3" stroke="#3FA34D" d="M83 250 V210 Q83 180 113 180 H270 Q320 180 320 210"/>
+        <g class="bulb">
+          <circle cx="345" cy="290" r="92" fill="#F6C343" opacity=".14"/>
+          <circle cx="345" cy="290" r="58" fill="#F6C343" opacity=".22"/>
+        </g>
+        <path d="M318 210 h54 v18 h-54z" fill="#5B6B7A"/>
+        <path d="M322 228 h46 c0 16 22 30 22 60 a45 45 0 01-90 0 c0-30 22-44 22-60z" fill="#F6C343" class="bulb"/>
+        <path d="M322 228 h46 c0 16 22 30 22 60 a45 45 0 01-90 0 c0-30 22-44 22-60z" fill="none" stroke="#F5F6F2" stroke-width="3"/>
+        <path d="M333 300 l6-24 6 18 6-18 6 24" fill="none" stroke="#15202B" stroke-width="3" stroke-linejoin="round" class="bulb"/>
+      </svg>
+    </div>
+  </section>
+
+  <section id="servicos" aria-labelledby="t-svc">
+    <div class="wrap">
+      <h2 id="t-svc">Serviços</h2>
+      <p class="lead">Do chuveiro que desarma ao quadro novo da obra. Orçamento sem compromisso e preço fechado antes de começar.</p>
+      <div class="svc">
+        <article><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 7v4M12 7v4M16 7v4M8 15h8"/></svg><h3>Quadro de distribuição</h3><p>Troca e organização de quadros, disjuntores, DR e DPS para proteger pessoas e aparelhos.</p></article>
+        <article><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18h6M10 21h4M12 3a6 6 0 00-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0012 3z"/></svg><h3>Iluminação LED</h3><p>Projeto e instalação de iluminação para casa, loja e fachada, com economia na conta de luz.</p></article>
+        <article><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 21V9l8-6 8 6v12"/><path d="M9 21v-6h6v6"/></svg><h3>Instalação residencial</h3><p>Fiação completa de casas e apartamentos em obra ou reforma, dentro da NBR 5410.</p></article>
+        <article><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="3" width="14" height="18" rx="2"/><circle cx="10" cy="11" r="1"/><circle cx="14" cy="11" r="1"/><path d="M10 15h4"/></svg><h3>Tomadas e chuveiros</h3><p>Instalação e troca de tomadas, interruptores, chuveiros e circuitos dedicados.</p></article>
+        <article><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21h18M5 21V8h14v13M9 12h2M13 12h2M9 16h2M13 16h2M8 8V4h8v4"/></svg><h3>Instalação comercial</h3><p>Lojas, escritórios e pequenas indústrias, com laudo e ART quando necessário.</p></article>
+        <article><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><h3>Emergências</h3><p>Curto-circuito, falta de energia ou cheiro de queimado: atendimento no mesmo dia.</p></article>
+      </div>
+    </div>
+  </section>
+
+  <section class="steps" aria-labelledby="t-steps">
+    <div class="wrap">
+      <h2 id="t-steps">Como funciona</h2>
+      <ol>
+        <li><h3>Você chama no WhatsApp</h3><p>Conte o que precisa e mande uma foto. Respondemos em até 1 hora no horário comercial.</p></li>
+        <li><h3>Orçamento fechado</h3><p>Visita técnica quando necessário e preço definido antes de começar. Sem surpresa no final.</p></li>
+        <li><h3>Serviço com garantia</h3><p>Trabalho limpo, material de qualidade e 90 dias de garantia por escrito.</p></li>
+      </ol>
+    </div>
+  </section>
+
+  <section id="trabalhos" aria-labelledby="t-gal">
+    <div class="wrap">
+      <h2 id="t-gal">Trabalhos realizados</h2>
+      <p class="lead">Alguns serviços recentes em Campinas e região.</p>
+      <div class="gal">
+        <figure><div class="ph blue"><svg viewBox="0 0 120 90" aria-hidden="true"><rect x="30" y="8" width="60" height="74" rx="4" fill="#fff" stroke="#15202B" stroke-width="2.5"/><g fill="#15202B"><rect x="38" y="18" width="7" height="16" rx="1"/><rect x="49" y="18" width="7" height="16" rx="1"/><rect x="60" y="18" width="7" height="16" rx="1"/><rect x="71" y="18" width="7" height="16" rx="1"/><rect x="38" y="42" width="7" height="16" rx="1"/><rect x="49" y="42" width="7" height="16" rx="1"/></g><rect x="60" y="42" width="18" height="16" rx="1" fill="#F6C343"/><path d="M38 68h40" stroke="#1E5AA8" stroke-width="2.5"/></svg></div><figcaption>Quadro novo com DR e DPS, Cambuí</figcaption></figure>
+        <figure><div class="ph yellow"><svg viewBox="0 0 120 90" aria-hidden="true"><path d="M10 20h100" stroke="#15202B" stroke-width="2.5"/><g fill="#F6C343" stroke="#15202B" stroke-width="2"><circle cx="30" cy="34" r="7"/><circle cx="60" cy="34" r="7"/><circle cx="90" cy="34" r="7"/></g><g stroke="#F6C343" stroke-width="2" opacity=".7"><path d="M30 44l-10 36M30 44l10 36M60 44l-10 36M60 44l10 36M90 44l-10 36M90 44l10 36"/></g></svg></div><figcaption>Iluminação LED em loja, Centro</figcaption></figure>
+        <figure><div class="ph green"><svg viewBox="0 0 120 90" aria-hidden="true"><path d="M20 80V40l40-28 40 28v40z" fill="#fff" stroke="#15202B" stroke-width="2.5"/><path d="M34 52h52M34 64h52M48 40v34M72 40v34" stroke="#3FA34D" stroke-width="2" stroke-dasharray="4 3"/></svg></div><figcaption>Fiação completa em obra, Barão Geraldo</figcaption></figure>
+        <figure><div class="ph purple"><svg viewBox="0 0 120 90" aria-hidden="true"><rect x="40" y="18" width="40" height="56" rx="6" fill="#fff" stroke="#15202B" stroke-width="2.5"/><circle cx="54" cy="42" r="3" fill="#15202B"/><circle cx="66" cy="42" r="3" fill="#15202B"/><path d="M54 54h12" stroke="#15202B" stroke-width="2.5" stroke-linecap="round"/></svg></div><figcaption>Tomadas no padrão novo, Taquaral</figcaption></figure>
+        <figure><div class="ph blue"><svg viewBox="0 0 120 90" aria-hidden="true"><path d="M60 10v20" stroke="#15202B" stroke-width="2.5"/><path d="M40 30h40l-6 12H46z" fill="#5B6B7A"/><g stroke="#1E5AA8" stroke-width="2.5" stroke-linecap="round"><path d="M48 52v8M60 52v14M72 52v8M54 66v10M66 66v10"/></g></svg></div><figcaption>Circuito dedicado para chuveiro, Valinhos</figcaption></figure>
+        <figure><div class="ph yellow"><svg viewBox="0 0 120 90" aria-hidden="true"><path d="M10 80V30h100v50" fill="#fff" stroke="#15202B" stroke-width="2.5"/><path d="M10 30l10-16h80l10 16" fill="none" stroke="#15202B" stroke-width="2.5"/><g fill="#F6C343"><circle cx="32" cy="22" r="4"/><circle cx="60" cy="22" r="4"/><circle cx="88" cy="22" r="4"/></g><rect x="26" y="44" width="24" height="36" fill="none" stroke="#15202B" stroke-width="2"/><rect x="62" y="44" width="34" height="20" fill="none" stroke="#15202B" stroke-width="2"/></svg></div><figcaption>Fachada iluminada, Vinhedo</figcaption></figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="about pt0" id="sobre" aria-labelledby="t-about">
+    <div class="wrap">
+      <div class="portrait" role="img" aria-label="Espaço para a foto do profissional"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg></div>
+      <div>
+        <h2 id="t-about">Rafael Duarte</h2>
+        <p class="lead">Eletricista há 12 anos, comecei ajudando meu pai em obras e hoje atendo casas, lojas e condomínios em toda a região de Campinas.</p>
+        <p>Trabalho com material de marcas conhecidas, explico o que vai ser feito antes de começar e deixo tudo organizado e identificado no quadro. Se precisar de laudo ou ART, eu providencio.</p>
+        <ul class="creds"><li>NR-10</li><li>NR-35</li><li>Técnico em Eletrotécnica</li><li>MEI com nota fiscal</li></ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="pt0" aria-labelledby="t-q">
+    <div class="wrap">
+      <h2 id="t-q">O que os clientes dizem</h2>
+      <div class="quotes">
+        <figure><blockquote>O disjuntor caía todo dia. O Rafael achou o problema em meia hora e refez o circuito do chuveiro. Nunca mais desarmou.</blockquote><figcaption><b>Mariana S.</b>, Taquaral</figcaption></figure>
+        <figure><blockquote>Fez toda a parte elétrica da minha loja no prazo combinado e deixou o quadro todo etiquetado. Super organizado.</blockquote><figcaption><b>Carlos M.</b>, Centro</figcaption></figure>
+        <figure><blockquote>Chamei num sábado com a casa sem luz e ele veio no mesmo dia. Preço justo e explicou tudo direitinho.</blockquote><figcaption><b>Ana P.</b>, Valinhos</figcaption></figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="contact" id="orcamento" aria-labelledby="t-c">
+    <div class="wrap">
+      <div>
+        <h2 id="t-c">Peça seu orçamento</h2>
+        <p class="lead">Preencha ao lado e a mensagem já abre pronta no WhatsApp. Ou ligue para (19)&nbsp;90000-0000.</p>
+        <h3 class="small">Área de atendimento</h3>
+        <ul class="cities"><li>Campinas</li><li>Valinhos</li><li>Vinhedo</li><li>Hortolândia</li><li>Sumaré</li><li>Paulínia</li></ul>
+        <p class="hours"><b>Segunda a sexta:</b> 8h às 18h<br><b>Sábado:</b> 8h às 12h<br><b>Emergências:</b> todos os dias</p>
+      </div>
+      <form class="quote" id="quote" novalidate>
+        <h3>Conte o que precisa</h3>
+        <div class="two">
+          <div class="f"><label for="qn">Seu nome</label><input id="qn" type="text" autocomplete="name" required></div>
+          <div class="f"><label for="qb">Bairro e cidade</label><input id="qb" type="text" placeholder="Ex.: Cambuí, Campinas" required></div>
+        </div>
+        <div class="f"><label for="qs">Serviço</label>
+          <select id="qs"><option>Quadro de distribuição</option><option>Iluminação LED</option><option>Instalação residencial</option><option>Tomadas e chuveiros</option><option>Instalação comercial</option><option>Emergência</option><option>Outro</option></select>
+        </div>
+        <div class="f"><label for="qm">Detalhes <span class="opt">(opcional)</span></label><textarea id="qm" placeholder="Ex.: o chuveiro desarma quando liga no quente."></textarea></div>
+        <label class="consent"><input type="checkbox" id="qc"> <span>Concordo em ser contatado sobre este orçamento. Meus dados não são usados para outra finalidade. <a href="#privacidade">Política de privacidade</a>.</span></label>
+        <p class="ferr" id="qerr" role="alert">Preencha nome, bairro e marque a autorização para continuar.</p>
+        <button class="btn" type="submit">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 00-8.6 15.1L2 22l5-1.3A10 10 0 1012 2zm5.3 14.1c-.2.6-1.3 1.2-1.8 1.3-.5 0-1 .3-3.3-.7-2.8-1.1-4.5-4-4.7-4.2-.1-.2-1.1-1.5-1.1-2.9s.7-2 1-2.3c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.4.6-.4.4c-.1.2-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.2 1 2.1 1.3 2.4 1.5.3.1.5.1.6-.1l.9-1.1c.2-.3.4-.2.7-.1l1.9.9c.3.1.5.2.5.3.1.2.1.7-.1 1.3z"/></svg>
+          Enviar pelo WhatsApp
+        </button>
+      </form>
+    </div>
+  </section>
+
+  <section class="faq" aria-labelledby="t-faq">
+    <div class="wrap">
+      <h2 id="t-faq">Perguntas frequentes</h2>
+      <details><summary>A visita para orçamento é cobrada?</summary><p>Para serviços simples, o orçamento sai pelo WhatsApp com fotos. Quando é preciso ver no local, a visita é gratuita em Campinas e descontada do serviço nas outras cidades.</p></details>
+      <details><summary>Vocês emitem nota fiscal?</summary><p>Sim, emitimos nota fiscal de serviço para pessoa física e jurídica.</p></details>
+      <details><summary>Quais formas de pagamento aceitam?</summary><p>PIX, dinheiro e cartão de débito ou crédito, com parcelamento em serviços maiores.</p></details>
+      <details><summary>Como funciona a garantia?</summary><p>Todo serviço tem 90 dias de garantia por escrito. Se algo que fizemos apresentar problema nesse período, voltamos sem custo.</p></details>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>© 2026 Duarte Elétrica · Campinas, SP</span>
+    <span id="privacidade">Os dados do formulário são usados apenas para responder ao seu pedido de orçamento (LGPD).</span>
+    <span>Site feito pela <a href="/">LynxCoder</a></span>
+  </div>
+</footer>
+
+<a class="wa" href="#orcamento" data-wa="Olá! Vi o site e quero um orçamento." aria-label="Falar no WhatsApp">
+  <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 00-8.6 15.1L2 22l5-1.3A10 10 0 1012 2zm5.3 14.1c-.2.6-1.3 1.2-1.8 1.3-.5 0-1 .3-3.3-.7-2.8-1.1-4.5-4-4.7-4.2-.1-.2-1.1-1.5-1.1-2.9s.7-2 1-2.3c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.4.6-.4.4c-.1.2-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.2 1 2.1 1.3 2.4 1.5.3.1.5.1.6-.1l.9-1.1c.2-.3.4-.2.7-.1l1.9.9c.3.1.5.2.5.3.1.2.1.7-.1 1.3z"/></svg>
+  <span>WhatsApp</span>
+</a>
+
+<dialog class="demo-dialog" id="demoDialog" aria-labelledby="ddTitle">
+  <div class="dd-head">
+    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 00-8.6 15.1L2 22l5-1.3A10 10 0 1012 2z"/></svg>
+    <span id="ddTitle">Assim chegaria no WhatsApp</span>
+  </div>
+  <div class="dd-body">
+    <p id="ddIntro">Nesta página de exemplo o número é fictício. Num site real, a mensagem abaixo abriria já pronta no WhatsApp do profissional:</p>
+    <p class="dd-msg" id="ddMsg"></p>
+    <div class="dd-actions">
+      <button type="button" class="btn o" id="ddClose">Fechar</button>
+      <a class="btn y" href="/comecar">Quero um site assim</a>
+    </div>
+  </div>
+</dialog>
+
+<script src="/assets/js/exemplo.js"></script>
+</body>
+</html>

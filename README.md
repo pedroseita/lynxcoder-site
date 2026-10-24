@@ -1,0 +1,73 @@
+# Site LynxCoder — lynxcoder.com.br
+
+Site institucional da LynxCoder. HTML/CSS/JS estático, sem build step e sem
+framework, servido por nginx num container Docker atrás de um Traefik já
+existente no VPS.
+
+## Estrutura
+
+```
+src/                     ← tudo o que vai para o browser (um só COPY no Dockerfile)
+├── index.html             página principal
+├── privacy.html           política de privacidade (noindex)
+├── terms.html             termos de uso (noindex)
+├── 404.html               página de erro (servida pelo nginx via error_page)
+├── obrigado.html          destino do formulário após envio
+├── robots.txt
+├── sitemap.xml
+└── assets/
+    ├── css/styles.css     design system completo
+    ├── js/app.js          nav, menu mobile, animação do terminal
+    ├── fonts/*.woff2      self-hosted, sem pedidos à Google
+    └── img/logo.png
+
+infra/
+├── Dockerfile             imagem do site
+├── nginx.conf             routing do site (404 real, cache de assets)
+├── security-headers.conf  ← FONTE ÚNICA dos security headers (incluída pelos dois)
+├── docker-compose.yml     serviço + labels Traefik (routers lynx-site, priority 10)
+└── maintenance/           modo de manutenção, container independente
+    ├── Dockerfile
+    ├── index.html
+    ├── nginx.conf         devolve 503 em tudo (routers lynx-maint, priority 100)
+    └── docker-compose.yml
+
+scripts/                 ← deploy e manutenção (ver docs/runbook.md)
+docs/                    ← runbook operacional e rascunhos
+```
+
+## Correr localmente
+
+```bash
+docker compose -f infra/docker-compose.yml up --build
+# http://localhost  (o Traefik não é usado localmente)
+```
+
+Sem Docker, qualquer servidor estático sobre `src/` serve, mas as regras de
+404 e os security headers só existem através do nginx:
+
+```bash
+python -m http.server 8000 --directory src
+```
+
+## Deploy
+
+```bash
+./scripts/deploy.sh            # pull + rebuild
+./scripts/maintenance-on.sh    # põe a página de manutenção à frente
+./scripts/maintenance-off.sh   # devolve o site ao ar
+```
+
+Os scripts leem `LYNX_SITE_DIR` (default `/root/lynxcoder-site`).
+Detalhe completo, incluindo rollback e o que fazer quando algo falha, em
+[docs/runbook.md](docs/runbook.md).
+
+## Pendentes conhecidos
+
+| O que | Onde | Porquê está pendente |
+|---|---|---|
+| ID do Formspree | `src/index.html` (`YOUR_FORM_ID`) | precisa de conta Formspree |
+| Capa Open Graph 1200×630 | `src/assets/img/` | hoje o `og:image` aponta para o logo quadrado |
+| `favicon.ico`, `apple-touch-icon.png` | `src/` | gerar a partir do logo — comandos no runbook |
+| HSTS a 300s | `infra/docker-compose.yml` | subir para 31536000 depois de validar HTTPS no blog |
+| Perfis sociais | `src/index.html` (footer) | só o GitHub está ligado; links mortos foram removidos |

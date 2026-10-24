@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+
+# Páginas de estado e legais não têm valor de busca (também têm meta noindex).
+Disallow: /404.html
+Disallow: /obrigado.html
+
+Sitemap: https://lynxcoder.com.br/sitemap.xml

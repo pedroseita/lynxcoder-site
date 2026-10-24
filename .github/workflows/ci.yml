@@ -1,0 +1,125 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  validate:
+    name: HTML, links e comportamento do nginx
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validar HTML
+        run: npx --yes html-validate "src/**/*.html"
+
+      # Apanha href="#", âncoras inexistentes e ficheiros referenciados que não
+      # existem — foi assim que os links mortos do footer passaram meses sem dar
+      # por isso.
+      - name: Verificar links
+        uses: lycheeverse/lychee-action@v2
+        with:
+          args: >-
+            --no-progress
+            --include-fragments
+            --exclude-mail
+            "src/**/*.html"
+          fail: true
+
+      - name: Build da imagem do site
+        run: docker build -f infra/Dockerfile -t lynx-site:ci .
+
+      - name: Build da imagem de manutenção
+        run: docker build -f infra/maintenance/Dockerfile -t lynx-maint:ci .
+
+      # Confirma no container real aquilo que mais vezes se quebrou aqui:
+      # o 404 a devolver 404 (e não a homepage com 200) e os headers nos assets.
+      - name: Testar o site servido
+        run: |
+          docker run -d --name lynx-ci -p 8080:80 lynx-site:ci
+          for i in $(seq 1 15); do
+            curl -sf http://localhost:8080/ >/dev/null && break || sleep 1
+          done
+
+          echo "— homepage deve ser 200"
+          test "$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8080/)" = "200"
+
+          echo "— URL inexistente deve ser 404, nao 200"
+          test "$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8080/nao-existe)" = "404"
+
+          echo "— a pagina 404 deve ter conteudo proprio"
+          curl -s http://localhost:8080/nao-existe | grep -q "Esta pagina nao existe\|Esta página não existe"
+
+          echo "— CSP presente na pagina"
+          curl -sI http://localhost:8080/ | grep -iq 'content-security-policy'
+
+          echo "— CSP presente tambem nos assets (heranca de add_header)"
+          curl -sI http://localhost:8080/assets/css/styles.css | grep -iq 'content-security-policy'
+
+          docker rm -f lynx-ci
+
+      # A manutenção tem de devolver 503 em TUDO, senão o Google desindexa
+      # durante uma janela de manutenção.
+      - name: Testar a manutenção servida
+        run: |
+          docker run -d --name lynx-maint-ci -p 8081:80 lynx-maint:ci
+          sleep 3
+
+          echo "— raiz deve ser 503"
+          test "$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8081/)" = "503"
+
+          echo "— qualquer outro caminho tambem deve ser 503"
+          test "$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8081/servicos)" = "503"
+
+          echo "— o logo tem de sair 200, senao a pagina aparece sem imagem"
+          test "$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8081/logo.png)" = "200"
+
+          echo "— Retry-After presente"
+          curl -sI http://localhost:8081/ | grep -iq 'retry-after'
+
+          docker rm -f lynx-maint-ci
+
+      # Não falha o build: é só um aviso visível enquanto os pendentes do
+      # README não estiverem fechados.
+      - name: Avisar sobre placeholders pendentes
+        continue-on-error: true
+        run: |
+          if grep -rq 'YOUR_FORM_ID' src/; then
+            echo "::warning::O formulario ainda tem YOUR_FORM_ID — ver docs/runbook.md"
+          fi
+          if [ ! -f src/favicon.ico ]; then
+            echo "::warning::src/favicon.ico nao existe — ver docs/runbook.md › Assets a gerar"
+          fi
+
+  lighthouse:
+    name: Lighthouse
+    runs-on: ubuntu-latest
+    needs: validate
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Servir e medir
+        run: |
+          docker build -f infra/Dockerfile -t lynx-site:lh .
+          docker run -d --name lynx-lh -p 8080:80 lynx-site:lh
+          for i in $(seq 1 15); do
+            curl -sf http://localhost:8080/ >/dev/null && break || sleep 1
+          done
+          npx --yes @lhci/cli@0.14.x autorun \
+            --collect.url=http://localhost:8080/ \
+            --collect.numberOfRuns=2 \
+            --upload.target=filesystem \
+            --upload.outputDir=./lhci \
+            --assert.assertions.categories:performance=warn \
+            --assert.assertions.categories:accessibility=error \
+            --assert.assertions.categories:seo=error \
+            || true
+          docker rm -f lynx-lh
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: lighthouse-report
+          path: ./lhci

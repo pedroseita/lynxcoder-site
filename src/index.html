@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-accent="cyan" data-hero="split" data-type="grotesk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LynxCoder — Desenvolvimento de Software</title>
+<meta name="description" content="A LynxCoder desenvolve sites, apps, sistemas e APIs para empresas e clientes que querem soluções reais, entregues com clareza e sem surpresas.">
+<meta name="theme-color" content="#08090b">
+<link rel="canonical" href="https://lynxcoder.com.br/">
+
+<!-- ícones -->
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="icon" type="image/png" href="/assets/img/logo.png" sizes="192x192">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+
+<!-- Open Graph / Twitter -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="LynxCoder">
+<meta property="og:locale" content="pt_BR">
+<meta property="og:title" content="LynxCoder — Desenvolvimento de Software">
+<meta property="og:description" content="Desenvolvemos sites, apps, sistemas e APIs para empresas e clientes que querem soluções reais, entregues com clareza e sem surpresas.">
+<meta property="og:url" content="https://lynxcoder.com.br/">
+<!-- TODO: trocar por uma capa 1200x630 (ver docs/runbook.md › Assets a gerar) -->
+<meta property="og:image" content="https://lynxcoder.com.br/assets/img/logo.png">
+<meta property="og:image:alt" content="LynxCoder — desenvolvimento de software">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="LynxCoder — Desenvolvimento de Software">
+<meta name="twitter:description" content="Desenvolvemos sites, apps, sistemas e APIs para empresas e clientes que querem soluções reais.">
+<meta name="twitter:image" content="https://lynxcoder.com.br/assets/img/logo.png">
+
+<!-- fontes críticas: pré-carregadas para evitar flash de texto sem estilo -->
+<link rel="preload" href="/assets/fonts/space-grotesk-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/manrope-latin.woff2" as="font" type="font/woff2" crossorigin>
+
+<link rel="stylesheet" href="/assets/css/styles.css">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "ProfessionalService",
+  "@id": "https://lynxcoder.com.br/#organization",
+  "name": "LynxCoder",
+  "url": "https://lynxcoder.com.br/",
+  "logo": "https://lynxcoder.com.br/assets/img/logo.png",
+  "image": "https://lynxcoder.com.br/assets/img/logo.png",
+  "description": "Desenvolvimento de sites, apps, sistemas e APIs para empresas e clientes que querem soluções reais.",
+  "email": "devlynxcoder@gmail.com",
+  "founder": { "@type": "Person", "name": "Pedro Seita" },
+  "areaServed": { "@type": "Country", "name": "Brasil" },
+  "knowsLanguage": ["pt-BR"],
+  "sameAs": ["https://github.com/pedroseita"],
+  "hasOfferCatalog": {
+    "@type": "OfferCatalog",
+    "name": "Serviços de desenvolvimento de software",
+    "itemListElement": [
+      { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Desenvolvimento Web" } },
+      { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Apps e Sistemas" } },
+      { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Integrações e APIs" } },
+      { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Manutenção e Suporte" } },
+      { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Consultoria Técnica" } }
+    ]
+  }
+}
+</script>
+</head>
+<body>
+
+<a class="skip-link" href="#top">Ir para o conteúdo</a>
+
+<!-- ============ NAV ============ -->
+<header class="nav" id="nav">
+  <div class="wrap nav-inner">
+    <a class="brand" href="#top">
+      <img src="/assets/img/logo.png" alt="LynxCoder" class="mark" width="44" height="44">
+      <span>LynxCoder</span>
+    </a>
+    <nav class="nav-links" aria-label="Navegação principal">
+      <a href="#servicos">Serviços</a>
+      <a href="#processo">Processo</a>
+      <a href="#portfolio">Portfólio</a>
+      <a href="#sobre">Sobre</a>
+      <a href="#valores">Valores</a>
+      <a href="#blog">Blog</a>
+      <a href="#contato">Contato</a>
+    </nav>
+    <div class="nav-cta">
+      <a class="btn btn-primary btn-sm" href="#contato">Falar com a gente ↗</a>
+    </div>
+    <button class="nav-burger" id="navBurger" type="button" aria-label="Abrir menu" aria-expanded="false" aria-controls="navMobile">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</header>
+
+<div class="nav-mobile" id="navMobile">
+  <nav class="nav-mobile-links" aria-label="Navegação principal (mobile)">
+    <a href="#servicos">Serviços</a>
+    <a href="#processo">Processo</a>
+    <a href="#portfolio">Portfólio</a>
+    <a href="#sobre">Sobre</a>
+    <a href="#valores">Valores</a>
+    <a href="#blog">Blog</a>
+    <a href="#contato">Contato</a>
+    <a class="btn btn-primary nav-mobile-cta" href="#contato">Falar com a gente ↗</a>
+  </nav>
+</div>
+
+<main id="top">
+
+<!-- ============ HERO ============ -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="grid-lines"></div>
+  <div class="wrap hero-inner">
+    <div class="hero-grid">
+      <div class="reveal">
+        <p class="eyebrow">// desenvolvimento de software</p>
+        <h1>Transformamos ideias em <span class="accent">software que funciona</span>.</h1>
+        <p class="lead">
+          Da landing page ao sistema completo — desenvolvemos web, apps e APIs
+          para empresas e clientes que querem soluções reais, entregues com
+          clareza e sem surpresas.
+        </p>
+        <div class="hero-cta">
+          <a class="btn btn-primary" href="#servicos">Ver serviços</a>
+          <a class="btn btn-ghost" href="#contato">Entrar em contato →</a>
+        </div>
+        <p class="hero-note">
+          <span class="dot">●</span> Web &amp; Mobile
+          <span class="sep">·</span> APIs &amp; Sistemas
+          <span class="sep">·</span> Suporte contínuo
+        </p>
+      </div>
+
+      <!-- terminal decorativo: animado por JS, invisível para leitores de ecrã -->
+      <div class="terminal reveal" aria-hidden="true">
+        <div class="term-bar">
+          <span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span>
+          <span class="term-title">lynxcoder <span class="accent">deploy</span> "lançar nova plataforma do cliente"</span>
+        </div>
+        <div class="term-body"><div id="term-out"></div><span class="cursor" id="cursor"></span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SERVIÇOS ============ -->
+<section class="section" id="servicos">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="count">01 — serviços</span>
+      <h2>Do design ao deploy, <span class="accent">entregamos</span>.</h2>
+      <p class="lead">Cobrimos todo o ciclo de desenvolvimento — do levantamento de requisitos ao produto em produção, com comunicação direta e prazos cumpridos.</p>
+    </div>
+
+    <div class="bento">
+      <article class="card span-2 reveal">
+        <div class="corner"></div>
+        <div class="ic">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="4" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.7"/><path d="M3 8h18" stroke="currentColor" stroke-width="1.4"/><path d="M7 12h4M7 15h6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+        </div>
+        <h3>Desenvolvimento Web</h3>
+        <p>Sites institucionais, landing pages de alta conversão, portais e plataformas web completas. Código limpo, performance otimizada e design fiel ao que foi acordado — sem reviravolta no escopo.</p>
+        <div class="kvs">
+          <span class="kv">stack <b>React / Next.js</b></span>
+          <span class="kv">design <b>pixel-perfect</b></span>
+          <span class="kv">entrega <b>responsiva</b></span>
+        </div>
+      </article>
+
+      <article class="card reveal">
+        <div class="corner"></div>
+        <div class="ic">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V9l-6-6Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M9 3v6h6" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M8 13h4M8 17h6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+        </div>
+        <h3>Apps &amp; Sistemas</h3>
+        <p>Aplicações web, sistemas de gestão internos e APIs robustas. Arquitetura pensada para crescer com o negócio.</p>
+      </article>
+
+      <article class="card reveal">
+        <div class="corner"></div>
+        <div class="ic">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3v4M12 17v4M3 12h4M17 12h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1.7"/></svg>
+        </div>
+        <h3>Integrações &amp; APIs</h3>
+        <p>Conexão entre sistemas, automações e APIs REST/GraphQL. Do pagamento ao CRM, tudo integrado e funcionando.</p>
+      </article>
+
+      <article class="card reveal">
+        <div class="corner"></div>
+        <div class="ic">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+        </div>
+        <h3>Manutenção &amp; Suporte</h3>
+        <p>Evolução contínua de projetos existentes, correção de bugs, melhorias de performance e atualizações de segurança.</p>
+      </article>
+
+      <article class="card span-2 reveal">
+        <div class="corner"></div>
+        <div class="ic">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5Z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <h3>Consultoria Técnica</h3>
+        <p>Revisão de arquitetura, escolha de stack, code review e planejamento técnico para equipes que querem tomar decisões melhores. Uma conversa honesta sobre o que faz sentido para o seu projeto — sem jargão desnecessário.</p>
+        <div class="kvs">
+          <span class="kv">arquitetura <b>fundamentada</b></span>
+          <span class="kv">stack <b>adequada ao problema</b></span>
+          <span class="kv">código <b>revisado</b></span>
+          <span class="kv">decisões <b>documentadas</b></span>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PROCESSO ============ -->
+<section class="section section-alt" id="processo">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="count">02 — processo</span>
+      <h2>Como trabalhamos com você.</h2>
+      <p class="lead">Sem reuniões intermináveis nem surpresas no orçamento. Um processo direto do primeiro contato à entrega.</p>
+    </div>
+    <div class="steps">
+      <div class="step reveal">
+        <span class="num">PASSO 01</span>
+        <h3>Descoberta</h3>
+        <p>Começamos por entender o problema, o público e os objetivos reais do projeto. Levantamos requisitos, alinhamos expectativas e definimos um escopo claro antes de escrever uma linha de código.</p>
+      </div>
+      <div class="step reveal">
+        <span class="num">PASSO 02</span>
+        <h3>Desenvolvimento</h3>
+        <p>Desenvolvemos em iterações curtas, com atualizações regulares e código disponível para revisão. Sem desaparecimentos de semanas — você acompanha o progresso em tempo real.</p>
+      </div>
+      <div class="step reveal">
+        <span class="num">PASSO 03</span>
+        <h3>Entrega</h3>
+        <p>Deploy em produção, documentação do que foi construído e transferência de conhecimento. O projeto é seu — com código limpo, testado e pronto para evoluir.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PORTFÓLIO ============ -->
+<section class="section" id="portfolio">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="count">03 — portfólio</span>
+      <h2>Projetos que falam por si.</h2>
+      <p class="lead">Cada projeto é uma solução real para um problema real. Os detalhes chegam em breve.</p>
+    </div>
+
+    <div class="demo-shell reveal">
+      <div class="demo-empty">
+        <div class="glyph">{ }</div>
+        <h3>Em construção</h3>
+        <p class="lead">
+          Os projetos estão sendo documentados e serão apresentados em breve.
+          Enquanto isso, <a href="#contato">entre em contato</a> e
+          conte o que você precisa construir.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SOBRE ============ -->
+<section class="section section-alt" id="sobre">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="count">04 — sobre</span>
+      <h2>Código com <span class="accent">propósito</span>.</h2>
+    </div>
+
+    <div class="reveal about-body">
+      <p class="about-p">
+        A <strong>LynxCoder</strong> foi fundada por <strong>Pedro Seita</strong>,
+        programador apaixonado por resolver problemas reais com tecnologia. Nosso foco não é apenas
+        escrever código — é entregar software que as pessoas consigam usar e que os negócios
+        consigam sustentar.
+      </p>
+      <p class="about-p dim">
+        Cada projeto recebe atenção direta, sem intermediários nem delegação para juniores.
+        A clareza na comunicação é tão importante quanto a qualidade técnica — porque
+        software que não é entendido pela equipe que o usa não cumpre o seu propósito.
+      </p>
+      <div class="kvs">
+        <span class="kv">linguagens <b>TypeScript / Node.js</b></span>
+        <span class="kv">frontend <b>React / Next.js</b></span>
+        <span class="kv">backend <b>NestJS</b></span>
+        <span class="kv">banco de dados <b>PostgreSQL</b></span>
+        <span class="kv">infra <b>Docker / Linux</b></span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ TECH STACK ============ -->
+<div class="marquee-strip" role="group" aria-label="Tecnologias que utilizamos">
+  <div class="wrap">
+    <div class="marquee-clip">
+      <div class="marquee-inner">
+        <div class="marquee-group">
+          <span class="tech-chip">JavaScript</span>
+          <span class="tech-chip">TypeScript</span>
+          <span class="tech-chip">React</span>
+          <span class="tech-chip">Next.js</span>
+          <span class="tech-chip">Node.js</span>
+          <span class="tech-chip">NestJS</span>
+          <span class="tech-chip">Git</span>
+          <span class="tech-chip">Firebase</span>
+          <span class="tech-chip">PostgreSQL</span>
+          <span class="tech-chip">Docker</span>
+          <span class="tech-chip">GitHub</span>
+          <span class="tech-chip">Tailwind CSS</span>
+        </div>
+        <div class="marquee-group" aria-hidden="true">
+          <span class="tech-chip">JavaScript</span>
+          <span class="tech-chip">TypeScript</span>
+          <span class="tech-chip">React</span>
+          <span class="tech-chip">Next.js</span>
+          <span class="tech-chip">Node.js</span>
+          <span class="tech-chip">NestJS</span>
+          <span class="tech-chip">Git</span>
+          <span class="tech-chip">Firebase</span>
+          <span class="tech-chip">PostgreSQL</span>
+          <span class="tech-chip">Docker</span>
+          <span class="tech-chip">GitHub</span>
+          <span class="tech-chip">Tailwind CSS</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ VALORES ============ -->
+<section class="section" id="valores">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="count">05 — valores</span>
+      <h2>O que guia o nosso <span class="accent">trabalho</span>.</h2>
+      <p class="lead">Não são princípios numa página — são o que levamos para cada projeto.</p>
+    </div>
+
+    <div class="values-grid">
+      <div class="value-item reveal">
+        <span class="value-num">01</span>
+        <h3>Transparência</h3>
+        <p>Comunicação clara evita problemas e cria confiança. Preferimos sempre alinhar expectativas, explicar decisões técnicas e manter tudo às claras durante o projeto.</p>
+      </div>
+      <div class="value-item reveal">
+        <span class="value-num">02</span>
+        <h3>Responsabilidade</h3>
+        <p>Compromisso assumido é compromisso cumprido. Prazo, qualidade e respeito ao cliente são prioridades — sem enrolação, sem desculpas.</p>
+      </div>
+      <div class="value-item reveal">
+        <span class="value-num">03</span>
+        <h3>Evolução Contínua</h3>
+        <p>Tecnologia muda rápido, e gostamos disso. Estamos sempre estudando, testando ferramentas novas e procurando formas melhores de resolver problemas.</p>
+      </div>
+      <div class="value-item reveal">
+        <span class="value-num">04</span>
+        <h3>Simplicidade</h3>
+        <p>Solução boa não precisa ser complicada. Criamos sistemas diretos, fáceis de entender e fáceis de manter.</p>
+      </div>
+      <div class="value-item reveal">
+        <span class="value-num">05</span>
+        <h3>Colaboração</h3>
+        <p>Trabalhar em conjunto é sempre melhor. Gostamos de trocar ideias, ouvir feedback e construir soluções em parceria com o cliente ou com a equipe.</p>
+      </div>
+      <div class="value-item reveal">
+        <span class="value-num">06</span>
+        <h3>Qualidade</h3>
+        <p>Código limpo, arquitetura bem pensada e testes fazem parte do nosso dia a dia. Não entregamos nada que não usaríamos.</p>
+      </div>
+      <div class="value-item reveal">
+        <span class="value-num">07</span>
+        <h3>Empatia</h3>
+        <p>Antes de escrever código, entendemos o problema. Nos importamos com a experiência de quem vai usar o produto e com a realidade de quem está pedindo.</p>
+      </div>
+      <div class="value-item reveal">
+        <span class="value-num">08</span>
+        <h3>Criatividade</h3>
+        <p>Gostamos de pensar fora da caixa e encontrar soluções inteligentes — às vezes simples, às vezes ousadas, mas sempre eficientes.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ BLOG ============ -->
+<section class="section section-alt" id="blog">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="count">06 — blog</span>
+      <h2>Artigos &amp; <span class="accent">insights</span>.</h2>
+      <p class="lead">Compartilhamos o que aprendemos — desenvolvimento, arquitetura, ferramentas e boas práticas.</p>
+    </div>
+
+    <div class="blog-grid">
+      <a class="blog-card reveal" href="https://blog.lynxcoder.com.br" target="_blank" rel="noopener">
+        <span class="blog-tag">TypeScript</span>
+        <h3>Por que escolhemos NestJS para APIs em produção</h3>
+        <p>Uma análise prática das razões pelas quais o NestJS se tornou o nosso framework de eleição para construir APIs robustas e escaláveis.</p>
+        <div class="blog-meta">
+          <span>Em breve</span>
+          <span>5 min de leitura</span>
+        </div>
+      </a>
+      <a class="blog-card reveal" href="https://blog.lynxcoder.com.br" target="_blank" rel="noopener">
+        <span class="blog-tag">DevOps</span>
+        <h3>Docker para devs: do zero ao deploy com Traefik</h3>
+        <p>Como configurar um servidor VPS com Docker, Traefik e HTTPS automático — o setup que usamos em todos os nossos projetos.</p>
+        <div class="blog-meta">
+          <span>Em breve</span>
+          <span>8 min de leitura</span>
+        </div>
+      </a>
+      <a class="blog-card reveal" href="https://blog.lynxcoder.com.br" target="_blank" rel="noopener">
+        <span class="blog-tag">Frontend</span>
+        <h3>Next.js App Router: o que mudou e como adaptar</h3>
+        <p>As principais diferenças entre o Pages Router e o App Router, e como migrar sem quebrar o que já funciona.</p>
+        <div class="blog-meta">
+          <span>Em breve</span>
+          <span>6 min de leitura</span>
+        </div>
+      </a>
+    </div>
+
+    <div class="blog-more">
+      <a class="btn btn-ghost" href="https://blog.lynxcoder.com.br" target="_blank" rel="noopener">
+        Ver todos os artigos →
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CONTATO ============ -->
+<section class="section" id="contato">
+  <div class="wrap">
+    <div class="cta-final reveal">
+      <div class="glowring"></div>
+      <p class="eyebrow">// vamos conversar</p>
+      <span class="count">07 — contato</span>
+      <h2>Tem um projeto? <span class="accent">Vamos conversar.</span></h2>
+      <p class="lead">
+        Descreva o que você precisa construir. Resposta em menos de 24 horas,
+        sem compromisso.
+      </p>
+
+      <!--
+        Formulário estático via Formspree: POST nativo do browser, sem JS e sem fetch,
+        o que mantém connect-src 'none' na CSP. O campo _next define para onde o
+        Formspree redireciona após o envio.
+        TODO: substituir YOUR_FORM_ID pelo ID real (ver docs/runbook.md › Formulário).
+      -->
+      <form class="contact-form" action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
+        <input type="hidden" name="_next" value="https://lynxcoder.com.br/obrigado.html">
+        <input type="hidden" name="_subject" value="Novo contato pelo site lynxcoder.com.br">
+
+        <div class="field">
+          <label for="f-nome">Nome <span class="req" aria-hidden="true">*</span></label>
+          <input id="f-nome" name="nome" type="text" required autocomplete="name" maxlength="120" placeholder="Como podemos chamar você?">
+        </div>
+
+        <div class="field">
+          <label for="f-email">E-mail <span class="req" aria-hidden="true">*</span></label>
+          <input id="f-email" name="email" type="email" required autocomplete="email" maxlength="200" placeholder="voce@empresa.com.br">
+        </div>
+
+        <div class="field">
+          <label for="f-msg">O que você precisa construir? <span class="req" aria-hidden="true">*</span></label>
+          <textarea id="f-msg" name="mensagem" required minlength="20" maxlength="4000" placeholder="Um parágrafo basta: o problema, para quem é, e qual o prazo que tem em mente."></textarea>
+        </div>
+
+        <!-- honeypot: invisível para humanos, atrativo para bots -->
+        <div class="hp" aria-hidden="true">
+          <label for="f-gotcha">Deixe este campo vazio</label>
+          <input id="f-gotcha" type="text" name="_gotcha" tabindex="-1" autocomplete="off">
+        </div>
+
+        <button class="btn btn-primary" type="submit">Enviar mensagem ↗</button>
+
+        <p class="form-note">
+          Usamos os seus dados apenas para responder a este contato.
+          Veja a <a href="/privacy.html">Política de Privacidade</a>.
+        </p>
+      </form>
+
+      <div class="contact-alt">
+        <a class="btn btn-ghost btn-sm" href="mailto:devlynxcoder@gmail.com">Enviar e-mail direto</a>
+        <a class="btn btn-ghost btn-sm" href="https://github.com/pedroseita" target="_blank" rel="noopener">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+          GitHub
+        </a>
+        <span class="email">devlynxcoder@gmail.com</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- ============ FOOTER ============ -->
+<footer class="footer">
+  <div class="wrap">
+    <div class="foot-grid">
+      <div class="foot-brand">
+        <a class="brand" href="#top">
+          <img src="/assets/img/logo.png" alt="LynxCoder" class="mark" width="44" height="44">
+          <span>LynxCoder</span>
+        </a>
+        <p class="lead">Desenvolvimento de software para empresas e clientes que querem soluções reais.</p>
+        <div class="foot-socials">
+          <!--
+            Só entram aqui perfis que existam de facto. Ícones com href="#" foram
+            removidos: link morto custa mais credibilidade do que a ausência do ícone.
+            Para reactivar um, basta acrescentar o <a> com o URL real.
+          -->
+          <a href="https://github.com/pedroseita" class="foot-social" target="_blank" rel="noopener" aria-label="GitHub da LynxCoder">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+          </a>
+        </div>
+      </div>
+      <div class="foot-col">
+        <h4>Navegação</h4>
+        <a href="#servicos">Serviços</a>
+        <a href="#processo">Processo</a>
+        <a href="#portfolio">Portfólio</a>
+        <a href="#sobre">Sobre</a>
+        <a href="#valores">Valores</a>
+        <a href="#blog">Blog</a>
+        <a href="#contato">Contato</a>
+      </div>
+      <div class="foot-col">
+        <h4>Serviços</h4>
+        <a href="#servicos">Desenvolvimento Web</a>
+        <a href="#servicos">Apps &amp; Sistemas</a>
+        <a href="#servicos">APIs &amp; Integrações</a>
+        <a href="#servicos">Manutenção &amp; Suporte</a>
+        <a href="#servicos">Consultoria Técnica</a>
+      </div>
+      <div class="foot-col">
+        <h4>Contato</h4>
+        <a href="mailto:devlynxcoder@gmail.com">devlynxcoder@gmail.com</a>
+        <a href="https://github.com/pedroseita" target="_blank" rel="noopener">GitHub</a>
+        <a href="https://blog.lynxcoder.com.br" target="_blank" rel="noopener">Blog</a>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2026 LynxCoder — Pedro Seita</span>
+      <div class="foot-legal">
+        <a href="/privacy.html">Política de Privacidade</a>
+        <a href="/terms.html">Termos de Uso</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="/assets/js/app.js"></script>
+</body>
+</html>

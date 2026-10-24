@@ -11,7 +11,6 @@
   window.addEventListener('scroll', onScroll, { passive: true });
   onScroll();
 
-  /* scroll reveal */
   var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   /* ---- terminal typing animation — deploy workflow ---- */
@@ -24,7 +23,7 @@
       L('term-dim',    '[main 3a7f2c1] feat: nova plataforma cliente\n'),
       L('term-dim',    ' 12 files changed, 847 insertions(+), 23 deletions(-)\n'),
       L('term-prompt', '\n$ git push origin main\n'),
-      L('term-comment','▸ a enviar para produção…\n'),
+      L('term-comment','▸ enviando para produção…\n'),
       L('term-path',   '  ~ build concluído em 34s\n'),
       L('term-path',   '  ~ testes passados: 96/96\n'),
       L('term-add',    '  + deploy em lynxcoder.com.br\n'),
@@ -69,40 +68,84 @@
 
   /* scroll reveal for .reveal elements */
   if (!reduce && 'IntersectionObserver' in window) {
-    var revealEls = document.querySelectorAll('.reveal');
-    var rio = new IntersectionObserver(function(entries) {
-      entries.forEach(function(e) {
+    var rio = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
         if (e.isIntersecting) {
           e.target.classList.add('visible');
           rio.unobserve(e.target);
         }
       });
     }, { threshold: 0.12 });
-    revealEls.forEach(function(el) { rio.observe(el); });
+    document.querySelectorAll('.reveal').forEach(function (el) { rio.observe(el); });
   } else {
-    document.querySelectorAll('.reveal').forEach(function(el) {
+    document.querySelectorAll('.reveal').forEach(function (el) {
       el.classList.add('visible');
     });
   }
 })();
 
-(function() {
+/* ---- menu mobile: abrir/fechar, Esc, e foco preso enquanto aberto ---- */
+(function () {
+  'use strict';
+
   var burger = document.getElementById('navBurger');
   var mobile = document.getElementById('navMobile');
-  burger.addEventListener('click', function() {
-    var open = burger.classList.toggle('open');
+  /* Páginas internas (privacy, terms, 404) não têm nav mobile — sair sem erro.
+     Sem esta guarda, um único null aqui abortava o IIFE inteiro. */
+  if (!burger || !mobile) return;
+
+  var FOCUSABLE = 'a[href], button:not([disabled]), input, textarea, select, [tabindex]:not([tabindex="-1"])';
+
+  function setOpen(open) {
+    burger.classList.toggle('open', open);
     mobile.classList.toggle('open', open);
-    burger.setAttribute('aria-expanded', open);
-    mobile.setAttribute('aria-hidden', !open);
+    burger.setAttribute('aria-expanded', String(open));
+    burger.setAttribute('aria-label', open ? 'Fechar menu' : 'Abrir menu');
     document.body.style.overflow = open ? 'hidden' : '';
+    if (open) {
+      var first = mobile.querySelector(FOCUSABLE);
+      if (first) first.focus();
+    }
+  }
+
+  function isOpen() { return mobile.classList.contains('open'); }
+
+  burger.addEventListener('click', function () { setOpen(!isOpen()); });
+
+  mobile.querySelectorAll('a').forEach(function (link) {
+    link.addEventListener('click', function () { setOpen(false); });
   });
-  mobile.querySelectorAll('a').forEach(function(link) {
-    link.addEventListener('click', function() {
-      burger.classList.remove('open');
-      mobile.classList.remove('open');
-      burger.setAttribute('aria-expanded', 'false');
-      mobile.setAttribute('aria-hidden', 'true');
-      document.body.style.overflow = '';
-    });
+
+  document.addEventListener('keydown', function (e) {
+    if (!isOpen()) return;
+
+    if (e.key === 'Escape') {
+      setOpen(false);
+      burger.focus();
+      return;
+    }
+
+    /* foco preso: Tab não escapa do menu enquanto ele cobre o ecrã */
+    if (e.key === 'Tab') {
+      var items = Array.prototype.filter.call(
+        mobile.querySelectorAll(FOCUSABLE),
+        function (el) { return el.offsetParent !== null; }
+      );
+      if (!items.length) return;
+      var first = items[0];
+      var last = items[items.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    }
+  });
+
+  /* ao passar para desktop com o menu aberto, reset do estado */
+  window.matchMedia('(min-width: 961px)').addEventListener('change', function (e) {
+    if (e.matches && isOpen()) setOpen(false);
   });
 })();

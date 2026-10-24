@@ -2,7 +2,7 @@
 // Cria (ou substitui) o acesso ao painel admin.lynxcoder.com.br.
 // Correr NO VPS, dentro do container:
 //   docker exec -it lynxcoder-onboarding node tools/admin-setup.js
-// Pede utilizador e senha, mostra um QR code para a app autenticadora
+// Pede usuário e senha, mostra um QR code para o app autenticador
 // (Google/Microsoft Authenticator) e só grava depois de um código válido.
 'use strict';
 
@@ -38,14 +38,14 @@ async function ask(question, { hidden = false } = {}) {
   console.log('\n=== Painel LynxCoder — configurar acesso ===\n');
   const file = path.join(DIRS.admin, 'credentials.json');
   if (await fsp.stat(file).catch(() => null)) {
-    console.log('Já existe um acesso configurado. Continuar SUBSTITUI o utilizador, a senha e o código 2FA.');
+    console.log('Já existe um acesso configurado. Continuar SUBSTITUI o usuário, a senha e o código 2FA.');
     const go = await ask('Continuar? (s/N) ');
     if (!/^s/i.test(go)) { console.log('Nada alterado.'); process.exit(0); }
   }
 
   let user = '';
   while (!/^[a-zA-Z0-9._@-]{3,60}$/.test(user)) {
-    user = await ask('Utilizador (3–60 letras, números, . _ - @): ');
+    user = await ask('Usuário (3–60 letras, números, . _ - @): ');
   }
 
   let password = '';
@@ -59,7 +59,7 @@ async function ask(question, { hidden = false } = {}) {
 
   const secret = totp.generateSecret();
   const uri = totp.otpauthUri(secret, user);
-  console.log('\nNa app autenticadora do celular, adicione uma conta lendo este QR code:\n');
+  console.log('\nNo app autenticador do celular, adicione uma conta lendo este QR code:\n');
   console.log(await QRCode.toString(uri, { type: 'terminal', small: true }));
   console.log('Se não conseguir ler o QR, escolha "inserir chave" e use:');
   console.log(`  Conta: LynxCoder (${user})`);
@@ -67,7 +67,7 @@ async function ask(question, { hidden = false } = {}) {
 
   if (!skipVerify) {
     for (let i = 0; ; i++) {
-      const code = (await ask('Digite o código de 6 dígitos que aparece na app: ')).replace(/\D/g, '');
+      const code = (await ask('Digite o código de 6 dígitos que aparece no app: ')).replace(/\D/g, '');
       if (totp.verify(secret, code) >= 0) break;
       if (i >= 4) { console.log('Código errado demasiadas vezes. Nada foi gravado.'); process.exit(1); }
       console.log('  Código não confere. Confira se o relógio do celular está certo e tente de novo.');

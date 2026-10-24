@@ -2,3 +2,5 @@ Lynx Coder.zip
 *.zip
 .DS_Store
 Thumbs.db
+node_modules/
+infra/onboarding.env

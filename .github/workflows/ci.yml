@@ -26,6 +26,8 @@ jobs:
       # --root-dir/--index-files/--fallback-extensions resolvem links "/...",
       # "/#ancora" e URLs sem extensão (/comecar) como o nginx.
       # /api/contato e /api/onboarding são endpoints POST da API, não ficheiros de src/.
+      # O próprio domínio fica de fora: os links internos já são verificados nos
+      # ficheiros, e o CI não pode falhar só porque o site está em manutenção.
       - name: Verificar links
         uses: lycheeverse/lychee-action@v2
         with:
@@ -37,6 +39,7 @@ jobs:
             --index-files index.html
             --fallback-extensions html
             --exclude '/api/(contato|onboarding)$'
+            --exclude '^https://(www\.)?lynxcoder\.com\.br'
             "src/**/*.html"
           fail: true
 

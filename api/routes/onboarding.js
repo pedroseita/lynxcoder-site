@@ -126,7 +126,7 @@ function summary(id, d, files) {
     '',
     `Plano: ${d.plano.tipo}`,
     d.plano.tipo === 'essencial'
-      ? `Endereço: ${d.plano.subdominio}.lynxcoder.com.br`
+      ? `Endereço: ${d.plano.subdominio}.lynxsites.com.br`
       : `Domínio: ${d.plano.dominio} (${d.plano.dominioRegistrado ? 'já registrado' : 'ainda vai registrar'})`,
     `Extras: ${d.plano.extras.join(', ') || '—'}`,
     '',

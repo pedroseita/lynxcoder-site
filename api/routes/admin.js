@@ -92,7 +92,7 @@ async function listPedidos() {
       tipo: 'pedido', id, recebidoEm: dados.recebidoEm,
       titulo: dados.negocio.nome,
       subtitulo: `${dados.negocio.especialidade} · ${dados.negocio.cidade}`,
-      detalhe: dados.plano.tipo === 'essencial' ? `${dados.plano.subdominio}.lynxcoder.com.br` : dados.plano.dominio,
+      detalhe: dados.plano.tipo === 'essencial' ? `${dados.plano.subdominio}.lynxsites.com.br` : dados.plano.dominio,
       status: admin.status || 'novo',
       teste: !!dados.teste,
     });

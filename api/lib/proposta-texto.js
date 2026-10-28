@@ -22,7 +22,7 @@ O Plano Essencial usa um endereço da LynxCoder e não exige nenhuma burocracia;
 
 | | Plano Essencial | Plano Profissional |
 |---|---|---|
-| **Endereço** | seunome.lynxcoder.com.br | www.seunome.com.br |
+| **Endereço** | seunome.lynxsites.com.br | www.seunome.com.br |
 | **Dono do domínio** | LynxCoder | Você (registrado no seu CPF ou CNPJ) |
 | **Registro do domínio** | Incluído | Pago por você no Registro.br (cerca de R$ 40/ano) |
 | **Taxa de implantação (única)** | **{{essencial_implantacao}}** | **{{profissional_implantacao}}** |
@@ -122,7 +122,7 @@ Você registra o domínio em seu nome e cria dois apontamentos no painel do Regi
 
 | Tipo | Nome | Valor | Para quê |
 |---|---|---|---|
-| CNAME | www | sites.lynxcoder.com.br | Endereço principal da página |
+| CNAME | www | lynxsites.com.br | Endereço principal da página |
 | A | (em branco) | IP enviado pela LynxCoder | Faz o endereço sem "www" funcionar e redirecionar para o com "www" |
 
 Depois de salvos, os apontamentos levam de alguns minutos a 24 horas para propagar. O certificado de segurança (HTTPS) é emitido automaticamente assim que o domínio passa a apontar para os nossos servidores.
@@ -159,7 +159,7 @@ O prazo começa a contar apenas quando todas as informações e fotos tiverem si
 
 - Você pode cancelar a qualquer momento, com aviso de {{aviso_cancelamento}} dias. A taxa de implantação não é reembolsável.
 - Ao cancelar, você recebe um pacote com todos os seus textos e fotos.
-- No Plano Essencial, o endereço seunome.lynxcoder.com.br é desativado.
+- No Plano Essencial, o endereço seunome.lynxsites.com.br é desativado.
 - No Plano Profissional, o domínio continua sendo seu e pode ser apontado para outro serviço.
 
 ### Suporte

@@ -503,7 +503,7 @@
 
     var url = val('plano') === 'profissional'
       ? 'www.' + (normalizeDomain(val('dominio')) || 'seunome.com.br')
-      : (val('subdominio') || 'seunome') + '.lynxcoder.com.br';
+      : (val('subdominio') || 'seunome') + '.lynxsites.com.br';
     $('#pvUrl').textContent = url;
 
     var logo = $('#pvLogo');
@@ -577,7 +577,7 @@
         row('Atendimento', d.negocio.area) + row('WhatsApp', maskPhone(d.negocio.whatsapp)) + row('E-mail', d.negocio.email) + row('Redes', redes)) +
       block(2, 'Plano e endereço',
         row('Plano', d.plano.tipo === 'essencial' ? 'Essencial' : 'Profissional') +
-        row('Endereço', d.plano.tipo === 'essencial' ? d.plano.subdominio + '.lynxcoder.com.br' : d.plano.dominio +
+        row('Endereço', d.plano.tipo === 'essencial' ? d.plano.subdominio + '.lynxsites.com.br' : d.plano.dominio +
           (d.plano.dominioRegistrado ? ' (já registrado)' : ' (ainda vai registrar)')) +
         row('Extras', extras)) +
       block(3, 'Logotipo e cores',

@@ -371,7 +371,7 @@
       ])),
       h('section', { class: 'card' }, h('h2', { text: 'Plano e endereço' }), dl([
         ['Plano', d.plano.tipo === 'essencial' ? 'Essencial' : 'Profissional'],
-        ['Endereço', d.plano.tipo === 'essencial' ? d.plano.subdominio + '.lynxcoder.com.br' : d.plano.dominio],
+        ['Endereço', d.plano.tipo === 'essencial' ? d.plano.subdominio + '.lynxsites.com.br' : d.plano.dominio],
         ['Domínio', d.plano.tipo === 'profissional' ? (d.plano.dominioRegistrado ? 'Já registrado' : 'Ainda vai registrar') : ''],
         ['Extras', (d.plano.extras || []).map(function (x) { return EXTRAS[x] || x; }).join(', ')],
         ['Cores', h('span', null, swatch(d.visual.corPrincipal), d.visual.corPrincipal.toUpperCase() + '  ', swatch(d.visual.corDestaque), d.visual.corDestaque.toUpperCase())],

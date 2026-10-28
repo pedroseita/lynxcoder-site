@@ -221,7 +221,8 @@ table.fees td:last-child,table.fees th:last-child{text-align:right}
 @media (min-width:900px){.about .wrap{grid-template-columns:.7fr 1.3fr}}
 .portrait{aspect-ratio:1;border-radius:50%;background:var(--cream);display:grid;place-items:center;max-width:300px;width:100%}
 .portrait svg{width:58%;color:var(--muted)}
-.quotes{display:grid;gap:14px;grid-template-columns:1fr;margin-top:28px}
+/* ocupa as duas colunas do .about .wrap (senão fica preso na coluna da foto) */
+.quotes{grid-column:1/-1;display:grid;gap:14px;grid-template-columns:1fr;margin-top:28px}
 @media (min-width:860px){.quotes{grid-template-columns:repeat(3,1fr)}}
 .quotes figure{margin:0;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:20px}
 .quotes .stars{color:var(--tomato);letter-spacing:2px;font-size:15px;margin-bottom:8px}

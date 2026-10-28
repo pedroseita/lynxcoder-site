@@ -5,7 +5,8 @@
                                  mostra a mensagem que o profissional receberia
    e marca os links com data-wa="texto" (WhatsApp) e data-tel (ligar).
    Formulário #quote: campos #qn (nome), #qb (bairro), #qs (serviço),
-   #qm (detalhes) e #qc (consentimento). */
+   #qm (detalhes) e #qc (consentimento).
+   Páginas com outra lógica chamam window.lxDemoSend(mensagem). */
 (function () {
   'use strict';
 
@@ -38,6 +39,9 @@
     if (DEMO) showDemo(text);
     else window.open(waUrl(text), '_blank', 'noopener');
   }
+  // Para páginas com lógica própria (ex.: carrinho das quentinhas): enviam a
+  // mensagem já montada e este script decide entre o WhatsApp e o balão de demo.
+  window.lxDemoSend = send;
 
   if (dialog) {
     document.getElementById('ddClose').addEventListener('click', function () { dialog.close(); });

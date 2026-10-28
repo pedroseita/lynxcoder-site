@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<!-- Exemplo de portfólio: negócio e contatos fictícios, por isso fora do Google. -->
+<meta name="robots" content="noindex">
+<title>Sabor da Lúcia · Quentinhas caseiras em Niterói</title>
+<meta name="description" content="Quentinhas caseiras feitas no dia, com entrega em Niterói. Veja o cardápio da semana e faça seu pedido pelo WhatsApp até 10h30.">
+<meta property="og:title" content="Sabor da Lúcia · Quentinhas caseiras">
+<meta property="og:description" content="Comida caseira feita no dia. Peça pelo WhatsApp até 10h30.">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#3A2418">
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<script type="application/ld+json">
+{
+  "@context":"https://schema.org",
+  "@type":"Restaurant",
+  "name":"Sabor da Lúcia",
+  "description":"Quentinhas caseiras feitas no dia, com entrega em Niterói.",
+  "servesCuisine":"Comida caseira brasileira",
+  "priceRange":"R$ 20–25",
+  "telephone":"+55 21 90000-0000",
+  "address":{"@type":"PostalAddress","addressLocality":"Niterói","addressRegion":"RJ","addressCountry":"BR"},
+  "openingHours":["Mo-Fr 08:00-14:00"],
+  "areaServed":["Centro","Icaraí","Santa Rosa","Fonseca","São Francisco","Ingá"]
+}
+</script>
+<style>
+/* Fontes self-hosted (fontsource-variable 5.3.0): Fraunces (tamanho óptico + peso, e itálico) e Figtree */
+@font-face{font-family:"Fraunces";font-style:normal;font-display:swap;font-weight:100 900;
+  src:url(/assets/fonts/fraunces-latin.woff2) format("woff2-variations");
+  unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:"Fraunces";font-style:italic;font-display:swap;font-weight:100 900;
+  src:url(/assets/fonts/fraunces-latin-italic.woff2) format("woff2-variations");
+  unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:"Figtree";font-style:normal;font-display:swap;font-weight:300 900;
+  src:url(/assets/fonts/figtree-latin.woff2) format("woff2-variations");
+  unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+
+:root{
+  --ink:#3A2418; --ink-2:#6B5244; --muted:#8C7566;
+  --paper:#FBF6EE; --surface:#FFFFFF; --cream:#F4EADB; --line:#E6D8C4;
+  --tomato:#C8442B; --tomato-ink:#FFFFFF; --tomato-soft:#F8E1DA;
+  --olive:#5E7A3A; --olive-soft:#E7EEDC;
+  --wa:#25D366; --wa-ink:#06301A;
+  --focus:#C8442B;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ink:#F4EADB; --ink-2:#D2C1AE; --muted:#A8957F;
+    --paper:#1C1410; --surface:#261C16; --cream:#2E221A; --line:#3E2F25;
+    --tomato:#E8664C; --tomato-ink:#1C1410; --tomato-soft:#3B211A;
+    --olive:#9DBB72; --olive-soft:#26301B;
+    --focus:#E8664C;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --ink:#F4EADB; --ink-2:#D2C1AE; --muted:#A8957F;
+  --paper:#1C1410; --surface:#261C16; --cream:#2E221A; --line:#3E2F25;
+  --tomato:#E8664C; --tomato-ink:#1C1410; --tomato-soft:#3B211A;
+  --olive:#9DBB72; --olive-soft:#26301B;
+  --focus:#E8664C;
+  color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-behavior:smooth;scroll-padding-top:calc(76px + env(safe-area-inset-top,0px))}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{margin:0;background:var(--paper);color:var(--ink);font:400 17px/1.6 "Figtree",system-ui,-apple-system,"Segoe UI",sans-serif}
+h1,h2,h3{font-family:"Fraunces",Georgia,"Times New Roman",serif;font-weight:800;line-height:1.08;margin:0;letter-spacing:-.01em}
+h2{font-size:clamp(30px,4.8vw,44px);margin-bottom:12px}
+h3{font-size:21px;font-weight:600;line-height:1.2}
+p{margin:0 0 1em}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--focus);outline-offset:3px}
+.wrap{max-width:1120px;margin:0 auto;padding:0 20px}
+section{padding:72px 0}
+section.pt0{padding-top:0}
+.lead{font-size:19px;color:var(--ink-2);max-width:58ch}
+.demo{background:var(--ink);color:var(--paper);font-size:14px;text-align:center;padding:8px 16px}
+.demo a{font-weight:700}
+
+/* header */
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--paper)}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--paper);border-bottom:1px solid var(--line)}
+.top .wrap{display:flex;align-items:center;justify-content:space-between;gap:14px;height:66px}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none;font-family:"Fraunces",Georgia,serif;font-weight:800;font-size:22px}
+.logo svg{width:32px;height:32px;flex:none}
+.top nav{display:none;gap:24px;font-size:15.5px}
+.top nav a{text-decoration:none;color:var(--ink-2)}
+.top nav a:hover{color:var(--ink)}
+@media (min-width:860px){.top nav{display:flex}}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:52px;padding:0 22px;border-radius:999px;font:inherit;font-weight:700;font-size:16.5px;text-decoration:none;border:2px solid transparent;cursor:pointer}
+.btn svg{width:20px;height:20px;flex:none}
+.btn.t{background:var(--tomato);color:var(--tomato-ink)}
+.btn.o{border-color:var(--ink);color:var(--ink);background:transparent}
+.btn.sm{min-height:42px;padding:0 16px;font-size:15px}
+
+/* hero */
+.hero{padding:44px 0 56px}
+.hero .wrap{display:grid;gap:36px;grid-template-columns:1fr;align-items:center}
+@media (min-width:900px){.hero .wrap{grid-template-columns:1.05fr .95fr}}
+.status{display:inline-flex;align-items:center;gap:8px;font-size:15px;font-weight:600;padding:6px 14px;border-radius:999px;margin-bottom:18px}
+.status i{width:9px;height:9px;border-radius:50%;background:currentColor}
+.status.open{background:var(--olive-soft);color:var(--olive)}
+.status.closed{background:var(--tomato-soft);color:var(--tomato)}
+.hero h1{font-size:clamp(42px,7.4vw,74px);margin-bottom:18px}
+.hero h1 em{font-style:italic;color:var(--tomato)}
+.hero .sub{font-size:19px;color:var(--ink-2);max-width:44ch;margin-bottom:26px}
+.ctas{display:flex;flex-wrap:wrap;gap:12px}
+.today{background:var(--surface);border:1px solid var(--line);border-radius:24px;padding:26px 24px;position:relative;overflow:hidden}
+.today .lbl{font-size:14.5px;font-weight:700;color:var(--tomato);text-transform:uppercase;letter-spacing:.06em}
+.today h2{font-size:clamp(28px,4vw,36px);margin:6px 0 8px}
+.today p{color:var(--ink-2);margin:0 0 16px}
+.today .plate{display:block;width:100%;max-width:300px;margin:0 auto 18px}
+.prices{display:flex;gap:10px;flex-wrap:wrap}
+.prices span{background:var(--cream);border-radius:12px;padding:8px 14px;font-size:15px}
+.prices b{font-size:18px}
+.cutoff{margin-top:14px;font-size:14.5px;color:var(--muted)}
+
+/* week */
+.week{background:var(--cream)}
+.days{list-style:none;padding:0;margin:32px 0 0;display:grid;gap:12px;grid-template-columns:1fr}
+@media (min-width:700px){.days{grid-template-columns:repeat(2,1fr)}}
+@media (min-width:1000px){.days{grid-template-columns:repeat(5,1fr)}}
+.days li{background:var(--surface);border:1.5px solid var(--line);border-radius:16px;padding:18px}
+.days li.is-today{border-color:var(--tomato);box-shadow:inset 0 0 0 1px var(--tomato)}
+.days .d{display:flex;justify-content:space-between;align-items:center;font-weight:700;font-size:15px;color:var(--muted);margin-bottom:8px}
+.days .d em{font-style:normal;font-size:12.5px;color:var(--tomato-ink);background:var(--tomato);border-radius:999px;padding:2px 10px}
+.days h3{font-size:19px;margin-bottom:6px}
+.days p{font-size:15px;color:var(--ink-2);margin:0}
+.fixed{display:grid;gap:12px;grid-template-columns:1fr;margin-top:12px}
+@media (min-width:700px){.fixed{grid-template-columns:1fr 1fr}}
+.fixed div{border:1.5px dashed var(--line);border-radius:16px;padding:16px 18px;background:var(--paper)}
+.fixed b{display:block;font-family:"Fraunces",Georgia,serif;font-size:18px;font-weight:600}
+.fixed span{font-size:15px;color:var(--ink-2)}
+.note{font-size:15px;color:var(--muted);margin-top:16px}
+
+/* order */
+.order .wrap{display:grid;gap:28px;grid-template-columns:1fr}
+@media (min-width:980px){.order .wrap{grid-template-columns:1.25fr .75fr;align-items:start}}
+.for-day{display:inline-block;background:var(--olive-soft);color:var(--olive);font-weight:700;font-size:15px;border-radius:10px;padding:8px 14px;margin-bottom:18px}
+.items{display:grid;gap:12px}
+.item{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px 18px}
+.item-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:4px}
+.item h3{font-size:19px}
+.item .tag{font-size:12.5px;font-weight:700;color:var(--olive);background:var(--olive-soft);border-radius:999px;padding:2px 10px;white-space:nowrap}
+.item p{font-size:15px;color:var(--ink-2);margin:0 0 12px}
+.sizes{display:grid;gap:8px;grid-template-columns:1fr}
+@media (min-width:520px){.sizes{grid-template-columns:1fr 1fr}}
+.size{display:flex;align-items:center;justify-content:space-between;gap:10px;border:1px solid var(--line);border-radius:12px;padding:8px 8px 8px 14px;background:var(--paper)}
+.size span{font-size:15px}
+.size b{display:block;font-size:16px}
+.step{display:flex;align-items:center;gap:4px}
+.step button{width:40px;height:40px;border-radius:50%;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);font:inherit;font-size:20px;line-height:1;cursor:pointer}
+.step button:disabled{opacity:.35;cursor:default}
+.step output{min-width:26px;text-align:center;font-weight:700;font-size:17px}
+.size.has{border-color:var(--tomato);background:var(--tomato-soft)}
+.subh{font-family:"Fraunces",Georgia,serif;font-size:22px;font-weight:600;margin:26px 0 12px}
+
+.cart{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:22px}
+@media (min-width:980px){.cart{position:sticky;top:calc(84px + env(safe-area-inset-top,0px))}}
+.cart h3{font-size:22px;margin-bottom:12px}
+.lines{list-style:none;padding:0;margin:0 0 12px;font-size:15.5px}
+.lines li{display:flex;justify-content:space-between;gap:10px;padding:6px 0;border-bottom:1px dashed var(--line)}
+.lines li span:last-child{white-space:nowrap}
+.lines .empty{color:var(--muted);border:0}
+.f{margin-bottom:14px}
+.f label,.f .lab{display:block;font-weight:600;font-size:15px;margin-bottom:6px}
+.f label .opt{font-weight:400;color:var(--muted)}
+.f input,.f select,.f textarea{width:100%;font:inherit;font-size:16px;color:var(--ink);background:var(--surface);border:1.5px solid var(--line);border-radius:10px;padding:11px 12px;min-height:48px}
+.f textarea{min-height:76px;resize:vertical}
+.f input:focus,.f select:focus,.f textarea:focus{outline:none;border-color:var(--focus);box-shadow:0 0 0 3px color-mix(in srgb,var(--focus) 22%,transparent)}
+.seg{display:flex;gap:8px;flex-wrap:wrap}
+.seg label{display:flex;align-items:center;gap:8px;border:1.5px solid var(--line);border-radius:999px;padding:9px 14px;font-size:15px;font-weight:500;cursor:pointer;margin:0}
+.seg input{accent-color:var(--tomato);margin:0;width:18px;height:18px;min-height:0}
+.seg label:has(input:checked){border-color:var(--tomato);background:var(--tomato-soft)}
+.totals{border-top:1.5px solid var(--line);padding-top:12px;margin-top:6px;font-size:15.5px}
+.totals div{display:flex;justify-content:space-between;padding:2px 0}
+.totals .grand{font-weight:700;font-size:19px;padding-top:6px}
+.err{display:none;color:var(--tomato);font-size:14.5px;margin:8px 0 0}
+.err.on{display:block}
+.cart .btn{width:100%;margin-top:14px;background:var(--wa);color:var(--wa-ink)}
+.small{font-size:13.5px;color:var(--muted);margin-top:10px}
+
+/* mobile cart bar */
+.bar{position:fixed;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));z-index:26;display:none;align-items:center;justify-content:space-between;gap:12px;background:var(--ink);color:var(--paper);border-radius:999px;padding:8px 8px 8px 20px;text-decoration:none;font-weight:600;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+.bar span b{font-size:17px}
+.bar em{font-style:normal;background:var(--tomato);color:var(--tomato-ink);border-radius:999px;padding:10px 18px}
+@media (max-width:979px){.bar.on{display:flex}.bar.on ~ .wa{display:none}}
+
+/* plan */
+.plan{background:var(--ink);color:var(--paper)}
+.plan .wrap{display:grid;gap:28px;grid-template-columns:1fr;align-items:center}
+@media (min-width:900px){.plan .wrap{grid-template-columns:1.2fr .8fr}}
+.plan .lead{color:#D9C9B6}
+.plan-card{background:var(--paper);color:var(--ink);border-radius:20px;padding:24px}
+.plan-card .p{font-family:"Fraunces",Georgia,serif;font-size:42px;font-weight:800;line-height:1}
+.plan-card .p small{font-family:"Figtree",sans-serif;font-size:16px;font-weight:500;color:var(--ink-2)}
+.plan-card ul{padding-left:20px;margin:14px 0 18px;color:var(--ink-2)}
+.plan-card .btn{width:100%}
+
+/* delivery */
+.deliv .wrap{display:grid;gap:32px;grid-template-columns:1fr}
+@media (min-width:900px){.deliv .wrap{grid-template-columns:1fr 1fr}}
+.deliv .hours-title{font-size:24px;margin-top:6px}
+table.fees{width:100%;border-collapse:collapse;font-size:16px;margin-top:8px}
+table.fees th,table.fees td{text-align:left;padding:10px 0;border-bottom:1px solid var(--line)}
+table.fees th{font-size:14px;color:var(--muted);font-weight:600}
+table.fees td:last-child,table.fees th:last-child{text-align:right}
+.hours{list-style:none;padding:0;margin:8px 0 0}
+.hours li{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--line)}
+
+/* about + reviews */
+.about .wrap{display:grid;gap:32px;grid-template-columns:1fr;align-items:center}
+@media (min-width:900px){.about .wrap{grid-template-columns:.7fr 1.3fr}}
+.portrait{aspect-ratio:1;border-radius:50%;background:var(--cream);display:grid;place-items:center;max-width:300px;width:100%}
+.portrait svg{width:58%;color:var(--muted)}
+.quotes{display:grid;gap:14px;grid-template-columns:1fr;margin-top:28px}
+@media (min-width:860px){.quotes{grid-template-columns:repeat(3,1fr)}}
+.quotes figure{margin:0;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:20px}
+.quotes .stars{color:var(--tomato);letter-spacing:2px;font-size:15px;margin-bottom:8px}
+.quotes blockquote{margin:0 0 12px}
+.quotes figcaption{font-size:14.5px;color:var(--muted)}
+.quotes figcaption b{color:var(--ink)}
+
+/* faq */
+.faq details{border-bottom:1px solid var(--line)}
+.faq details:first-of-type{border-top:1px solid var(--line);margin-top:24px}
+.faq summary{cursor:pointer;list-style:none;display:flex;justify-content:space-between;gap:16px;align-items:center;padding:18px 0;font-weight:700;font-size:18px}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"+";font-size:26px;font-weight:400;color:var(--muted)}
+.faq details[open] summary::after{content:"−"}
+.faq details p{color:var(--ink-2);max-width:66ch}
+
+footer{padding:32px 0 120px;font-size:14.5px;color:var(--muted);border-top:1px solid var(--line)}
+footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px}
+
+.wa{position:fixed;right:18px;bottom:calc(18px + env(safe-area-inset-bottom,0px));z-index:25;display:flex;align-items:center;gap:10px;background:var(--wa);color:var(--wa-ink);text-decoration:none;font-weight:700;border-radius:999px;padding:0 20px 0 16px;min-height:56px;box-shadow:0 6px 20px rgba(0,0,0,.22)}
+.wa svg{width:26px;height:26px}
+@media (max-width:520px){.wa span{display:none}.wa{padding:0;width:60px;justify-content:center}}
+
+/* Diálogo do modo de demonstração (número fictício: mostra a mensagem que a Lúcia receberia) */
+dialog.demo-dialog{width:min(480px,calc(100% - 32px));border:0;border-radius:18px;padding:0;background:var(--surface);color:var(--ink);box-shadow:0 30px 80px rgba(0,0,0,.4)}
+dialog.demo-dialog::backdrop{background:rgba(28,20,16,.6)}
+.dd-head{display:flex;align-items:center;gap:10px;padding:16px 20px;background:var(--wa);color:var(--wa-ink);font-weight:700;border-radius:18px 18px 0 0}
+.dd-head svg{width:22px;height:22px}
+.dd-body{padding:20px}
+.dd-body p{color:var(--ink-2);font-size:15.5px}
+.dd-body .dd-msg{white-space:pre-wrap;background:#DCF8C6;color:#111B21;border-radius:12px 12px 2px 12px;padding:12px 14px;margin:0 0 16px;font-size:15px;line-height:1.45;max-height:45vh;overflow:auto}
+.dd-actions{display:flex;flex-wrap:wrap;gap:10px;justify-content:flex-end}
+.dd-actions .btn{min-height:46px}
+</style>
+</head>
+<body data-wa-phone="5521900000000" data-demo="1">
+
+<div class="demo">Página de exemplo criada pela <a href="/">LynxCoder</a>. Negócio e contatos fictícios. <a href="/#contato">Quero uma assim →</a></div>
+
+<header class="top">
+  <div class="wrap">
+    <a class="logo" href="#inicio" aria-label="Sabor da Lúcia, início">
+      <svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="18" r="12" fill="#C8442B"/><path d="M8 18a8 8 0 0016 0z" fill="#FBF6EE"/><path d="M12 9c0-2 2-2 2-4M17 9c0-2 2-2 2-4" stroke="#5E7A3A" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
+      Sabor da Lúcia
+    </a>
+    <nav aria-label="Seções">
+      <a href="#cardapio">Cardápio</a><a href="#pedido">Fazer pedido</a><a href="#entrega">Entrega</a><a href="#sobre">Sobre</a>
+    </nav>
+    <a class="btn t sm" href="#pedido">Pedir agora</a>
+  </div>
+</header>
+
+<main id="inicio">
+  <section class="hero" aria-labelledby="t-hero">
+    <div class="wrap">
+      <div>
+        <span class="status" id="status"><i></i><span id="statusText">Aceitando pedidos</span></span>
+        <h1 id="t-hero">Comida de casa, <em>quentinha</em> no seu almoço.</h1>
+        <p class="sub">Tempero caseiro, feito no dia, com ingredientes frescos. Entrega no Centro e nos bairros vizinhos de Niterói.</p>
+        <div class="ctas">
+          <a class="btn t" href="#pedido">Montar meu pedido</a>
+          <a class="btn o" href="#cardapio">Ver cardápio da semana</a>
+        </div>
+      </div>
+      <article class="today" aria-labelledby="t-today">
+        <svg class="plate" viewBox="0 0 300 190" role="img" aria-label="Ilustração de uma quentinha aberta">
+          <rect x="22" y="40" width="256" height="136" rx="18" fill="#E6D8C4"/>
+          <rect x="34" y="52" width="232" height="112" rx="12" fill="#FFFFFF"/>
+          <path d="M150 52v112M150 108h116" stroke="#E6D8C4" stroke-width="5"/>
+          <g fill="#F4EADB"><ellipse cx="92" cy="94" rx="44" ry="28"/></g>
+          <g fill="#E9DFC9"><circle cx="72" cy="86" r="5"/><circle cx="96" cy="80" r="5"/><circle cx="110" cy="96" r="5"/><circle cx="84" cy="104" r="5"/><circle cx="62" cy="100" r="4"/></g>
+          <ellipse cx="92" cy="140" rx="44" ry="16" fill="#5B3722"/>
+          <ellipse cx="208" cy="80" rx="44" ry="20" fill="#A3542F"/>
+          <ellipse cx="196" cy="76" rx="14" ry="6" fill="#C46B3E"/>
+          <g fill="#7FA34A"><circle cx="188" cy="138" r="9"/><circle cx="206" cy="132" r="9"/><circle cx="224" cy="140" r="9"/></g>
+          <g fill="#C8442B"><circle cx="242" cy="134" r="6"/><circle cx="176" cy="146" r="6"/></g>
+          <path d="M60 30c0-10 10-10 10-20M90 30c0-10 10-10 10-20M120 30c0-10 10-10 10-20" stroke="#C8B79F" stroke-width="4" fill="none" stroke-linecap="round"/>
+        </svg>
+        <span class="lbl" id="todayLbl">Prato do dia</span>
+        <h2 id="t-today">Feijoada completa</h2>
+        <p id="todayDesc">Com arroz, couve refogada, farofa e laranja.</p>
+        <div class="prices"><span>Pequena <b>R$ 20</b></span><span>Grande <b>R$ 25</b></span></div>
+        <p class="cutoff">Pedidos até 10h30 · entregas das 11h30 às 13h30</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="week" id="cardapio" aria-labelledby="t-week">
+    <div class="wrap">
+      <h2 id="t-week">Cardápio da semana</h2>
+      <p class="lead">Todos os pratos vêm com arroz, feijão e salada, menos a feijoada, que tem seus acompanhamentos próprios.</p>
+      <ul class="days" id="days"></ul>
+      <div class="fixed">
+        <div><b>Todo dia: bife acebolado</b><span>Para quem não abre mão do clássico.</span></div>
+        <div><b>Todo dia: opção vegetariana</b><span>Legumes refogados com grão-de-bico e arroz integral.</span></div>
+      </div>
+      <p class="note">O cardápio pode mudar conforme os ingredientes da feira. Avisamos no WhatsApp.</p>
+    </div>
+  </section>
+
+  <section class="order" id="pedido" aria-labelledby="t-order">
+    <div class="wrap">
+      <div>
+        <h2 id="t-order">Monte seu pedido</h2>
+        <span class="for-day" id="forDay">Pedido para hoje</span>
+        <div class="items" id="items"></div>
+        <p class="subh">Para acompanhar</p>
+        <div class="items" id="extras"></div>
+      </div>
+
+      <form class="cart" id="cart" novalidate aria-labelledby="t-cart">
+        <h3 id="t-cart">Seu pedido</h3>
+        <ul class="lines" id="lines"><li class="empty">Escolha as quentinhas ao lado.</li></ul>
+
+        <div class="f">
+          <span class="lab">Como prefere receber?</span>
+          <div class="seg">
+            <label><input type="radio" name="mode" value="entrega" checked> Entrega</label>
+            <label><input type="radio" name="mode" value="retirada"> Retirar no local</label>
+          </div>
+        </div>
+        <div id="deliveryFields">
+          <div class="f"><label for="bairro">Bairro</label>
+            <select id="bairro"><option value="">Selecione</option></select>
+          </div>
+          <div class="f"><label for="endereco">Endereço</label><input id="endereco" type="text" autocomplete="address-line1" placeholder="Rua, número e complemento"></div>
+        </div>
+        <div class="f"><label for="nome">Seu nome</label><input id="nome" type="text" autocomplete="name"></div>
+        <div class="f">
+          <span class="lab">Pagamento</span>
+          <div class="seg">
+            <label><input type="radio" name="pay" value="PIX" checked> PIX</label>
+            <label><input type="radio" name="pay" value="Cartão na entrega"> Cartão</label>
+            <label><input type="radio" name="pay" value="Dinheiro"> Dinheiro</label>
+          </div>
+        </div>
+        <div class="f" id="trocoBox" hidden><label for="troco">Troco para quanto?</label><input id="troco" type="text" inputmode="decimal" placeholder="Ex.: R$ 50"></div>
+        <div class="f"><label for="obs">Observações <span class="opt">(opcional)</span></label><textarea id="obs" placeholder="Ex.: sem cebola, feijão à parte."></textarea></div>
+
+        <div class="totals">
+          <div><span>Subtotal</span><span id="sub">R$ 0,00</span></div>
+          <div><span>Entrega</span><span id="fee">R$ 0,00</span></div>
+          <div class="grand"><span>Total</span><span id="total">R$ 0,00</span></div>
+        </div>
+        <p class="err" id="err" role="alert"></p>
+        <button class="btn" type="submit">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 00-8.6 15.1L2 22l5-1.3A10 10 0 1012 2zm5.3 14.1c-.2.6-1.3 1.2-1.8 1.3-.5 0-1 .3-3.3-.7-2.8-1.1-4.5-4-4.7-4.2-.1-.2-1.1-1.5-1.1-2.9s.7-2 1-2.3c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.4.6-.4.4c-.1.2-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.2 1 2.1 1.3 2.4 1.5.3.1.5.1.6-.1l.9-1.1c.2-.3.4-.2.7-.1l1.9.9c.3.1.5.2.5.3.1.2.1.7-.1 1.3z"/></svg>
+          Enviar pedido pelo WhatsApp
+        </button>
+        <p class="small">O pedido abre pronto no WhatsApp. A Lúcia confirma e manda a chave PIX. Seus dados são usados só para a entrega.</p>
+      </form>
+    </div>
+  </section>
+
+  <section class="plan" aria-labelledby="t-plan">
+    <div class="wrap">
+      <div>
+        <h2 id="t-plan">Almoço da semana resolvido</h2>
+        <p class="lead">No plano semanal, você recebe uma quentinha por dia, de segunda a sexta, e paga menos por cada uma. Dá para trocar o prato do dia pelo bife ou pela opção vegetariana.</p>
+      </div>
+      <div class="plan-card">
+        <div class="p">R$ 105 <small>/ semana</small></div>
+        <ul><li>5 quentinhas grandes (R$ 21 cada)</li><li>Entrega grátis nos bairros atendidos</li><li>Pagamento antecipado por PIX</li></ul>
+        <a class="btn t" href="#pedido" data-wa="Olá, Lúcia! Quero saber do plano semanal de quentinhas.">Quero o plano semanal</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="deliv" id="entrega" aria-labelledby="t-deliv">
+    <div class="wrap">
+      <div>
+        <h2 id="t-deliv">Entrega</h2>
+        <p class="lead">Entrega grátis a partir de 4 quentinhas no mesmo endereço. Retirada no local sempre grátis.</p>
+        <table class="fees" id="fees"><thead><tr><th scope="col">Bairro</th><th scope="col">Taxa</th></tr></thead><tbody></tbody></table>
+      </div>
+      <div>
+        <h3 class="hours-title">Horários</h3>
+        <ul class="hours">
+          <li><span>Pedidos</span><b>Seg a sex, até 10h30</b></li>
+          <li><span>Entregas</span><b>11h30 às 13h30</b></li>
+          <li><span>Retirada</span><b>A partir das 11h30</b></li>
+          <li><span>Sábado e domingo</span><b>Fechado</b></li>
+        </ul>
+        <p class="note">Pedidos feitos depois das 10h30 ou no fim de semana ficam para o próximo dia útil.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="about pt0" id="sobre" aria-labelledby="t-about">
+    <div class="wrap">
+      <div class="portrait" role="img" aria-label="Espaço para a foto da cozinheira"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg></div>
+      <div>
+        <h2 id="t-about">Oi, eu sou a Lúcia</h2>
+        <p class="lead">Cozinho para fora há 9 anos. Comecei fazendo marmita para os vizinhos e hoje entrego para escritórios, lojas e famílias do Centro de Niterói.</p>
+        <p>Compro os legumes na feira toda manhã, tempero tudo na hora e uso embalagem de alumínio com tampa, que pode ir ao forno. A cozinha é registrada na Vigilância Sanitária.</p>
+      </div>
+    </div>
+    <div class="wrap">
+      <div class="quotes">
+        <figure><div class="stars" role="img" aria-label="5 estrelas">★★★★★</div><blockquote>A feijoada de quarta é sagrada no escritório. Chega quentinha e bem servida.</blockquote><figcaption><b>Renata C.</b>, Centro</figcaption></figure>
+        <figure><div class="stars" role="img" aria-label="5 estrelas">★★★★★</div><blockquote>Faço o plano semanal há um ano. Comida de verdade, com gosto de casa.</blockquote><figcaption><b>Marcos T.</b>, Icaraí</figcaption></figure>
+        <figure><div class="stars" role="img" aria-label="5 estrelas">★★★★★</div><blockquote>A opção vegetariana não é só salada, é prato de verdade. Recomendo.</blockquote><figcaption><b>Júlia F.</b>, Ingá</figcaption></figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="faq pt0" aria-labelledby="t-faq">
+    <div class="wrap">
+      <h2 id="t-faq">Perguntas frequentes</h2>
+      <details><summary>Até que horas posso pedir?</summary><p>Até 10h30 para receber no mesmo dia. Depois disso, o pedido fica para o próximo dia útil.</p></details>
+      <details><summary>Vocês fazem encomenda para eventos?</summary><p>Sim, a partir de 15 quentinhas, com 2 dias de antecedência. Chame no WhatsApp.</p></details>
+      <details><summary>Dá para congelar?</summary><p>Dá. A embalagem de alumínio vai ao congelador e ao forno. Recomendamos consumir em até 30 dias.</p></details>
+      <details><summary>Como funciona o pagamento?</summary><p>PIX na confirmação do pedido, ou cartão e dinheiro na entrega.</p></details>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>© 2026 Sabor da Lúcia · Niterói, RJ</span>
+    <span>Seus dados são usados apenas para preparar e entregar o pedido (LGPD).</span>
+    <span>Site feito pela <a href="/">LynxCoder</a></span>
+  </div>
+</footer>
+
+<a class="bar" id="bar" href="#cart"><span><b id="barTotal">R$ 0,00</b> · <span id="barCount">0 itens</span></span><em>Finalizar</em></a>
+
+<a class="wa" href="#pedido" data-wa="Olá, Lúcia! Vi o site e quero fazer um pedido." aria-label="Falar no WhatsApp">
+  <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 00-8.6 15.1L2 22l5-1.3A10 10 0 1012 2zm5.3 14.1c-.2.6-1.3 1.2-1.8 1.3-.5 0-1 .3-3.3-.7-2.8-1.1-4.5-4-4.7-4.2-.1-.2-1.1-1.5-1.1-2.9s.7-2 1-2.3c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.4.6-.4.4c-.1.2-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.2 1 2.1 1.3 2.4 1.5.3.1.5.1.6-.1l.9-1.1c.2-.3.4-.2.7-.1l1.9.9c.3.1.5.2.5.3.1.2.1.7-.1 1.3z"/></svg>
+  <span>WhatsApp</span>
+</a>
+
+<dialog class="demo-dialog" id="demoDialog" aria-labelledby="ddTitle">
+  <div class="dd-head">
+    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 00-8.6 15.1L2 22l5-1.3A10 10 0 1012 2z"/></svg>
+    <span id="ddTitle">Assim chegaria no WhatsApp</span>
+  </div>
+  <div class="dd-body">
+    <p id="ddIntro">Nesta página de exemplo o número é fictício. Num site real, a mensagem abaixo abriria já pronta no WhatsApp da Lúcia:</p>
+    <p class="dd-msg" id="ddMsg"></p>
+    <div class="dd-actions">
+      <button type="button" class="btn o" id="ddClose">Fechar</button>
+      <a class="btn t" href="/#contato">Quero um site assim</a>
+    </div>
+  </div>
+</dialog>
+
+<script src="/assets/js/exemplo.js?v=3"></script>
+<script src="/assets/js/quentinhas.js?v=1"></script>
+</body>
+</html>

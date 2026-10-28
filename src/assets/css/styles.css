@@ -399,6 +399,8 @@ h3 { font-size: clamp(20px, 2.2vw, 26px); }
 .pf-text { align-self: stretch; display: grid; gap: 6px; }
 .pf-tag { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); }
 .pf-amber .pf-tag { color: #f6c343; }
+.pf-tomato { background: radial-gradient(120% 60% at 50% 100%, rgba(232,102,76,.28), transparent 62%), linear-gradient(180deg, #2a1c15, #140d0a); }
+.pf-tomato .pf-tag { color: #f08a6e; }
 .pf-title { font-family: var(--font-display); font-size: 22px; font-weight: 600; line-height: 1.15; letter-spacing: -.01em; }
 .pf-desc { color: var(--dim); font-size: 14.5px; line-height: 1.45; }
 

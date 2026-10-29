@@ -407,6 +407,8 @@ h3 { font-size: clamp(20px, 2.2vw, 26px); }
 .pf-ember .pf-tag { color: #f2b544; }
 .pf-rose { background: radial-gradient(120% 60% at 50% 100%, rgba(228,111,148,.28), transparent 62%), linear-gradient(180deg, #2a1820, #140c10); }
 .pf-rose .pf-tag { color: #f08aab; }
+.pf-aqua { background: radial-gradient(120% 60% at 50% 100%, rgba(60,194,205,.26), transparent 62%), linear-gradient(180deg, #0f2a33, #07141a); }
+.pf-aqua .pf-tag { color: #5fd3dc; }
 .pf-title { font-family: var(--font-display); font-size: 22px; font-weight: 600; line-height: 1.15; letter-spacing: -.01em; }
 .pf-desc { color: var(--dim); font-size: 14.5px; line-height: 1.45; }
 

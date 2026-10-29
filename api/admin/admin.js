@@ -352,9 +352,11 @@
       h('div', null,
         h('h1', { text: ng.nome }),
         h('p', { class: 'd-meta', text: 'Pedido ' + id + ' · recebido em ' + fmtDate(d.recebidoEm) }),
+        d.editadoEm ? h('span', { class: 'edited-note', text: 'Respostas corrigidas no painel em ' + fmtDate(d.editadoEm) + ' (o original fica em dados.original.json)' }) : null,
         d.propostaId ? h('a', { class: 'link', href: '#/proposta/' + d.propostaId }, 'Ver a proposta deste cliente →') : null),
       h('div', { class: 'd-actions' },
         statusSelect('pedido', id, admin.status),
+        h('button', { type: 'button', class: 'btn btn-ghost btn-sm', onclick: function () { editarPedido(id, d); } }, 'Editar respostas'),
         h('a', { class: 'btn btn-primary btn-sm', href: wa, target: '_blank', rel: 'noopener noreferrer' }, 'WhatsApp'),
         h('a', { class: 'btn btn-ghost btn-sm', href: mail }, 'E-mail'),
         h('a', { class: 'btn btn-ghost btn-sm', href: '/adm/pedidos/' + encodeURIComponent(id) + '/zip' }, 'Baixar tudo (ZIP)'),
@@ -393,6 +395,88 @@
         h('div', { class: 'photos' }, fotos.map(function (f, i) { return thumb(f, 'Foto ' + (i + 1)); }))),
       notesCard('pedido', id, admin)
     ));
+  }
+
+  // Corrige as respostas que o cliente enviou (fotos e logotipo não mudam aqui).
+  function editarPedido(id, d) {
+    var ng = d.negocio, rd = ng.redes || {};
+    var form = h('form', { class: 'form-grid', novalidate: true });
+    var add = function (x) { form.appendChild(x); };
+    add(h('h2', { class: 'wide form-group', text: 'Negócio' }));
+    add(formField('Nome do negócio', textInput('nome', ng.nome, { maxlength: '80' })));
+    add(formField('Especialidade', textInput('especialidade', ng.especialidade, { maxlength: '100' })));
+    add(formField('Cidade', textInput('cidade', ng.cidade, { maxlength: '80' })));
+    add(formField('Área de atendimento', textInput('area', ng.area, { maxlength: '120' })));
+    add(formField('WhatsApp (DDD + número)', textInput('whatsapp', ng.whatsapp, { maxlength: '20', inputmode: 'tel' })));
+    add(formField('E-mail', textInput('email', ng.email, { type: 'email', maxlength: '120' })));
+    add(formField('Instagram (sem @)', textInput('instagram', rd.instagram, { maxlength: '40' })));
+    add(formField('TikTok (sem @)', textInput('tiktok', rd.tiktok, { maxlength: '40' })));
+    add(formField('Facebook', textInput('facebook', rd.facebook, { maxlength: '200' })));
+    add(formField('YouTube', textInput('youtube', rd.youtube, { maxlength: '200' })));
+
+    add(h('h2', { class: 'wide form-group', text: 'Plano e endereço' }));
+    var tipo = h('select', { name: 'tipo' }, h('option', { value: 'essencial', text: 'Essencial' }), h('option', { value: 'profissional', text: 'Profissional' }));
+    tipo.value = d.plano.tipo;
+    add(formField('Plano', tipo));
+    add(formField('Endereço (Essencial)', textInput('subdominio', d.plano.subdominio, { maxlength: '40' }), 'Só o nome: fica nome.lynxsites.com.br'));
+    add(formField('Domínio (Profissional)', textInput('dominio', d.plano.dominio, { maxlength: '100', placeholder: 'seunome.com.br' })));
+    var registrado = h('input', { type: 'checkbox', name: 'dominioRegistrado' });
+    registrado.checked = !!d.plano.dominioRegistrado;
+    add(h('label', { class: 'f check-row' }, registrado, h('span', { text: 'Domínio já registrado' })));
+    var extrasConhecidos = Object.keys(EXTRAS).map(function (k) { return { id: k, label: EXTRAS[k] }; });
+    (d.plano.extras || []).forEach(function (x) { if (!EXTRAS[x]) extrasConhecidos.push({ id: x, label: x }); });
+    var extras = checkList(extrasConhecidos, d.plano.extras || []);
+    add(groupField('Extras', extras.el, null, true));
+
+    add(h('h2', { class: 'wide form-group', text: 'Cores' }));
+    var paleta = h('select', { name: 'paleta' }, Object.keys(PALETAS).map(function (k) { return h('option', { value: k, text: PALETAS[k] }); }));
+    if (!PALETAS[d.visual.paleta]) paleta.appendChild(h('option', { value: d.visual.paleta, text: d.visual.paleta }));
+    paleta.value = d.visual.paleta;
+    add(formField('Paleta escolhida', paleta));
+    var c1 = h('input', { type: 'color', 'aria-label': 'Cor principal' }); c1.value = d.visual.corPrincipal;
+    var c2 = h('input', { type: 'color', 'aria-label': 'Cor de destaque' }); c2.value = d.visual.corDestaque;
+    add(groupField('Cor principal e de destaque', h('div', { class: 'color-row' }, c1, c2)));
+
+    add(h('h2', { class: 'wide form-group', text: 'Serviços' }));
+    var servicos = rowsEditor(d.servicos, [{ key: 'nome', ph: 'Nome do serviço', max: 60 }, { key: 'descricao', ph: 'Descrição (opcional)', max: 160 }], 10, '+ Serviço');
+    add(groupField('Do mais procurado para o menos', servicos.el, null, true));
+
+    add(h('h2', { class: 'wide form-group', text: 'Sobre e depoimentos' }));
+    add(wideField('História', textArea('historia', d.sobre.historia, { maxlength: '1500' })));
+    var depoimentos = rowsEditor(d.depoimentos, [{ key: 'nome', ph: 'Nome do cliente', max: 60 }, { key: 'texto', ph: 'Depoimento', max: 400, area: true }], 6, '+ Depoimento');
+    add(groupField('Depoimentos', depoimentos.el, null, true));
+
+    var voltar = function () { route(); };
+    add(h('div', { class: 'f wide form-actions' },
+      h('button', { type: 'submit', class: 'btn btn-primary' }, 'Salvar correções'),
+      h('button', { type: 'button', class: 'btn btn-ghost', onclick: voltar }, 'Cancelar'),
+      h('span', { class: 'muted small', text: 'Fotos e logotipo não mudam aqui. A primeira correção guarda uma cópia do que o cliente enviou.' })));
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var f = form.elements;
+      api('PUT', '/adm/pedidos/' + encodeURIComponent(id) + '/dados', {
+        negocio: {
+          nome: f.nome.value, especialidade: f.especialidade.value, cidade: f.cidade.value, area: f.area.value,
+          whatsapp: f.whatsapp.value.replace(/\D/g, '').replace(/^55(?=\d{10,11}$)/, ''), email: f.email.value,
+          redes: { instagram: f.instagram.value.replace(/^@+/, ''), tiktok: f.tiktok.value.replace(/^@+/, ''), facebook: f.facebook.value, youtube: f.youtube.value }
+        },
+        plano: { tipo: tipo.value, subdominio: f.subdominio.value, dominio: f.dominio.value, dominioRegistrado: registrado.checked, extras: extras.get() },
+        visual: { paleta: paleta.value, corPrincipal: c1.value, corDestaque: c2.value },
+        servicos: servicos.get(),
+        sobre: { historia: f.historia.value },
+        depoimentos: depoimentos.get()
+      }).then(function () { toast('Respostas corrigidas'); loadItems(); route(); })
+        .catch(function (err) { toast(err.message, true); });
+    });
+
+    var el = $('detail');
+    el.textContent = '';
+    el.appendChild(h('button', { type: 'button', class: 'btn btn-ghost btn-sm', onclick: voltar }, '← Voltar ao pedido'));
+    el.appendChild(h('div', { class: 'd-head' }, h('div', null, h('h1', { text: 'Editar respostas: ' + ng.nome }),
+      h('p', { class: 'd-meta', text: 'Pedido ' + id + ' · as mesmas regras do formulário (WhatsApp com DDD, e-mail válido, pelo menos um serviço).' }))));
+    el.appendChild(h('section', { class: 'card wide' }, form));
+    window.scrollTo(0, 0);
   }
 
   function renderMensagem(m) {
@@ -499,8 +583,18 @@
         cv.usadoEm ? null : h('p', { class: 'muted small', text: 'Válido até ' + fmtDate(cv.expiraEm) + '. Ainda não foi enviado.' }));
     }
 
+    var pfCard = null;
+    if (!cancelada && !(p.convite && p.convite.usadoEm)) {
+      pfCard = h('section', { class: 'card wide' }, h('h2', { text: 'Formulário deste cliente' }),
+        h('p', { class: 'muted small', text: resumoPersonalizacao(p) }),
+        h('div', { class: 'link-row' },
+          h('button', { type: 'button', class: 'btn btn-ghost btn-sm', onclick: function () { personalizarFormulario(p); } }, 'Personalizar formulário'),
+          p.convite ? h('a', { class: 'btn btn-ghost btn-sm', href: p.linkFormulario.replace('/comecar#', '/comecar?previa=1#'), target: '_blank', rel: 'noopener noreferrer' }, 'Ver como o cliente') : null),
+        p.convite ? null : h('p', { class: 'muted small', text: '"Ver como o cliente" aparece depois de liberar o formulário.' }));
+    }
+
     var v = p.valores || {};
-    var mailHref = c.email ? 'mailto:' + c.email + '?subject=' + encodeURIComponent('Proposta LynxCoder') + '&body=' + encodeURIComponent(msgProposta) : null;
+    var mailHref =c.email ? 'mailto:' + c.email + '?subject=' + encodeURIComponent('Proposta LynxCoder') + '&body=' + encodeURIComponent(msgProposta) : null;
     el.appendChild(h('div', { class: 'd-grid' },
       h('section', { class: 'card wide' }, h('h2', { text: 'Link da proposta' }),
         cancelada ? h('p', { class: 'muted', text: 'Cancelado: o link já não abre.' }) :
@@ -524,7 +618,91 @@
         ['Profissional', (v.profissional_implantacao || '—') + ' + ' + (v.profissional_mensalidade || '—') + '/mês']
       ])),
       p.mensagem ? h('section', { class: 'card' }, h('h2', { text: 'Mensagem no topo' }), h('p', { class: 'prose', text: p.mensagem })) : null,
-      conviteCard));
+      conviteCard,
+      pfCard));
+  }
+
+  function resumoPersonalizacao(p) {
+    var pf = p.formulario;
+    if (!pf) return 'Formulário padrão: vem pré-preenchido só com o negócio, o WhatsApp e o e-mail desta proposta. Personalize para adiantar mais respostas, escolher os extras e as paletas que aparecem ou deixar um recado no topo.';
+    var pre = pf.preenchido || {};
+    var campos = Object.keys(pre).filter(function (k) { return k !== 'servicos' && pre[k]; }).length;
+    var partes = [];
+    if (campos) partes.push(campos + (campos === 1 ? ' campo pré-preenchido' : ' campos pré-preenchidos'));
+    if (pre.servicos && pre.servicos.length) partes.push(pre.servicos.length + (pre.servicos.length === 1 ? ' serviço sugerido' : ' serviços sugeridos'));
+    if (Array.isArray(pf.extras)) partes.push(pf.extras.length ? pf.extras.length + ' extra(s) escolhido(s)' : 'sem extras');
+    if (Array.isArray(pf.paletas)) partes.push(pf.paletas.length + ' paleta(s) escolhida(s)');
+    if (pf.mensagem) partes.push('recado no topo');
+    return 'Personalizado em ' + fmtDate(pf.atualizadoEm) + ': ' + (partes.join(', ') || 'sem alterações') + '. Se o cliente já abriu o formulário, o rascunho guardado no aparelho dele tem prioridade sobre o pré-preenchimento.';
+  }
+
+  // Prepara o /comecar só para este cliente: respostas adiantadas, extras e
+  // paletas visíveis e um recado no topo.
+  function personalizarFormulario(p) {
+    api('GET', '/adm/formulario').then(function (opc) {
+      var pf = p.formulario || {}, pre = pf.preenchido || {}, c = p.cliente;
+      var form = h('form', { class: 'form-grid', novalidate: true });
+      var add = function (x) { form.appendChild(x); };
+
+      add(wideField('Recado no topo do formulário (opcional)', textArea('mensagem', pf.mensagem, { maxlength: '600', class: 'ta-sm', placeholder: 'Ex.: Já deixei preenchido o que falamos por telefone. Falta só conferir e enviar as fotos.' })));
+
+      add(h('h2', { class: 'wide form-group', text: 'Respostas adiantadas' }));
+      add(h('p', { class: 'wide muted small', text: 'O cliente vê estes campos já preenchidos e pode alterar. Em branco fica como está.' }));
+      add(formField('Nome do negócio', textInput('nome', pre.nome || c.negocio, { maxlength: '80' })));
+      add(formField('Especialidade', textInput('especialidade', pre.especialidade, { maxlength: '100' })));
+      add(formField('Cidade', textInput('cidade', pre.cidade, { maxlength: '80' })));
+      add(formField('Área de atendimento', textInput('area', pre.area, { maxlength: '120' })));
+      add(formField('WhatsApp', textInput('whatsapp', pre.whatsapp || c.whatsapp, { maxlength: '20', inputmode: 'tel' })));
+      add(formField('E-mail', textInput('email', pre.email || c.email, { type: 'email', maxlength: '120' })));
+      add(formField('Instagram (sem @)', textInput('instagram', pre.instagram, { maxlength: '40' })));
+      add(formField('Endereço sugerido (Essencial)', textInput('subdominio', pre.subdominio, { maxlength: '40' }), 'Só o nome: fica nome.lynxsites.com.br. Em branco, sai do nome do negócio.'));
+      add(formField('Domínio (Profissional)', textInput('dominio', pre.dominio, { maxlength: '100', placeholder: 'seunome.com.br' })));
+      var paleta = h('select', { name: 'paleta' }, h('option', { value: '', text: 'A primeira da lista' }),
+        opc.paletas.map(function (x) { return h('option', { value: x.id, text: x.label }); }));
+      paleta.value = pre.paleta || '';
+      add(formField('Paleta já selecionada', paleta));
+      add(wideField('História', textArea('historia', pre.historia, { maxlength: '1500', class: 'ta-sm' })));
+      var servicos = rowsEditor(pre.servicos, [{ key: 'nome', ph: 'Nome do serviço', max: 60 }, { key: 'descricao', ph: 'Descrição (opcional)', max: 160 }], 10, '+ Serviço');
+      add(groupField('Serviços sugeridos', servicos.el, null, true));
+
+      add(h('h2', { class: 'wide form-group', text: 'O que aparece para escolher' }));
+      // null = todas (incluindo as que forem criadas depois)
+      var extras = checkList(opc.extras, Array.isArray(pf.extras) ? pf.extras : opc.extras.map(function (x) { return x.id; }));
+      var paletas = checkList(opc.paletas, Array.isArray(pf.paletas) ? pf.paletas : opc.paletas.map(function (x) { return x.id; }));
+      add(groupField('Extras (etapa 2)', opc.extras.length ? extras.el : h('p', { class: 'muted small', text: 'Não há extras nas opções gerais.' }), 'Desmarque todos para esconder a secção.'));
+      add(groupField('Paletas de cores (etapa 3)', paletas.el, 'Sem nenhuma marcada, aparecem todas.'));
+
+      var voltar = function () { route(); };
+      add(h('div', { class: 'f wide form-actions' },
+        h('button', { type: 'submit', class: 'btn btn-primary' }, 'Salvar personalização'),
+        h('button', { type: 'button', class: 'btn btn-ghost', onclick: voltar }, 'Cancelar')));
+
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        var f = form.elements;
+        var todas = function (lista, escolhidos) { return escolhidos.length === lista.length ? null : escolhidos; };
+        api('PUT', '/adm/propostas/' + p.id + '/formulario', {
+          mensagem: f.mensagem.value,
+          preenchido: {
+            nome: f.nome.value, especialidade: f.especialidade.value, cidade: f.cidade.value, area: f.area.value,
+            whatsapp: f.whatsapp.value, email: f.email.value, instagram: f.instagram.value,
+            subdominio: f.subdominio.value, dominio: f.dominio.value, paleta: paleta.value,
+            historia: f.historia.value, servicos: servicos.get()
+          },
+          extras: todas(opc.extras, extras.get()),
+          paletas: todas(opc.paletas, paletas.get())
+        }).then(function () { toast('Formulário personalizado'); route(); })
+          .catch(function (err) { toast(err.message, true); });
+      });
+
+      var el = $('detail');
+      el.textContent = '';
+      el.appendChild(h('button', { type: 'button', class: 'btn btn-ghost btn-sm', onclick: voltar }, '← Voltar à proposta'));
+      el.appendChild(h('div', { class: 'd-head' }, h('div', null, h('h1', { text: 'Formulário de ' + c.nome }),
+        h('p', { class: 'd-meta', text: 'Vale só para este cliente. Os textos das etapas são os de Configurações › Formulário.' }))));
+      el.appendChild(h('section', { class: 'card wide' }, form));
+      window.scrollTo(0, 0);
+    }).catch(function (err) { if (err.message !== '401') toast(err.message, true); });
   }
 
   function formField(label, input, hint) {
@@ -534,6 +712,67 @@
     var i = h('input', Object.assign({ type: 'text', name: name }, attrs || {}));
     i.value = value || '';
     return i;
+  }
+
+  function textArea(name, value, attrs) {
+    var t = h('textarea', Object.assign({ name: name }, attrs || {}));
+    t.value = value || '';
+    return t;
+  }
+  function wideField(label, input, hint) {
+    var f = formField(label, input, hint);
+    f.classList.add('wide');
+    return f;
+  }
+  // Para grupos de vários controlos (listas, caixas de seleção): um <label>
+  // não pode conter outros labels nem vários campos.
+  function groupField(label, content, hint, wide) {
+    return h('div', { class: 'f' + (wide ? ' wide' : ''), role: 'group', 'aria-label': label },
+      h('span', { class: 'f-label', text: label }), content, hint ? h('span', { class: 'f-hint', text: hint }) : null);
+  }
+
+  // Lista de linhas editáveis (serviços, depoimentos): campos = [{ key, ph, max, area }].
+  function rowsEditor(items, campos, max, addLabel) {
+    var box = h('div', { class: 'opt-list' });
+    function linha(item) {
+      var inputs = campos.map(function (c) {
+        var attrs = { placeholder: c.ph, maxlength: String(c.max), 'aria-label': c.ph, 'data-key': c.key };
+        // sem name: senão form.elements.nome passaria a ser uma lista (o nome do negócio + as linhas)
+        var el = c.area ? textArea(null, item[c.key], Object.assign({ rows: '2', class: 'ta-sm' }, attrs)) : textInput(null, item[c.key], attrs);
+        return el;
+      });
+      var row = h('div', { class: 'opt-row rows-row' }, h('div', { class: 'rows-fields' }, inputs),
+        h('button', { type: 'button', class: 'btn btn-ghost btn-sm', 'aria-label': 'Remover linha', onclick: function () { row.remove(); sync(); } }, '×'));
+      return row;
+    }
+    var add = h('button', { type: 'button', class: 'btn btn-ghost btn-sm' }, addLabel);
+    function sync() { add.hidden = box.children.length >= max; }
+    add.addEventListener('click', function () { box.appendChild(linha({})); sync(); box.lastChild.querySelector('input, textarea').focus(); });
+    (items || []).forEach(function (it) { box.appendChild(linha(it)); });
+    sync();
+    return {
+      el: h('div', null, box, add),
+      get: function () {
+        return Array.prototype.map.call(box.children, function (row) {
+          var o = {};
+          Array.prototype.forEach.call(row.querySelectorAll('[data-key]'), function (i) { o[i.getAttribute('data-key')] = i.value.trim(); });
+          return o;
+        });
+      }
+    };
+  }
+
+  // Caixas de seleção a partir de [{ id, label }]; marcados = lista de ids.
+  function checkList(opcoes, marcados) {
+    var box = h('div', { class: 'check-list' }, opcoes.map(function (o) {
+      var c = h('input', { type: 'checkbox', value: o.id });
+      c.checked = marcados.indexOf(o.id) !== -1;
+      return h('label', { class: 'check-row' }, c, h('span', { text: o.label }));
+    }));
+    return {
+      el: box,
+      get: function () { return Array.prototype.filter.call(box.querySelectorAll('input'), function (c) { return c.checked; }).map(function (c) { return c.value; }); }
+    };
   }
 
   function renderNovaProposta(cfg) {
@@ -762,8 +1001,24 @@
     r.extras.forEach(function (x) { extrasBox.appendChild(extraRow(x)); });
     r.paletas.forEach(function (p) { paletasBox.appendChild(paletaRow(p)); });
 
+    // Textos das etapas: em branco volta ao padrão (mostrado como exemplo).
+    var textosBox = h('div', { class: 'form-grid' });
+    var grupo = null;
+    r.textosCampos.forEach(function (c) {
+      if (c.grupo !== grupo) { grupo = c.grupo; textosBox.appendChild(h('h3', { class: 'wide form-group', text: grupo })); }
+      var atual = r.textos[c.chave] || '';
+      var longo = c.max > 160;
+      var inp = longo
+        ? textArea(c.chave, atual === c.padrao ? '' : atual, { maxlength: String(c.max), class: 'ta-sm', placeholder: c.padrao, 'data-txt': c.chave })
+        : textInput(c.chave, atual === c.padrao ? '' : atual, { maxlength: String(c.max), placeholder: c.padrao, 'data-txt': c.chave });
+      textosBox.appendChild((longo ? wideField : formField)(c.rotulo, inp, atual !== c.padrao ? 'Alterado. Padrão: ' + c.padrao : null));
+    });
+
     function coletar() {
+      var textos = {};
+      Array.prototype.forEach.call(textosBox.querySelectorAll('[data-txt]'), function (i) { textos[i.getAttribute('data-txt')] = i.value; });
       return {
+        textos: textos,
         extras: Array.prototype.map.call(extrasBox.querySelectorAll('.opt-row'), function (row) {
           var i = row.querySelector('input[type=text]');
           return { id: i.getAttribute('data-id'), label: i.value };
@@ -788,10 +1043,16 @@
         location.hash = '#/proposta/' + id;
       }).catch(function (e) { toast(e.message, true); });
     });
-    var padrao = h('button', { type: 'button', class: 'btn btn-danger btn-sm' }, 'Restaurar padrão');
+    var padrao = h('button', { type: 'button', class: 'btn btn-danger btn-sm' }, 'Restaurar opções padrão');
     padrao.addEventListener('click', function () {
-      if (!padrao.classList.contains('confirm')) { padrao.classList.add('confirm'); padrao.textContent = 'Confirmar'; setTimeout(function () { padrao.classList.remove('confirm'); padrao.textContent = 'Restaurar padrão'; }, 5000); return; }
+      if (!padrao.classList.contains('confirm')) { padrao.classList.add('confirm'); padrao.textContent = 'Confirmar'; setTimeout(function () { padrao.classList.remove('confirm'); padrao.textContent = 'Restaurar opções padrão'; }, 5000); return; }
       api('PUT', '/adm/formulario', { restaurar: true }).then(function (x) { toast('Opções padrão restauradas'); loadFormOptions(); renderFormulario(x); })
+        .catch(function (e) { toast(e.message, true); });
+    });
+    var padraoTextos = h('button', { type: 'button', class: 'btn btn-danger btn-sm' }, 'Restaurar textos padrão');
+    padraoTextos.addEventListener('click', function () {
+      if (!padraoTextos.classList.contains('confirm')) { padraoTextos.classList.add('confirm'); padraoTextos.textContent = 'Confirmar: perder os textos editados'; setTimeout(function () { padraoTextos.classList.remove('confirm'); padraoTextos.textContent = 'Restaurar textos padrão'; }, 5000); return; }
+      api('PUT', '/adm/formulario', { restaurarTextos: true }).then(function (x) { toast('Textos padrão restaurados'); renderFormulario(x); })
         .catch(function (e) { toast(e.message, true); });
     });
 
@@ -799,8 +1060,8 @@
     el.textContent = '';
     el.appendChild(backLink());
     el.appendChild(configNav('#/config/formulario'));
-    el.appendChild(h('div', { class: 'd-head' }, h('div', null, h('h1', { text: 'Opções do formulário' }),
-      h('p', { class: 'd-meta', text: 'O que o cliente vê nas etapas 2 (extras) e 3 (paletas de cores) do /comecar.' }))));
+    el.appendChild(h('div', { class: 'd-head' }, h('div', null, h('h1', { text: 'Formulário' }),
+      h('p', { class: 'd-meta', text: 'Vale para todos os clientes: extras (etapa 2), paletas (etapa 3) e os textos de cada etapa do /comecar. Para um cliente só, use "Personalizar formulário" na proposta.' }))));
     el.appendChild(h('div', { class: 'd-grid' },
       h('section', { class: 'card wide' }, h('div', { class: 'link-row' }, salvar, testar, padrao)),
       h('section', { class: 'card' }, h('h2', { text: 'Extras (etapa 2)' }),
@@ -810,7 +1071,11 @@
       h('section', { class: 'card' }, h('h2', { text: 'Paletas de cores (etapa 3)' }),
         h('p', { class: 'muted small', text: 'Nome, cor principal e cor de destaque. A primeira vem selecionada.' }),
         paletasBox,
-        h('button', { type: 'button', class: 'btn btn-ghost btn-sm', onclick: function () { paletasBox.appendChild(paletaRow(null)); } }, '+ Paleta'))));
+        h('button', { type: 'button', class: 'btn btn-ghost btn-sm', onclick: function () { paletasBox.appendChild(paletaRow(null)); } }, '+ Paleta')),
+      h('section', { class: 'card wide' }, h('h2', { text: 'Textos das etapas' }),
+        h('p', { class: 'muted small', text: 'Em branco usa o texto padrão (aparece em cinza como exemplo). Os botões Salvar acima guardam também os textos.' }),
+        textosBox,
+        h('div', { class: 'link-row editor-actions' }, padraoTextos))));
   }
 
   // ---------- arranque ----------

@@ -167,6 +167,14 @@ textarea { resize: vertical; min-height: 110px; }
 .opt-row { display: flex; gap: 8px; align-items: center; }
 .opt-row input[type=text] { flex: 1; }
 .opt-row input[type=color] { width: 44px; height: 38px; padding: 3px; border-radius: 8px; border: 1px solid var(--border-2); background: var(--bg-2); cursor: pointer; }
+.rows-row { align-items: flex-start; }
+.rows-fields { flex: 1; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); gap: 8px; min-width: 0; }
+.ta-sm { min-height: 44px; }
+.check-list { display: grid; gap: 6px; margin: 4px 0 8px; }
+.color-row { display: flex; gap: 10px; align-items: center; }
+.color-row input[type=color] { width: 52px; height: 40px; padding: 3px; border-radius: 8px; border: 1px solid var(--border-2); background: var(--bg-2); cursor: pointer; }
+.edited-note { display: block; margin-top: 4px; font: 12px var(--mono); color: var(--warn); }
+@media (max-width: 640px) { .rows-fields { grid-template-columns: 1fr; } }
 .check-row { display: flex !important; gap: 10px; align-items: flex-start; font-size: 14px; color: var(--dim); }
 .check-row input { width: 18px; height: 18px; margin-top: 2px; accent-color: var(--accent); }
 #clearTests { justify-self: start; }

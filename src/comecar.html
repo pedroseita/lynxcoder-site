@@ -11,7 +11,7 @@
 <link rel="icon" type="image/png" href="/assets/img/logo.png" sizes="192x192">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="stylesheet" href="/assets/css/styles.css?v=2">
-<link rel="stylesheet" href="/assets/css/comecar.css?v=2">
+<link rel="stylesheet" href="/assets/css/comecar.css?v=3">
 </head>
 <body class="ob-body">
 
@@ -41,6 +41,7 @@
   <div class="ob-main">
 
     <p class="ob-test" id="testBanner" hidden>Formulário de teste: o pedido fica marcado como teste e não envia e-mails.</p>
+    <p class="ob-welcome" id="welcomeNote" hidden></p>
     <div class="ob-progress" id="progress" aria-hidden="true">
       <span></span><span></span><span></span><span></span><span></span><span></span>
     </div>
@@ -56,28 +57,28 @@
 
       <!-- ===== Etapa 1 ===== -->
       <section class="ob-step" data-step="1" data-title="Seu negócio">
-        <h1 class="ob-title">Vamos começar pelo seu negócio</h1>
-        <p class="ob-intro">São 6 etapas curtas, cerca de 10 minutos. Suas respostas ficam salvas neste aparelho se precisar parar no meio.</p>
+        <h1 class="ob-title" data-txt="e1_titulo">Vamos começar pelo seu negócio</h1>
+        <p class="ob-intro" data-txt="e1_intro">São 6 etapas curtas, cerca de 10 minutos. Suas respostas ficam salvas neste aparelho se precisar parar no meio.</p>
 
         <div class="ob-grid">
           <div class="ob-field span-2">
-            <label for="f-nome">Nome do negócio ou profissional</label>
-            <input id="f-nome" name="nome" type="text" maxlength="80" autocomplete="organization" placeholder="Ex.: João Eletricista" required>
+            <label for="f-nome" data-txt="l_nome">Nome do negócio ou profissional</label>
+            <input id="f-nome" name="nome" type="text" maxlength="80" autocomplete="organization" placeholder="Ex.: João Eletricista" data-ph="ph_nome" required>
             <p class="ob-error" data-error-for="nome">Informe o nome que vai aparecer na página.</p>
           </div>
           <div class="ob-field span-2">
-            <label for="f-especialidade">Especialidade</label>
-            <input id="f-especialidade" name="especialidade" type="text" maxlength="100" placeholder="Ex.: Eletricista residencial e comercial" required>
+            <label for="f-especialidade" data-txt="l_especialidade">Especialidade</label>
+            <input id="f-especialidade" name="especialidade" type="text" maxlength="100" placeholder="Ex.: Eletricista residencial e comercial" data-ph="ph_especialidade" required>
             <p class="ob-error" data-error-for="especialidade">Informe sua especialidade.</p>
           </div>
           <div class="ob-field">
-            <label for="f-cidade">Cidade</label>
-            <input id="f-cidade" name="cidade" type="text" maxlength="80" autocomplete="address-level2" placeholder="Ex.: Campinas - SP" required>
+            <label for="f-cidade" data-txt="l_cidade">Cidade</label>
+            <input id="f-cidade" name="cidade" type="text" maxlength="80" autocomplete="address-level2" placeholder="Ex.: Campinas - SP" data-ph="ph_cidade" required>
             <p class="ob-error" data-error-for="cidade">Informe a cidade.</p>
           </div>
           <div class="ob-field">
-            <label for="f-area">Área de atendimento <span class="opt">(opcional)</span></label>
-            <input id="f-area" name="area" type="text" maxlength="120" placeholder="Ex.: Campinas e região">
+            <label for="f-area"><span data-txt="l_area">Área de atendimento</span> <span class="opt">(opcional)</span></label>
+            <input id="f-area" name="area" type="text" maxlength="120" placeholder="Ex.: Campinas e região" data-ph="ph_area">
           </div>
           <div class="ob-field">
             <label for="f-whatsapp">WhatsApp</label>
@@ -106,13 +107,13 @@
             <input id="f-youtube" name="youtube" type="url" maxlength="200" placeholder="Link do canal">
           </div>
         </div>
-        <p class="ob-hint">As redes informadas aparecem como links na página, sem custo extra.</p>
+        <p class="ob-hint" data-txt="e1_dica">As redes informadas aparecem como links na página, sem custo extra.</p>
       </section>
 
       <!-- ===== Etapa 2 ===== -->
       <section class="ob-step" data-step="2" data-title="Plano e endereço" hidden>
-        <h2 class="ob-title">Escolha o plano e o endereço</h2>
-        <p class="ob-intro">A página é a mesma nos dois planos. Muda o endereço e quem é dono do domínio.</p>
+        <h2 class="ob-title" data-txt="e2_titulo">Escolha o plano e o endereço</h2>
+        <p class="ob-intro" data-txt="e2_intro">A página é a mesma nos dois planos. Muda o endereço e quem é dono do domínio.</p>
 
         <fieldset class="ob-field">
           <legend>Plano</legend>
@@ -121,7 +122,7 @@
               <input type="radio" name="plano" value="essencial" checked>
               <span class="ob-option-body">
                 <strong>Essencial</strong>
-                <span>Endereço da LynxCoder, sem registrar nada.</span>
+                <span data-txt="e2_essencial">Endereço da LynxCoder, sem registrar nada.</span>
                 <code>seunome.lynxsites.com.br</code>
               </span>
             </label>
@@ -129,7 +130,7 @@
               <input type="radio" name="plano" value="profissional">
               <span class="ob-option-body">
                 <strong>Profissional</strong>
-                <span>Seu próprio domínio, registrado em seu nome.</span>
+                <span data-txt="e2_profissional">Seu próprio domínio, registrado em seu nome.</span>
                 <code>www.seunome.com.br</code>
               </span>
             </label>
@@ -168,8 +169,8 @@
 
       <!-- ===== Etapa 3 ===== -->
       <section class="ob-step" data-step="3" data-title="Logotipo e cores" hidden>
-        <h2 class="ob-title">Logotipo e cores</h2>
-        <p class="ob-intro">Sem logotipo? Sem problema: usamos o nome do negócio com uma tipografia forte.</p>
+        <h2 class="ob-title" data-txt="e3_titulo">Logotipo e cores</h2>
+        <p class="ob-intro" data-txt="e3_intro">Sem logotipo? Sem problema: usamos o nome do negócio com uma tipografia forte.</p>
 
         <div class="ob-field">
           <span class="ob-label">Logotipo <span class="opt">(opcional)</span></span>
@@ -204,8 +205,8 @@
 
       <!-- ===== Etapa 4 ===== -->
       <section class="ob-step" data-step="4" data-title="Seus serviços" hidden>
-        <h2 class="ob-title">Seus serviços</h2>
-        <p class="ob-intro">Liste os principais, do mais procurado para o menos. Entre 3 e 6 funciona melhor.</p>
+        <h2 class="ob-title" data-txt="e4_titulo">Seus serviços</h2>
+        <p class="ob-intro" data-txt="e4_intro">Liste os principais, do mais procurado para o menos. Entre 3 e 6 funciona melhor.</p>
         <div id="servicesList" class="ob-list"></div>
         <button type="button" class="btn btn-ghost btn-sm" id="addService">+ Adicionar serviço</button>
         <p class="ob-error" data-error-for="servicos">Adicione pelo menos um serviço com nome.</p>
@@ -213,8 +214,8 @@
 
       <!-- ===== Etapa 5 ===== -->
       <section class="ob-step" data-step="5" data-title="Fotos e depoimentos" hidden>
-        <h2 class="ob-title">Fotos e depoimentos</h2>
-        <p class="ob-intro">Fotos nítidas, com boa luz e na horizontal fazem mais diferença do que qualquer outro detalhe.</p>
+        <h2 class="ob-title" data-txt="e5_titulo">Fotos e depoimentos</h2>
+        <p class="ob-intro" data-txt="e5_intro">Fotos nítidas, com boa luz e na horizontal fazem mais diferença do que qualquer outro detalhe.</p>
 
         <div class="ob-field">
           <span class="ob-label">Fotos de trabalhos realizados</span>
@@ -239,7 +240,7 @@
 
         <div class="ob-field">
           <label for="f-historia">Conte sua história <span class="opt">(opcional)</span></label>
-          <textarea id="f-historia" name="historia" maxlength="1500" rows="5" placeholder="Há quanto tempo trabalha na área, o que o diferencia, como gosta de atender."></textarea>
+          <textarea id="f-historia" name="historia" maxlength="1500" rows="5" placeholder="Há quanto tempo trabalha na área, o que o diferencia, como gosta de atender." data-ph="ph_historia"></textarea>
         </div>
 
         <div class="ob-field">
@@ -251,8 +252,8 @@
 
       <!-- ===== Etapa 6 ===== -->
       <section class="ob-step" data-step="6" data-title="Confira e envie" hidden>
-        <h2 class="ob-title">Confira e envie</h2>
-        <p class="ob-intro">Toque em "Editar" para corrigir qualquer etapa.</p>
+        <h2 class="ob-title" data-txt="e6_titulo">Confira e envie</h2>
+        <p class="ob-intro" data-txt="e6_intro">Toque em "Editar" para corrigir qualquer etapa.</p>
         <div id="review" class="ob-review"></div>
 
         <div class="ob-consents">
@@ -277,8 +278,8 @@
       <!-- ===== Sucesso ===== -->
       <section class="ob-step ob-done" data-step="done" hidden>
         <p class="ob-done-mark" aria-hidden="true">✔</p>
-        <h2 class="ob-title">Obrigado! Já recebemos tudo.</h2>
-        <p class="ob-intro">Vamos analisar as suas informações e falar com você pelo WhatsApp. Guarde o código do seu pedido:</p>
+        <h2 class="ob-title" data-txt="fim_titulo">Obrigado! Já recebemos tudo.</h2>
+        <p class="ob-intro" data-txt="fim_intro">Vamos analisar as suas informações e falar com você pelo WhatsApp. Guarde o código do seu pedido:</p>
         <p class="ob-protocol" id="protocol"></p>
         <a class="btn btn-primary" href="/">Voltar ao site</a>
       </section>
@@ -332,6 +333,6 @@
   </div>
 </footer>
 
-<script src="/assets/js/comecar.js?v=3"></script>
+<script src="/assets/js/comecar.js?v=4"></script>
 </body>
 </html>

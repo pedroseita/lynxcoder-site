@@ -116,7 +116,22 @@ services:
       - "traefik.http.middlewares.lynx-admin-ratelimit.ratelimit.average=300"
       - "traefik.http.middlewares.lynx-admin-ratelimit.ratelimit.period=1m"
       - "traefik.http.middlewares.lynx-admin-ratelimit.ratelimit.burst=100"
-      - "traefik.http.middlewares.lynx-admin-body.buffering.maxRequestBodyBytes=1048576"
+      # 10 MB: as imagens dos posts do blog sobem pelo painel (já reduzidas no navegador).
+      - "traefik.http.middlewares.lynx-admin-body.buffering.maxRequestBodyBytes=10485760"
+      # Blog próprio (routes/blog.js), servido pelo mesmo container. Fica no ar
+      # durante a manutenção do site, como o painel.
+      - "traefik.http.routers.lynx-blog.rule=Host(`blog.lynxcoder.com.br`)"
+      - "traefik.http.routers.lynx-blog.entrypoints=websecure"
+      - "traefik.http.routers.lynx-blog.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.lynx-blog.service=lynx-api"
+      - "traefik.http.routers.lynx-blog.middlewares=lynx-api-hsts,lynx-blog-ratelimit"
+      - "traefik.http.routers.lynx-blog-http.rule=Host(`blog.lynxcoder.com.br`)"
+      - "traefik.http.routers.lynx-blog-http.entrypoints=web"
+      - "traefik.http.routers.lynx-blog-http.service=lynx-api"
+      - "traefik.http.routers.lynx-blog-http.middlewares=lynx-admin-to-https"
+      - "traefik.http.middlewares.lynx-blog-ratelimit.ratelimit.average=300"
+      - "traefik.http.middlewares.lynx-blog-ratelimit.ratelimit.period=1m"
+      - "traefik.http.middlewares.lynx-blog-ratelimit.ratelimit.burst=100"
     networks:
       - proxy
 

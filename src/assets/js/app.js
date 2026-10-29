@@ -90,6 +90,34 @@
 
   var burger = document.getElementById('navBurger');
   var mobile = document.getElementById('navMobile');
+  /* ---- Blog: os 3 posts mais recentes (blog.lynxcoder.com.br, via /api/blog/recentes) ----
+     Sem posts (ou sem API) fica a mensagem "a caminho" que já está no HTML. */
+  var blogGrid = document.getElementById('blogGrid');
+  if (blogGrid && window.fetch) {
+    fetch('/api/blog/recentes', { credentials: 'omit' })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (d) {
+        if (!d || !d.posts || !d.posts.length) return;
+        var el = function (tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text) e.textContent = text; return e; };
+        blogGrid.textContent = '';
+        d.posts.forEach(function (p) {
+          var a = el('a', 'blog-card');
+          a.href = p.url;
+          a.appendChild(el('span', 'blog-tag', new Date(p.data).toLocaleDateString('pt-BR', { day: 'numeric', month: 'short', year: 'numeric' })));
+          a.appendChild(el('h3', null, p.titulo));
+          a.appendChild(el('p', null, p.resumo || ''));
+          var meta = el('div', 'blog-meta');
+          meta.appendChild(el('span', null, p.leitura + ' min de leitura'));
+          meta.appendChild(el('span', null, 'Ler artigo →'));
+          a.appendChild(meta);
+          blogGrid.appendChild(a);
+        });
+        blogGrid.hidden = false;
+        document.getElementById('blogEmpty').hidden = true;
+      })
+      .catch(function () { /* fica a mensagem "a caminho" */ });
+  }
+
   /* Páginas internas (privacy, terms, 404) não têm nav mobile — sair sem erro.
      Sem esta guarda, um único null aqui abortava o IIFE inteiro. */
   if (!burger || !mobile) return;

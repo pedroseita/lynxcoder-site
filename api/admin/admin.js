@@ -1161,15 +1161,18 @@
 
   function renderNovaProposta(cfg) {
     var v = cfg.valores;
+    // Valores de Configurações em branco aparecem como "a combinar" no texto da proposta.
+    var vazios = cfg.campos.filter(function (c) { return !String(v[c[1]] || '').trim(); });
+    var semPreco = 'Em branco, a proposta mostra "a combinar".';
     var form = h('form', { class: 'form-grid', novalidate: true },
       formField('Nome do cliente *', textInput('nome', '', { required: true, maxlength: '120', autocomplete: 'off' })),
       formField('Negócio', textInput('negocio', '', { maxlength: '120', placeholder: 'Ex.: Duarte Elétrica' }), 'Pré-preenche o formulário quando for liberado.'),
       formField('WhatsApp', textInput('whatsapp', '', { inputmode: 'tel', maxlength: '20', placeholder: '(21) 98765-4321' })),
       formField('E-mail', textInput('email', '', { type: 'email', maxlength: '160' })),
-      formField('Essencial: implantação', textInput('essencial_implantacao', v.essencial_implantacao)),
-      formField('Essencial: mensalidade', textInput('essencial_mensalidade', v.essencial_mensalidade)),
-      formField('Profissional: implantação', textInput('profissional_implantacao', v.profissional_implantacao)),
-      formField('Profissional: mensalidade', textInput('profissional_mensalidade', v.profissional_mensalidade)),
+      formField('Essencial: implantação', textInput('essencial_implantacao', v.essencial_implantacao, { placeholder: 'Ex.: 297' }), semPreco),
+      formField('Essencial: mensalidade', textInput('essencial_mensalidade', v.essencial_mensalidade, { placeholder: 'Ex.: 49' }), semPreco),
+      formField('Profissional: implantação', textInput('profissional_implantacao', v.profissional_implantacao, { placeholder: 'Ex.: 397' }), semPreco),
+      formField('Profissional: mensalidade', textInput('profissional_mensalidade', v.profissional_mensalidade, { placeholder: 'Ex.: 59' }), semPreco),
       formField('Validade (dias)', textInput('validade', v.validade_dias || '15', { inputmode: 'numeric', maxlength: '2' })),
       h('label', { class: 'f wide check-row' }, h('input', { type: 'checkbox', name: 'teste' }),
         h('span', null, h('strong', { text: 'Proposta de teste' }), ' — não envia e-mails, não conta nos números e pode ser apagada com "Apagar todos os testes".')),
@@ -1199,6 +1202,14 @@
     el.appendChild(backLink());
     el.appendChild(h('div', { class: 'd-head' }, h('div', null, h('h1', { text: 'Nova proposta' }),
       h('p', { class: 'd-meta', text: 'O texto é o da proposta padrão; aqui você define o cliente e, se quiser, preços só para ele.' }))));
+    if (vazios.length) {
+      el.appendChild(h('p', { class: 'aviso-config' },
+        h('strong', { text: vazios.length + (vazios.length === 1 ? ' valor padrão em branco' : ' valores padrão em branco') }),
+        ' (' + vazios.slice(0, 4).map(function (c) { return c[2]; }).join(', ') + (vazios.length > 4 ? '…' : '') + '). ',
+        'Na proposta aparecem como "a combinar". Preencha uma vez em ',
+        h('a', { class: 'link', href: '#/config' }, 'Configurações › Valores'),
+        ' e todas as propostas novas já vêm com eles.'));
+    }
     el.appendChild(h('section', { class: 'card wide' }, form));
     form.elements.nome.focus();
   }

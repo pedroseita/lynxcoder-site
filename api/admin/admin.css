@@ -209,6 +209,8 @@ textarea { resize: vertical; min-height: 110px; }
 .f { display: grid; gap: 6px; align-content: start; }
 .f-label { font-weight: 700; font-size: 13.5px; }
 .f-hint { font-size: 12px; color: var(--faint); }
+.aviso-config { margin: 0 0 14px; padding: 12px 16px; border-radius: 12px; border: 1px solid rgba(242,177,52,.45); background: rgba(242,177,52,.08); color: var(--text); font-size: 14px; }
+.aviso-config strong { color: var(--warn); }
 .form-actions { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; margin-top: 4px; }
 .empty { color: var(--faint); text-align: center; padding: 24px 0; margin: 0; }
 

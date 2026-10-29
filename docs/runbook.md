@@ -309,6 +309,11 @@ Atualizar ficheiros de um cliente que já está no ar não precisa do script.
 
 Para tirar um cliente do ar: apagar (ou mover) a pasta e correr o script.
 
+**Cliente de teste**: `bash /root/lynxcoder-site/scripts/cliente-teste.sh` monta
+`pedroeletricista.lynxsites.com.br` a partir do exemplo do eletricista (WhatsApp
+fictício) e publica; `… cliente-teste.sh --remover` tira-o do ar. Só apaga
+pastas que ele próprio criou. Precisa do registo A `pedroeletricista` no DNS.
+
 ## Painel admin (`admin.lynxcoder.com.br`)
 
 Servido pelo container `lynxcoder-onboarding` (`api/routes/admin.js` +

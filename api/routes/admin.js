@@ -22,6 +22,7 @@ const totp = require('../lib/totp');
 const { zipStream } = require('../lib/zip');
 const propostas = require('./propostas');
 const flags = require('../lib/flags');
+const { validarDados, summary } = require('./onboarding');
 
 const ADMIN_HOST = (process.env.ADMIN_HOST || 'admin.lynxcoder.com.br').toLowerCase();
 const CREDENTIALS = path.join(DIRS.admin, 'credentials.json');
@@ -279,6 +280,22 @@ module.exports = async function adminRoutes(app) {
     next.atualizadoEm = new Date().toISOString();
     await writeJson(path.join(dir, 'admin.json'), next);
     return { ok: true, admin: next };
+  });
+
+  // Corrige as respostas do cliente. A primeira edição guarda a versão
+  // original em dados.original.json; ficheiros e consentimentos não mudam.
+  app.put('/adm/pedidos/:id/dados', async (req) => {
+    const dir = pedidoDir(req.params.id);
+    const dados = await readJson(path.join(dir, 'dados.json'));
+    if (!dados) throw new HttpError(404, 'Pedido não encontrado.');
+    const novos = validarDados(req.body || {}, { exigirConsentimento: false });
+    const original = path.join(dir, 'dados.original.json');
+    if (!(await fsp.stat(original).catch(() => null))) await writeJson(original, dados);
+    const atualizado = { ...dados, ...novos, consentimentos: dados.consentimentos, editadoEm: new Date().toISOString() };
+    await writeJson(path.join(dir, 'dados.json'), atualizado);
+    await fsp.writeFile(path.join(dir, 'resumo.txt'), summary(req.params.id, atualizado, atualizado.ficheiros || []) + '\n');
+    req.log.info({ id: req.params.id }, 'respostas do pedido editadas no painel');
+    return { ok: true, dados: atualizado };
   });
 
   app.delete('/adm/pedidos/:id', async (req) => {

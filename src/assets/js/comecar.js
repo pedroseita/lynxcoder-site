@@ -8,6 +8,9 @@
   // Link individual: /comecar#<convite>, gerado no painel ("Liberar formulário").
   var CONVITE = (location.hash || '').replace(/^#/, '');
   var DRAFT_KEY = 'lynx-onboarding-draft-v1:' + CONVITE;
+  // ?previa=1 (botão "Ver como o cliente" no painel): mostra o formulário sem
+  // guardar rascunho nem deixar enviar.
+  var PREVIA = /(?:^|&)previa=1(?:&|$)/.test(location.search.slice(1));
   // Mudar só o # (ex.: abrir /comecar e depois colar o link completo) não recarrega a página.
   window.addEventListener('hashchange', function () { location.reload(); });
   var TOTAL_STEPS = 6;
@@ -32,6 +35,9 @@
   ];
 
   var STEP_TITLES = ['Seu negócio', 'Plano e endereço', 'Logotipo e cores', 'Seus serviços', 'Fotos e depoimentos', 'Confira e envie'];
+  // Textos editados no painel (chaves = data-txt / data-ph do HTML); o que
+  // não vier fica com o texto que já está na página.
+  var TXT = {};
 
   // ---------- estado ----------
   var state = {
@@ -143,6 +149,14 @@
     }).join('');
   }
 
+  function applyTexts(t) {
+    if (!t || typeof t !== 'object') return;
+    TXT = t;
+    $$('[data-txt]').forEach(function (el) { var v = t[el.getAttribute('data-txt')]; if (v) el.textContent = v; });
+    $$('[data-ph]').forEach(function (el) { var v = t[el.getAttribute('data-ph')]; if (v) el.placeholder = v; });
+    STEP_TITLES = STEP_TITLES.map(function (def, i) { return t['e' + (i + 1) + '_nome'] || def; });
+  }
+
   function renderList(kind) {
     var isService = kind === 'servicos';
     var list = state[kind];
@@ -153,7 +167,7 @@
       return '<div class="ob-item" data-kind="' + kind + '" data-index="' + i + '">' +
         '<span class="ob-item-num">' + String(i + 1).padStart(2, '0') + '</span>' +
         '<div class="ob-item-fields">' +
-        '<input type="text" data-key="nome" maxlength="' + (isService ? 60 : 60) + '" aria-label="' + (isService ? 'Nome do serviço ' : 'Nome do cliente ') + (i + 1) + '" placeholder="' + (isService ? 'Nome do serviço, ex.: Instalação de chuveiro' : 'Nome do cliente, ex.: Maria S.') + '" value="' + esc(a) + '">' +
+        '<input type="text" data-key="nome" maxlength="' + (isService ? 60 : 60) + '" aria-label="' + (isService ? 'Nome do serviço ' : 'Nome do cliente ') + (i + 1) + '" placeholder="' + esc(isService ? (TXT.ph_servico || 'Nome do serviço, ex.: Instalação de chuveiro') : 'Nome do cliente, ex.: Maria S.') + '" value="' + esc(a) + '">' +
         (isService
           ? '<input type="text" data-key="descricao" maxlength="160" aria-label="Descrição do serviço ' + (i + 1) + ' (opcional)" placeholder="Descrição curta (opcional)" value="' + esc(b) + '">'
           : '<textarea data-key="texto" maxlength="400" rows="2" aria-label="Depoimento ' + (i + 1) + '" placeholder="O que o cliente disse sobre o seu trabalho">' + esc(b) + '</textarea>') +
@@ -642,7 +656,7 @@
     'subdominio', 'dominio', 'corPrincipal', 'corDestaque', 'historia'];
 
   function saveDraft() {
-    if (state.submitted) return;
+    if (state.submitted || PREVIA) return;
     var draft = {
       step: typeof state.step === 'number' ? Math.min(state.step, 5) : 1,
       subdominioManual: state.subdominioManual,
@@ -663,6 +677,7 @@
   var saveDraftSoon = debounce(saveDraft, 400);
 
   function loadDraft() {
+    if (PREVIA) return false;
     var draft;
     try { draft = JSON.parse(localStorage.getItem(DRAFT_KEY) || 'null'); } catch (e) { draft = null; }
     if (!draft || typeof draft !== 'object') return false;
@@ -697,11 +712,17 @@
   // Fotos não vão para o rascunho: avisar antes de as perder ao sair.
   window.addEventListener('beforeunload', function (e) {
     var f = state.files;
-    if (!state.submitted && (f.fotos.length || f.logo || f.retrato)) { e.preventDefault(); e.returnValue = ''; }
+    if (!state.submitted && !PREVIA && (f.fotos.length || f.logo || f.retrato)) { e.preventDefault(); e.returnValue = ''; }
   });
 
   // ---------- envio ----------
   function submit() {
+    if (PREVIA) {
+      var box = $('#submitError');
+      box.textContent = 'Pré-visualização: o envio está desativado. O cliente envia a partir do link dele.';
+      box.classList.add('show');
+      return;
+    }
     var data = collect();
     var fd = new FormData();
     fd.append('convite', CONVITE); // tem de ir antes das fotos (a API valida-o primeiro)
@@ -778,17 +799,38 @@
     $('#gateBlocked').hidden = false;
   }
 
+  // Pré-preenche o que já sabemos: dados da proposta e, por cima, o que foi
+  // preparado no painel para este cliente (Personalizar formulário).
+  function prefill(info) {
+    var pf = info.preenchido || {};
+    var nome = pf.nome || info.cliente.nome;
+    if (nome) { field('nome').value = nome; field('subdominio').value = slugify(nome); }
+    var email = pf.email || info.cliente.email;
+    if (email) field('email').value = email;
+    var wa = pf.whatsapp || info.cliente.whatsapp;
+    if (wa) field('whatsapp').value = maskPhone(wa);
+    ['especialidade', 'cidade', 'area', 'instagram', 'dominio', 'historia'].forEach(function (n) { if (pf[n]) field(n).value = pf[n]; });
+    if (pf.subdominio) { field('subdominio').value = pf.subdominio; state.subdominioManual = true; }
+    if (info.plano) $$('input[name=plano]').forEach(function (r) { r.checked = r.value === info.plano; });
+    var radios = $$('input[name=paleta]');
+    if (pf.paleta && radios.some(function (r) { return r.value === pf.paleta; })) {
+      radios.forEach(function (r) { r.checked = r.value === pf.paleta; });
+    }
+    if (Array.isArray(pf.servicos) && pf.servicos.length) {
+      state.servicos = pf.servicos.slice(0, 10).map(function (x) { return { nome: String(x.nome || ''), descricao: String(x.descricao || '') }; });
+    }
+  }
+
   function start(info) {
     renderOptions(info && info.opcoes);
-    if (info && info.teste) $('#testBanner').hidden = false;
+    applyTexts(info && info.opcoes && info.opcoes.textos);
+    if (info && info.mensagem) { $('#welcomeNote').textContent = info.mensagem; $('#welcomeNote').hidden = false; }
+    if (PREVIA) {
+      $('#testBanner').textContent = 'Pré-visualização da LynxCoder: nada fica guardado e o envio está desativado.';
+      $('#testBanner').hidden = false;
+    } else if (info && info.teste) $('#testBanner').hidden = false;
     var restored = loadDraft();
-    if (!restored && info) {
-      // Pré-preenche o que já sabemos da proposta.
-      if (info.cliente.nome) { field('nome').value = info.cliente.nome; field('subdominio').value = slugify(info.cliente.nome); }
-      if (info.cliente.email) field('email').value = info.cliente.email;
-      if (info.cliente.whatsapp) field('whatsapp').value = maskPhone(info.cliente.whatsapp);
-      if (info.plano) $$('input[name=plano]').forEach(function (r) { r.checked = r.value === info.plano; });
-    }
+    if (!restored && info) prefill(info);
     renderList('servicos');
     renderList('depoimentos');
     syncPlan();

@@ -243,7 +243,8 @@ Fluxo: painel → **+ Nova proposta** → enviar o link ao cliente (WhatsApp/e-m
   enviadas.
 - Formulário: `lynxcoder.com.br/comecar#<token>`, válido 30 dias e para um
   único envio. Sem link válido o `/comecar` só mostra uma mensagem. O link
-  pré-preenche negócio, e-mail, WhatsApp e o plano aceite.
+  pré-preenche negócio, e-mail, WhatsApp, o plano aceite e o que for
+  preparado em "Personalizar formulário".
 - Ao enviar o formulário, o cliente recebe um e-mail de confirmação com o
   resumo (requer o SMTP configurado).
 - Dados: `/data/propostas/<id>.json` e `/data/config/proposta.json` no volume.
@@ -257,8 +258,20 @@ Painel → **Configurações**:
   `| tabela |`, `[link](/caminho)`) com campos `{{…}}` trocados pelos valores.
   Guardado em `/data/config/proposta-texto.md`; vazio volta ao texto padrão
   (`api/lib/proposta-texto.js`). Cada proposta copia o texto ao ser criada.
-- **Formulário**: extras (etapa 2) e paletas (etapa 3) do `/comecar`
-  (`/data/config/formulario.json`).
+- **Formulário**: extras (etapa 2), paletas (etapa 3) e os textos de cada
+  etapa do `/comecar` (`/data/config/formulario.json`; dos textos só guarda os
+  alterados, em branco volta ao padrão de `api/lib/formulario.js`).
+
+Na **proposta** → **Personalizar formulário**: respostas adiantadas, extras e
+paletas visíveis e um recado no topo, só para esse cliente (guardado na
+própria proposta, em `formulario`). Editável até o cliente enviar. **Ver como
+o cliente** abre `/comecar?previa=1#<token>`: sem rascunho e sem envio. Se o
+cliente já tiver aberto o link, o rascunho no aparelho dele tem prioridade
+sobre o pré-preenchimento.
+
+No **pedido** → **Editar respostas**: corrige os dados enviados (com as mesmas
+regras do formulário). A primeira correção guarda o original em
+`dados.original.json`; o `resumo.txt` é refeito. Fotos e logotipo não mudam.
 
 **Propostas de teste** (caixa "Proposta de teste" ou "Salvar e testar"):
 mostram uma faixa de teste, não enviam e-mails, não contam nos números, e o

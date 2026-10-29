@@ -44,6 +44,12 @@ const isHex = (v) => typeof v === 'string' && /^#[0-9a-f]{6}$/i.test(v);
 function validate(raw) {
   let d;
   try { d = JSON.parse(raw); } catch { throw new HttpError(400, 'Dados do formulário inválidos.'); }
+  return validarDados(d);
+}
+
+// Também usada pelo painel ao corrigir as respostas de um pedido
+// (aí sem consentimentos: esses ficam os que o cliente deu no envio).
+function validarDados(d, { exigirConsentimento = true } = {}) {
   if (!d || typeof d !== 'object') throw new HttpError(400, 'Dados do formulário inválidos.');
   const n = d.negocio || {};
   const r = n.redes || {};
@@ -105,6 +111,7 @@ function validate(raw) {
   }
   if (!out.visual.corPrincipal || !out.visual.corDestaque) fail('Cores inválidas.');
   if (!out.servicos.length) fail('Adicione pelo menos um serviço.');
+  if (!exigirConsentimento) return out;
   if (!(d.consentimentos && d.consentimentos.uso === true && d.consentimentos.termos === true)) {
     fail('É preciso aceitar as duas autorizações.');
   }
@@ -256,3 +263,6 @@ LynxCoder · lynxcoder.com.br
     }
   });
 };
+
+module.exports.validarDados = validarDados;
+module.exports.summary = summary;

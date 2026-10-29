@@ -85,6 +85,42 @@ function resumo(p) {
   };
 }
 
+// ---------- formulário personalizado para um cliente ----------
+// p.formulario = { preenchido: {...}, extras: [ids] | null, paletas: [ids] | null, mensagem }
+// extras/paletas a null = mostra todas as opções gerais.
+function limparPersonalizacao(b) {
+  b = b || {};
+  const pf = b.preenchido || {};
+  const preenchido = {
+    nome: str(pf.nome, 80),
+    especialidade: str(pf.especialidade, 100),
+    cidade: str(pf.cidade, 80),
+    area: str(pf.area, 120),
+    whatsapp: str(pf.whatsapp, 20).replace(/\D/g, '').slice(-11),
+    email: str(pf.email, 120).toLowerCase(),
+    instagram: str(pf.instagram, 40).replace(/^@+/, ''),
+    subdominio: str(pf.subdominio, 40).toLowerCase().replace(/[^a-z0-9-]/g, ''),
+    dominio: str(pf.dominio, 100).toLowerCase().replace(/^https?:\/\//, '').replace(/^www\./, '').replace(/\/.*$/, ''),
+    paleta: str(pf.paleta, 40),
+    historia: str(pf.historia, 1500),
+    servicos: (Array.isArray(pf.servicos) ? pf.servicos : []).slice(0, 10)
+      .map((s) => ({ nome: str(s && s.nome, 60), descricao: str(s && s.descricao, 160) }))
+      .filter((s) => s.nome),
+  };
+  if (preenchido.email && !isEmail(preenchido.email)) throw new HttpError(400, 'E-mail pré-preenchido inválido.');
+  const ids = (v) => (Array.isArray(v) ? v.filter((x) => typeof x === 'string').map((x) => x.slice(0, 40)).slice(0, 20) : null);
+  return { preenchido, extras: ids(b.extras), paletas: ids(b.paletas), mensagem: str(b.mensagem, 600) };
+}
+
+// O que o /comecar recebe: opções gerais filtradas pelo que foi escolhido para este cliente.
+async function opcoesDoCliente(p) {
+  const geral = await formulario.load();
+  const pf = p.formulario || {};
+  const extras = Array.isArray(pf.extras) ? geral.extras.filter((x) => pf.extras.includes(x.id)) : geral.extras;
+  const escolhidas = Array.isArray(pf.paletas) ? geral.paletas.filter((x) => pf.paletas.includes(x.id)) : [];
+  return { extras, paletas: escolhidas.length ? escolhidas : geral.paletas, textos: geral.textos };
+}
+
 // ---------- uso pelo formulário (routes/onboarding.js) ----------
 async function conviteValido(token) {
   const p = await byConvite(token);
@@ -168,12 +204,15 @@ async function publicRoutes(app) {
     guard(req);
     const p = await conviteValido(req.params.token);
     reply.header('cache-control', 'no-store');
+    const pf = p.formulario || {};
     return {
       ok: true,
       teste: !!p.teste,
       cliente: { nome: p.cliente.negocio || '', email: p.cliente.email || '', whatsapp: p.cliente.whatsapp || '' },
       plano: p.aceite ? p.aceite.plano : null,
-      opcoes: await formulario.load(),
+      preenchido: pf.preenchido || null,
+      mensagem: pf.mensagem || '',
+      opcoes: await opcoesDoCliente(p),
     };
   });
 }
@@ -244,6 +283,17 @@ async function adminRoutes(app) {
     return { ok: true, linkFormulario: linkConvite(p) };
   });
 
+  // Personaliza o formulário deste cliente (antes ou depois de liberado, até ao envio).
+  app.put('/adm/propostas/:id/formulario', async (req) => {
+    const p = await readJson(fileOf(req.params.id));
+    if (!p) throw new HttpError(404, 'Proposta não encontrada.');
+    if (p.canceladaEm) throw new HttpError(400, 'A proposta foi cancelada.');
+    if (p.convite && p.convite.usadoEm) throw new HttpError(400, 'O cliente já enviou o formulário: edite as respostas no pedido.');
+    p.formulario = { ...limparPersonalizacao(req.body), atualizadoEm: new Date().toISOString() };
+    await save(p);
+    return { ok: true, formulario: p.formulario };
+  });
+
   // ---------- texto da proposta ----------
   app.get('/adm/proposta-texto', async () => ({ ok: true, ...(await propostaTexto.load()), campos: AJUDA_CAMPOS }));
   app.put('/adm/proposta-texto', async (req) => {
@@ -252,10 +302,12 @@ async function adminRoutes(app) {
   });
 
   // ---------- opções do formulário /comecar ----------
-  app.get('/adm/formulario', async () => ({ ok: true, ...(await formulario.load()) }));
+  const comCampos = (r) => ({ ok: true, ...r, textosCampos: formulario.TEXTOS_CAMPOS });
+  app.get('/adm/formulario', async () => comCampos(await formulario.load()));
   app.put('/adm/formulario', async (req) => {
-    if (req.body && req.body.restaurar === true) return { ok: true, ...(await formulario.restaurar()) };
-    return { ok: true, ...(await formulario.save(req.body || {})) };
+    if (req.body && req.body.restaurar === true) return comCampos(await formulario.restaurar());
+    if (req.body && req.body.restaurarTextos === true) return comCampos(await formulario.restaurarTextos());
+    return comCampos(await formulario.save(req.body || {}));
   });
 
   // ---------- apagar todos os testes (propostas e pedidos de teste) ----------

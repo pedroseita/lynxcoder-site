@@ -130,6 +130,65 @@ jobs:
 
           docker rm -f lynx-maint-ci
 
+      # Páginas dos clientes (lynxsites.com.br): corre o próprio scripts/lynxsites.sh
+      # com um getent falso (DNS "a apontar" para 127.0.0.1) e confirma os
+      # routers gerados e o nginx a escolher a pasta certa pelo host.
+      - name: Testar as páginas dos clientes
+        run: |
+          docker network create proxy
+          sites="$RUNNER_TEMP/lynxsites"
+          mkdir -p "$sites/quentinhas/css" "$sites/quentinhas/.git" "$sites/semindex" "$sites/Maiusculas"
+          echo '<h1>Quentinhas CI</h1>' > "$sites/quentinhas/index.html"
+          echo '<p>sobre</p>' > "$sites/quentinhas/sobre.html"
+          echo 'body{}' > "$sites/quentinhas/css/a.css"
+          echo 'segredo' > "$sites/quentinhas/.git/config"
+          echo 'x' > "$sites/quentinhas/.git/x.js"
+          echo '<h1>x</h1>' > "$sites/Maiusculas/index.html"
+          mkdir -p "$RUNNER_TEMP/bin"
+          printf '#!/bin/sh\necho "127.0.0.1 STREAM $2"\n' > "$RUNNER_TEMP/bin/getent"
+          chmod +x "$RUNNER_TEMP/bin/getent"
+
+          PATH="$RUNNER_TEMP/bin:$PATH" LYNX_SITE_DIR="$GITHUB_WORKSPACE" LYNXSITES_DIR="$sites" LYNXSITES_IP=127.0.0.1 \
+            bash scripts/lynxsites.sh 2>&1 | tee /tmp/lynxsites.log
+
+          echo "— só a pasta valida, com index.html, entra"
+          grep -q 'https://quentinhas.lynxsites.com.br' /tmp/lynxsites.log
+          grep -q 'Ignorado: "Maiusculas"' /tmp/lynxsites.log
+          grep -q 'semindex: falta o index.html' /tmp/lynxsites.log
+          grep -q 'routers.lynxsites-quentinhas.rule=Host(`quentinhas.lynxsites.com.br`)' infra/lynxsites/clientes.yml
+          # "! grep" não falha o passo (comandos negados ficam fora do set -e)
+          if grep -q 'semindex\|Maiusculas' infra/lynxsites/clientes.yml; then echo "pasta invalida entrou"; exit 1; fi
+
+          echo "— o container tem os routers do cliente"
+          docker inspect lynxsites-paginas --format '{{json .Config.Labels}}' | grep -q 'lynxsites-quentinhas-http'
+
+          for i in $(seq 1 15); do
+            [ "$(docker inspect -f '{{.State.Health.Status}}' lynxsites-paginas)" = healthy ] && break || sleep 2
+          done
+          code() { docker run --rm --network proxy curlimages/curl:8.11.1 -s -o /dev/null -w '%{http_code}' -H "Host: $1" "http://lynxsites-paginas$2"; }
+          body() { docker run --rm --network proxy curlimages/curl:8.11.1 -s -H "Host: $1" "http://lynxsites-paginas$2"; }
+          hdr() { docker run --rm --network proxy curlimages/curl:8.11.1 -sI -H "Host: $1" "http://lynxsites-paginas$2"; }
+
+          echo "— cada host serve a pasta do seu cliente"
+          body quentinhas.lynxsites.com.br / | grep -q 'Quentinhas CI'
+          test "$(code quentinhas.lynxsites.com.br /sobre)" = "200"
+          test "$(code naoexiste.lynxsites.com.br /)" = "404"
+          test "$(code outro-dominio.com /)" = "404"
+
+          echo "— ficheiros escondidos nunca saem (nem com extensao de asset)"
+          test "$(code quentinhas.lynxsites.com.br /.git/config)" = "404"
+          test "$(code quentinhas.lynxsites.com.br /.git/x.js)" = "404"
+
+          echo "— cabecalhos tambem nos assets"
+          hdr quentinhas.lynxsites.com.br /css/a.css | grep -iq "frame-ancestors"
+
+          echo "— lynxsites.com.br mostra a apresentacao e www redireciona"
+          body lynxsites.com.br / | grep -q 'Páginas criadas pela LynxCoder'
+          test "$(code lynxsites.com.br /logo.png)" = "200"
+          hdr www.lynxsites.com.br /x | grep -iq '^location: https://lynxsites.com.br/x'
+
+          docker rm -f lynxsites-paginas
+
       # Não falha o build: é só um aviso visível enquanto os pendentes do
       # README não estiverem fechados.
       - name: Avisar sobre placeholders pendentes

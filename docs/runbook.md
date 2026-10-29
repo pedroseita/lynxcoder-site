@@ -278,6 +278,37 @@ mostram uma faixa de teste, não enviam e-mails, não contam nos números, e o
 pedido feito a partir delas fica marcado `teste`. Filtro **Testes** na lista →
 **Apagar todos os testes**.
 
+## Páginas dos clientes (`lynxsites.com.br`)
+
+Container `lynxsites-paginas`, num projeto Docker **à parte**
+(`infra/lynxsites/docker-compose.yml`, projeto `lynxsites`): o deploy e a
+manutenção do lynxcoder.com.br não lhe tocam, e o site em manutenção não
+derruba as páginas dos clientes.
+
+- Cada cliente é uma pasta no VPS: `/root/lynxsites/<nome>/index.html` →
+  `https://<nome>.lynxsites.com.br`. O nome é o endereço escolhido no
+  formulário (só minúsculas, números e hífen).
+- `lynxsites.com.br` mostra a página de apresentação (`infra/lynxsites/inicio/`);
+  `www.` redireciona para lá.
+- O DNS está no Registro.br, que **não aceita `*`**: cada cliente precisa do seu
+  registo A. Registos fixos: `lynxsites.com.br` (nome em branco) e `www`,
+  ambos → `187.127.22.113`.
+
+### Publicar um cliente
+
+1. Registro.br → lynxsites.com.br → Configurar zona DNS → registo **A**
+   `<nome>` → `187.127.22.113`.
+2. No VPS, copiar a página para `/root/lynxsites/<nome>/` (com `index.html`).
+3. `bash /root/lynxcoder-site/scripts/lynxsites.sh`
+
+O script gera um router Traefik (e um certificado) por cliente em
+`infra/lynxsites/clientes.yml` (não vai para o git) e sobe o container. Uma
+pasta cujo nome ainda não aponta para o VPS fica de fora com aviso, para o
+Let's Encrypt não falhar em repetição: criar o registo e correr de novo.
+Atualizar ficheiros de um cliente que já está no ar não precisa do script.
+
+Para tirar um cliente do ar: apagar (ou mover) a pasta e correr o script.
+
 ## Painel admin (`admin.lynxcoder.com.br`)
 
 Servido pelo container `lynxcoder-onboarding` (`api/routes/admin.js` +

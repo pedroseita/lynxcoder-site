@@ -1,0 +1,53 @@
+# Páginas dos clientes em <nome>.lynxsites.com.br — projeto separado do site.
+# Os scripts do site (deploy, manutenção) recriam os containers do outro
+# compose; aqui ficam de fora, e pôr o lynxcoder.com.br em manutenção não
+# derruba as páginas dos clientes.
+#
+# Não subir à mão: usar scripts/lynxsites.sh, que junta os routers de cada
+# cliente (clientes.yml, gerado a partir das pastas em /root/lynxsites).
+name: lynxsites
+services:
+  paginas:
+    build:
+      context: ../..
+      dockerfile: infra/lynxsites/Dockerfile
+    container_name: lynxsites-paginas
+    restart: unless-stopped
+    volumes:
+      # Uma pasta por cliente: /root/lynxsites/quentinhas -> quentinhas.lynxsites.com.br
+      - ${LYNXSITES_DIR:-/root/lynxsites}:/srv/sites:ro
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1/healthz"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.lynxsites.loadbalancer.server.port=80"
+      # lynxsites.com.br e www (a página "Páginas criadas pela LynxCoder").
+      # Os routers de cada cliente vêm de clientes.yml.
+      - "traefik.http.routers.lynxsites-inicio.rule=Host(`lynxsites.com.br`) || Host(`www.lynxsites.com.br`)"
+      - "traefik.http.routers.lynxsites-inicio.entrypoints=websecure"
+      - "traefik.http.routers.lynxsites-inicio.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.lynxsites-inicio.service=lynxsites"
+      - "traefik.http.routers.lynxsites-inicio.middlewares=lynxsites-hsts"
+      - "traefik.http.routers.lynxsites-inicio-http.rule=Host(`lynxsites.com.br`) || Host(`www.lynxsites.com.br`)"
+      - "traefik.http.routers.lynxsites-inicio-http.entrypoints=web"
+      - "traefik.http.routers.lynxsites-inicio-http.service=lynxsites"
+      - "traefik.http.routers.lynxsites-inicio-http.middlewares=lynxsites-to-https"
+      - "traefik.http.middlewares.lynxsites-to-https.redirectscheme.scheme=https"
+      - "traefik.http.middlewares.lynxsites-to-https.redirectscheme.permanent=true"
+      # HSTS curto, como no site; subir depois de validar.
+      - "traefik.http.middlewares.lynxsites-hsts.headers.stsSeconds=300"
+    networks:
+      - proxy
+
+networks:
+  proxy:
+    external: true

@@ -36,10 +36,14 @@ infra/
 ├── nginx.conf             routing do site (404 real, cache de assets)
 ├── security-headers.conf  ← FONTE ÚNICA dos security headers (incluída pelos dois)
 ├── docker-compose.yml     serviço + labels Traefik (routers lynx-site, priority 10)
-└── maintenance/           modo de manutenção, container independente
-    ├── Dockerfile         usa src/manutencao.html (fonte única)
-    ├── nginx.conf         devolve 503 em tudo (routers lynx-maint, priority 100)
-    └── docker-compose.yml
+├── maintenance/           modo de manutenção, container independente
+│   ├── Dockerfile         usa src/manutencao.html (fonte única)
+│   ├── nginx.conf         devolve 503 em tudo (routers lynx-maint, priority 100)
+│   └── docker-compose.yml
+└── lynxsites/             páginas dos clientes em <nome>.lynxsites.com.br (projeto à parte)
+    ├── nginx.conf         host -> pasta do cliente; lynxsites.com.br -> inicio/
+    ├── inicio/            página de apresentação do lynxsites.com.br
+    └── docker-compose.yml subir com scripts/lynxsites.sh (gera clientes.yml)
 
 api/                     ← API (Node + Fastify), container lynxcoder-onboarding
 ├── routes/onboarding.js   POST /api/onboarding (formulário /comecar)
@@ -73,6 +77,7 @@ python -m http.server 8000 --directory src
 ./scripts/deploy.sh            # pull + rebuild
 ./scripts/maintenance-on.sh    # manutenção pesada: para o site e sobe o container de manutenção
 ./scripts/maintenance-off.sh   # devolve o site ao ar
+./scripts/lynxsites.sh         # páginas dos clientes: depois de criar/apagar uma pasta em /root/lynxsites
 ```
 
 Para uma manutenção normal, use o botão **Manutenção** no painel: liga e

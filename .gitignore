@@ -5,3 +5,5 @@ Thumbs.db
 node_modules/
 infra/onboarding.env
 infra/backup.env
+# gerado no VPS por scripts/lynxsites.sh
+infra/lynxsites/clientes.yml

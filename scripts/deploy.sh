@@ -12,6 +12,12 @@ git pull origin main
 echo ">>> Rebuild e restart do container..."
 docker compose -f infra/docker-compose.yml up -d --build
 
+# Páginas dos clientes (lynxsites.com.br): projeto à parte, com os routers
+# gerados a partir das pastas em /root/lynxsites. Antes do aviso de manutenção,
+# que sai do script mais cedo.
+echo ">>> Páginas dos clientes..."
+bash scripts/lynxsites.sh
+
 # O container de manutenção tem priority 100 contra os 10 do site, por isso
 # continuaria a ganhar o routing mesmo depois deste deploy. Avisar em vez de
 # derrubar sozinho: desligar a manutenção é uma decisão explícita.

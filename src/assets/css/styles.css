@@ -403,6 +403,8 @@ h3 { font-size: clamp(20px, 2.2vw, 26px); }
 .pf-tomato .pf-tag { color: #f08a6e; }
 .pf-ember { background: radial-gradient(120% 60% at 50% 100%, rgba(240,112,56,.28), transparent 62%), linear-gradient(180deg, #2a1a10, #120c08); }
 .pf-ember .pf-tag { color: #f2b544; }
+.pf-rose { background: radial-gradient(120% 60% at 50% 100%, rgba(228,111,148,.28), transparent 62%), linear-gradient(180deg, #2a1820, #140c10); }
+.pf-rose .pf-tag { color: #f08aab; }
 .pf-title { font-family: var(--font-display); font-size: 22px; font-weight: 600; line-height: 1.15; letter-spacing: -.01em; }
 .pf-desc { color: var(--dim); font-size: 14.5px; line-height: 1.45; }
 

@@ -19,7 +19,8 @@ src/                     ← tudo o que vai para o browser (um só COPY no Docke
 ├── exemplos/              páginas de exemplo do portfólio (noindex, dados fictícios)
 │   ├── eletricista.html     usa assets/js/exemplo.js (WhatsApp em modo demonstração)
 │   └── quentinhas.html      + assets/js/quentinhas.js (carrinho; envia via window.lxDemoSend)
-│   └── churrasco.html       + assets/js/churrasco.js (calculadora; envia via window.lxDemoSend)
+│   ├── churrasco.html       + assets/js/churrasco.js (calculadora; envia via window.lxDemoSend)
+│   └── manicure.html        + assets/js/manicure.js (pedido de horário; envia via window.lxDemoSend)
 ├── robots.txt
 ├── sitemap.xml
 └── assets/

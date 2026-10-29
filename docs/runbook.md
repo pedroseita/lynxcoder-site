@@ -316,6 +316,25 @@ Servido pelo container `lynxcoder-onboarding` (`api/routes/admin.js` +
 situação, notas internas, fotos, download em ZIP e exclusão (direito de
 eliminação da LGPD). Mostra também os últimos posts do blog (Hashnode).
 
+### Clientes ativos
+
+Separador **Clientes** (`api/routes/clientes.js`, dados em `/data/clientes/<id>.json`).
+
+- **Tornar cliente** (no pedido, quando a página vai ao ar) cria a ficha com os
+  dados do pedido e o valor da proposta; **+ Cliente sem pedido** para quem
+  veio por fora do formulário.
+- A mensalidade vence todos os meses no dia do **primeiro vencimento** (num mês
+  mais curto, no último dia). Cada pagamento registado quita um mês. A
+  situação sai daí: **em dia**, **vence em breve** (5 dias) ou **em atraso**;
+  o contador no topo mostra os clientes em atraso. Pausado e cancelado não
+  contam mensalidades.
+- O painel só **avisa**: não suspende páginas (não tem acesso ao Docker).
+  Para tirar uma página do ar, ver "Publicar um cliente".
+- **Estado do site**: a API abre `https://<endereço>/` ao arrancar e de 30 em
+  30 minutos (clientes ativos, sem os de teste) e mostra se está no ar, com o
+  motivo quando não está (DNS, certificado, erro). O resultado fica em memória:
+  depois de um restart aparece na verificação seguinte (ou em "Verificar agora").
+
 ### DNS
 
 Registo **A** `admin` → IP do VPS, no Registro.br (onde está o DNS do

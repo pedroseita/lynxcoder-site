@@ -53,6 +53,7 @@
         <div class="stat"><span class="stat-n" id="statPedidos">–</span><span class="stat-l">pedidos novos</span></div>
         <div class="stat"><span class="stat-n" id="statMensagens">–</span><span class="stat-l">mensagens novas</span></div>
         <div class="stat"><span class="stat-n" id="statPropostas">–</span><span class="stat-l">aceitas a liberar</span></div>
+        <div class="stat"><span class="stat-n" id="statAtraso">–</span><span class="stat-l" id="statAtrasoL">clientes em atraso</span></div>
       </div>
 
       <div class="filters">
@@ -61,6 +62,7 @@
           <button type="button" role="tab" data-type="pedido" aria-selected="false">Pedidos</button>
           <button type="button" role="tab" data-type="mensagem" aria-selected="false">Mensagens</button>
           <button type="button" role="tab" data-type="proposta" aria-selected="false">Propostas</button>
+          <button type="button" role="tab" data-type="cliente" aria-selected="false">Clientes</button>
         </div>
         <label class="sr-only" for="statusFilter">Situação</label>
         <select id="statusFilter">
@@ -73,6 +75,7 @@
       </div>
 
       <button type="button" class="btn btn-danger btn-sm" id="clearTests" hidden>Apagar todos os testes</button>
+      <a class="btn btn-ghost btn-sm" id="newClient" href="#/novo-cliente" hidden>+ Cliente sem pedido</a>
       <ul class="items" id="items"></ul>
       <p class="empty" id="emptyList" hidden>Nada por aqui.</p>
 
@@ -87,7 +90,7 @@
 
     <section class="col-detail" id="detailCol" aria-live="polite">
       <div class="placeholder" id="detailEmpty">
-        <p>Escolha um pedido ou uma mensagem para ver os detalhes.</p>
+        <p>Escolha um item da lista para ver os detalhes.</p>
       </div>
       <article id="detail" hidden></article>
     </section>

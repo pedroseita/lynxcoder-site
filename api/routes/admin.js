@@ -21,6 +21,7 @@ const { verifyPassword } = require('../lib/password');
 const totp = require('../lib/totp');
 const { zipStream } = require('../lib/zip');
 const propostas = require('./propostas');
+const clientes = require('./clientes');
 const flags = require('../lib/flags');
 const { validarDados, summary } = require('./onboarding');
 
@@ -243,7 +244,7 @@ module.exports = async function adminRoutes(app) {
 
   // ---------- entradas ----------
   app.get('/adm/entradas', async () => {
-    const items = [...await listPedidos(), ...await listMensagens(), ...(await propostas.all()).map(propostas.resumo)]
+    const items = [...await listPedidos(), ...await listMensagens(), ...(await propostas.all()).map(propostas.resumo), ...(await clientes.all()).map(clientes.resumo)]
       .sort((a, b) => String(b.recebidoEm).localeCompare(String(a.recebidoEm)));
     return {
       ok: true,
@@ -252,6 +253,8 @@ module.exports = async function adminRoutes(app) {
         pedidosNovos: items.filter((i) => i.tipo === 'pedido' && i.status === 'novo' && !i.teste).length,
         mensagensNovas: items.filter((i) => i.tipo === 'mensagem' && i.status === 'nova').length,
         propostasAceitas: items.filter((i) => i.tipo === 'proposta' && i.status === 'aceita' && !i.teste).length,
+        clientesAtivos: items.filter((i) => i.tipo === 'cliente' && ['em_dia', 'vence', 'atraso'].includes(i.status) && !i.teste).length,
+        clientesAtraso: items.filter((i) => i.tipo === 'cliente' && i.status === 'atraso' && !i.teste).length,
         testes: items.filter((i) => i.teste).length,
       },
     };
@@ -263,7 +266,8 @@ module.exports = async function adminRoutes(app) {
     const dados = await readJson(path.join(dir, 'dados.json'));
     if (!dados) throw new HttpError(404, 'Pedido não encontrado.');
     const admin = await readJson(path.join(dir, 'admin.json'), {});
-    return { ok: true, dados, admin: { status: admin.status || 'novo', notas: admin.notas || '', atualizadoEm: admin.atualizadoEm || null } };
+    const cliente = await clientes.clienteDoPedido(req.params.id);
+    return { ok: true, dados, clienteId: cliente ? cliente.id : null, admin: { status: admin.status || 'novo', notas: admin.notas || '', atualizadoEm: admin.atualizadoEm || null } };
   });
 
   app.patch('/adm/pedidos/:id', async (req) => {
@@ -373,6 +377,9 @@ module.exports = async function adminRoutes(app) {
 
   // ---------- propostas e configuração (routes/propostas.js) ----------
   await propostas.adminRoutes(app);
+
+  // ---------- clientes ativos (routes/clientes.js) ----------
+  await clientes.adminRoutes(app);
 
   // ---------- blog ----------
   app.get('/adm/blog', async (req) => {

@@ -13,6 +13,7 @@ const DIRS = {
   admin: path.join(DATA_DIR, 'admin'),
   propostas: path.join(DATA_DIR, 'propostas'),
   config: path.join(DATA_DIR, 'config'),
+  clientes: path.join(DATA_DIR, 'clientes'),
 };
 
 class HttpError extends Error {

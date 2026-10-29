@@ -7,10 +7,12 @@
     pedido: [['novo', 'Novo'], ['producao', 'Em produção'], ['publicado', 'Publicado'], ['arquivado', 'Arquivado']],
     mensagem: [['nova', 'Nova'], ['respondida', 'Respondida'], ['arquivada', 'Arquivada']],
     proposta: [['enviada', 'Enviada'], ['aberta', 'Aberta'], ['aceita', 'Aceita'], ['formulario', 'Formulário liberado'],
-      ['concluida', 'Pedido recebido'], ['expirada', 'Expirada'], ['cancelada', 'Cancelada']]
+      ['concluida', 'Pedido recebido'], ['expirada', 'Expirada'], ['cancelada', 'Cancelada']],
+    // situação calculada pelo servidor (mensalidades) ou a escolhida no painel
+    cliente: [['em_dia', 'Em dia'], ['vence', 'Vence em breve'], ['atraso', 'Em atraso'], ['pausado', 'Pausado'], ['cancelado', 'Cancelado']]
   };
-  var ARCHIVED = ['arquivado', 'arquivada', 'cancelada', 'expirada', 'concluida'];
-  var KIND = { pedido: 'Pedido', mensagem: 'Contato', proposta: 'Proposta' };
+  var ARCHIVED = ['arquivado', 'arquivada', 'cancelada', 'expirada', 'concluida', 'cancelado'];
+  var KIND = { pedido: 'Pedido', mensagem: 'Contato', proposta: 'Proposta', cliente: 'Cliente' };
   var PLANOS = { essencial: 'Essencial', profissional: 'Profissional' };
   var EXTRAS = { manutencao: 'Manutenção' };
   var PALETAS = { confianca: 'Confiança', natureza: 'Natureza', energia: 'Energia', elegante: 'Elegante', moderno: 'Moderno', claro: 'Claro', personalizada: 'Personalizada' };
@@ -127,6 +129,9 @@
       $('statPedidos').textContent = r.contagem.pedidosNovos;
       $('statMensagens').textContent = r.contagem.mensagensNovas;
       $('statPropostas').textContent = r.contagem.propostasAceitas;
+      $('statAtraso').textContent = r.contagem.clientesAtraso;
+      $('statAtrasoL').textContent = 'em atraso de ' + r.contagem.clientesAtivos + (r.contagem.clientesAtivos === 1 ? ' cliente' : ' clientes');
+      $('statAtraso').parentNode.classList.toggle('alerta', r.contagem.clientesAtraso > 0);
       renderList();
     }).catch(function (err) { if (err.message !== '401') toast(err.message, true); });
   }
@@ -164,6 +169,7 @@
     });
     $('emptyList').hidden = visible.length > 0;
     $('clearTests').hidden = state.status !== 'testes' || !visible.length;
+    $('newClient').hidden = state.type !== 'cliente';
   }
 
   $('typeTabs').addEventListener('click', function (e) {
@@ -201,6 +207,16 @@
 
   function route() {
     var layout = document.querySelector('.layout');
+    var nc = /^#\/novo-cliente(?:\/([\w-]+))?$/.exec(location.hash);
+    if (nc) {
+      state.current = null;
+      layout.classList.add('showing-detail');
+      renderList();
+      (nc[1] ? api('GET', '/adm/clientes/sugestao/' + nc[1]).then(function (r) { return r.ficha; }) : Promise.resolve(null))
+        .then(function (ficha) { renderClienteForm(ficha, null); showDetail(); })
+        .catch(function (err) { if (err.message !== '401') toast(err.message, true); });
+      return;
+    }
     if (location.hash === '#/nova-proposta' || /^#\/config(\/(texto|formulario))?$/.test(location.hash)) {
       state.current = null;
       layout.classList.add('showing-detail');
@@ -216,7 +232,7 @@
       }).catch(function (err) { if (err.message !== '401') toast(err.message, true); });
       return;
     }
-    var m = /^#\/(pedido|mensagem|proposta)\/([\w-]+)$/.exec(location.hash);
+    var m = /^#\/(pedido|mensagem|proposta|cliente)\/([\w-]+)$/.exec(location.hash);
     if (!m) {
       state.current = null;
       layout.classList.remove('showing-detail');
@@ -228,10 +244,11 @@
     state.current = { tipo: m[1], id: m[2] };
     layout.classList.add('showing-detail');
     renderList();
-    var url = { pedido: '/adm/pedidos/', mensagem: '/adm/mensagens/', proposta: '/adm/propostas/' }[m[1]] + m[2];
+    var url = URLS[m[1]] + m[2];
     api('GET', url).then(function (r) {
       if (m[1] === 'pedido') renderPedido(m[2], r);
       else if (m[1] === 'mensagem') renderMensagem(r.mensagem);
+      else if (m[1] === 'cliente') renderCliente(r.cliente, r.formas);
       else renderProposta(r.proposta);
       showDetail();
     }).catch(function (err) {
@@ -241,6 +258,8 @@
     });
   }
   window.addEventListener('hashchange', route);
+
+  var URLS = { pedido: '/adm/pedidos/', mensagem: '/adm/mensagens/', proposta: '/adm/propostas/', cliente: '/adm/clientes/' };
 
   function backLink() {
     return h('button', { type: 'button', class: 'btn btn-ghost btn-sm back', onclick: function () { location.hash = ''; } }, '← Voltar');
@@ -275,8 +294,8 @@
         return;
       }
       clearTimeout(timer);
-      api('DELETE', { pedido: '/adm/pedidos/', mensagem: '/adm/mensagens/', proposta: '/adm/propostas/' }[tipo] + id).then(function () {
-        toast({ pedido: 'Pedido excluído, com todos os ficheiros', mensagem: 'Mensagem excluída', proposta: 'Proposta excluída' }[tipo]);
+      api('DELETE', URLS[tipo] + id).then(function () {
+        toast({ pedido: 'Pedido excluído, com todos os ficheiros', mensagem: 'Mensagem excluída', proposta: 'Proposta excluída', cliente: 'Cliente excluído, com os pagamentos registados' }[tipo]);
         location.hash = '';
         loadItems();
       }).catch(function (err) { toast(err.message, true); });
@@ -290,7 +309,7 @@
     var info = h('span', { class: 'muted', text: admin.atualizadoEm ? 'Atualizado em ' + fmtDate(admin.atualizadoEm) : '' });
     var save = h('button', { type: 'button', class: 'btn btn-ghost btn-sm' }, 'Salvar notas');
     save.addEventListener('click', function () {
-      api('PATCH', (tipo === 'pedido' ? '/adm/pedidos/' : '/adm/mensagens/') + id, { notas: ta.value }).then(function (r) {
+      api('PATCH', URLS[tipo] + id, { notas: ta.value }).then(function (r) {
         info.textContent = 'Atualizado em ' + fmtDate(r.admin.atualizadoEm);
         toast('Notas salvas');
       }).catch(function (err) { toast(err.message, true); });
@@ -353,10 +372,12 @@
         h('h1', { text: ng.nome }),
         h('p', { class: 'd-meta', text: 'Pedido ' + id + ' · recebido em ' + fmtDate(d.recebidoEm) }),
         d.editadoEm ? h('span', { class: 'edited-note', text: 'Respostas corrigidas no painel em ' + fmtDate(d.editadoEm) + ' (o original fica em dados.original.json)' }) : null,
-        d.propostaId ? h('a', { class: 'link', href: '#/proposta/' + d.propostaId }, 'Ver a proposta deste cliente →') : null),
+        d.propostaId ? h('a', { class: 'link', href: '#/proposta/' + d.propostaId }, 'Ver a proposta deste cliente →') : null,
+        r.clienteId ? h('a', { class: 'link', href: '#/cliente/' + r.clienteId }, ' · Ver a ficha de cliente →') : null),
       h('div', { class: 'd-actions' },
         statusSelect('pedido', id, admin.status),
         h('button', { type: 'button', class: 'btn btn-ghost btn-sm', onclick: function () { editarPedido(id, d); } }, 'Editar respostas'),
+        r.clienteId ? null : h('a', { class: 'btn btn-ghost btn-sm', href: '#/novo-cliente/' + id, title: 'Quando a página for ao ar: ficha com mensalidade e pagamentos' }, 'Tornar cliente'),
         h('a', { class: 'btn btn-primary btn-sm', href: wa, target: '_blank', rel: 'noopener noreferrer' }, 'WhatsApp'),
         h('a', { class: 'btn btn-ghost btn-sm', href: mail }, 'E-mail'),
         h('a', { class: 'btn btn-ghost btn-sm', href: '/adm/pedidos/' + encodeURIComponent(id) + '/zip' }, 'Baixar tudo (ZIP)'),
@@ -497,6 +518,161 @@
       h('section', { class: 'card wide' }, h('h2', { text: 'Mensagem' }), dl([['De', m.nome], ['E-mail', m.email]]),
         h('p', { class: 'prose', text: m.mensagem })),
       notesCard('mensagem', m.id, admin)));
+  }
+
+  // ---------- clientes ----------
+  function fmtValor(n) { return n == null ? '' : Number(n).toFixed(2).replace('.', ','); }
+  function fmtMoney(n) { return n == null ? '—' : Number(n).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }); }
+  function fmtDia(d) { return d ? d.split('-').reverse().join('/') : ''; }
+  var MESES = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
+  function fmtRef(ref) { var p = ref.split('-'); return MESES[Number(p[1]) - 1] + '/' + p[0]; }
+  function hojeISO() { return new Date().toLocaleDateString('en-CA', { timeZone: 'America/Sao_Paulo' }); }
+
+  function renderCliente(c, formas) {
+    var el = $('detail');
+    var url = c.endereco ? 'https://' + c.endereco : null;
+
+    var sel = h('select', { 'aria-label': 'Situação do cliente' },
+      [['ativo', 'Ativo'], ['pausado', 'Pausado'], ['cancelado', 'Cancelado']].map(function (o) { return h('option', { value: o[0], text: o[1] }); }));
+    sel.value = c.status;
+    sel.addEventListener('change', function () {
+      api('PATCH', '/adm/clientes/' + c.id, { status: sel.value }).then(function () { toast('Cliente ' + sel.options[sel.selectedIndex].text.toLowerCase()); loadItems(); route(); })
+        .catch(function (err) { toast(err.message, true); });
+    });
+
+    // --- mensalidade
+    var dia = c.primeiroVencimento ? Number(c.primeiroVencimento.slice(8, 10)) : null;
+    var totalAberto = c.emAberto.length * (c.mensalidade || 0);
+    var aberto = c.status !== 'ativo' ? null
+      : c.emAberto.length
+        ? h('span', { class: c.atrasados ? 'alerta-txt' : '' }, c.emAberto.map(function (x) { return fmtRef(x.referencia) + (x.atrasado ? ' (venceu ' + fmtDia(x.vencimento) + ')' : ' (vence hoje)'); }).join(', ') +
+            (c.mensalidade ? ' · ' + fmtMoney(totalAberto) : ''))
+        : h('span', { class: 'ok-txt', text: 'Nada em aberto' });
+
+    // --- site
+    var site = c.site;
+    var siteEstado = !c.endereco ? 'Sem endereço na ficha'
+      : !site ? 'Ainda não verificado'
+      : site.ok ? h('span', { class: 'ok-txt', text: 'No ar, com HTTPS' }) : h('span', { class: 'alerta-txt', text: site.erro });
+    var verificar = h('button', { type: 'button', class: 'btn btn-ghost btn-sm' }, 'Verificar agora');
+    verificar.addEventListener('click', function () {
+      verificar.disabled = true; verificar.textContent = 'A verificar…';
+      api('POST', '/adm/clientes/' + c.id + '/verificar-site').then(function (r) {
+        toast(r.site.ok ? 'O site está no ar' : 'Problema: ' + r.site.erro, !r.site.ok); loadItems(); route();
+      }).catch(function (err) { toast(err.message, true); verificar.disabled = false; verificar.textContent = 'Verificar agora'; });
+    });
+
+    // --- pagamentos
+    var linhas = (c.pagamentos || []).slice().reverse().map(function (p) {
+      var rm = h('button', { type: 'button', class: 'btn btn-ghost btn-sm', 'aria-label': 'Apagar pagamento de ' + fmtRef(p.referencia) }, '×');
+      rm.addEventListener('click', function () {
+        if (!rm.classList.contains('confirm')) { rm.classList.add('confirm'); rm.textContent = 'Apagar?'; setTimeout(function () { rm.classList.remove('confirm'); rm.textContent = '×'; }, 4000); return; }
+        api('DELETE', '/adm/clientes/' + c.id + '/pagamentos/' + p.id).then(function () { toast('Pagamento apagado'); loadItems(); route(); })
+          .catch(function (err) { toast(err.message, true); });
+      });
+      return h('tr', null, h('td', { text: fmtRef(p.referencia) }), h('td', { text: fmtMoney(p.valor) }), h('td', { text: fmtDia(p.pagoEm) }),
+        h('td', { text: p.forma }), h('td', { text: p.nota || '' }), h('td', null, rm));
+    });
+    var sugerido = (c.emAberto[0] || c.proximo || {}).referencia || hojeISO().slice(0, 7);
+    var fRef = h('input', { type: 'month', name: 'referencia', 'aria-label': 'Mês da mensalidade' }); fRef.value = sugerido;
+    var fValor = textInput('valor', fmtValor(c.mensalidade), { inputmode: 'decimal', 'aria-label': 'Valor pago' });
+    var fData = h('input', { type: 'date', name: 'pagoEm', 'aria-label': 'Data do pagamento' }); fData.value = hojeISO();
+    var fForma = h('select', { name: 'forma', 'aria-label': 'Forma de pagamento' }, formas.map(function (f) { return h('option', { value: f, text: f }); }));
+    var fNota = textInput('nota', '', { maxlength: '300', placeholder: 'Nota (opcional)', 'aria-label': 'Nota' });
+    var payForm = h('form', { class: 'pay-form', novalidate: true },
+      formField('Mês', fRef), formField('Valor', fValor), formField('Pago em', fData), formField('Forma', fForma), formField('Nota', fNota),
+      h('button', { type: 'submit', class: 'btn btn-primary btn-sm' }, 'Registar pagamento'));
+    payForm.addEventListener('submit', function (e) {
+      e.preventDefault();
+      api('POST', '/adm/clientes/' + c.id + '/pagamentos', { referencia: fRef.value, valor: fValor.value, pagoEm: fData.value, forma: fForma.value, nota: fNota.value })
+        .then(function () { toast('Pagamento de ' + fmtRef(fRef.value) + ' registado'); loadItems(); route(); })
+        .catch(function (err) { toast(err.message, true); });
+    });
+
+    var wa = c.whatsapp ? 'https://wa.me/' + (c.whatsapp.length <= 11 ? '55' + c.whatsapp : c.whatsapp) : null;
+    el.textContent = '';
+    el.appendChild(backLink());
+    el.appendChild(h('div', { class: 'd-head' },
+      h('div', null,
+        h('h1', { text: c.nome }),
+        h('p', { class: 'd-meta', text: 'Cliente desde ' + fmtDia(c.clienteDesde) + ' · plano ' + PLANOS[c.plano] }),
+        c.teste ? h('span', { class: 'badge st-teste', text: 'Teste' }) : null, ' ',
+        badge('cliente', c.situacao)),
+      h('div', { class: 'd-actions' },
+        sel,
+        h('button', { type: 'button', class: 'btn btn-ghost btn-sm', onclick: function () { renderClienteForm(c, c.id); } }, 'Editar ficha'),
+        wa ? h('a', { class: 'btn btn-primary btn-sm', href: wa, target: '_blank', rel: 'noopener noreferrer' }, 'WhatsApp') : null,
+        deleteButton('cliente', c.id))));
+
+    el.appendChild(h('div', { class: 'd-grid' },
+      h('section', { class: 'card' }, h('h2', { text: 'Mensalidade' }), dl([
+        ['Valor', c.mensalidade != null ? fmtMoney(c.mensalidade) + '/mês' : 'A definir (editar ficha)'],
+        ['Vencimento', dia ? 'Todo dia ' + dia + ' (desde ' + fmtDia(c.primeiroVencimento) + ')' : ''],
+        ['Em aberto', aberto],
+        ['Próximo', c.status === 'ativo' && c.proximo ? fmtRef(c.proximo.referencia) + ', vence ' + fmtDia(c.proximo.vencimento) : ''],
+        ['Situação', c.status !== 'ativo' ? 'Cliente ' + (c.status === 'pausado' ? 'pausado' : 'cancelado') + ': não conta mensalidades' : '']
+      ])),
+      h('section', { class: 'card' }, h('h2', { text: 'Site' }), dl([
+        ['Endereço', url ? h('a', { class: 'link', href: url, target: '_blank', rel: 'noopener noreferrer', text: c.endereco }) : ''],
+        ['Estado', siteEstado],
+        ['Verificado', site ? fmtDate(site.em) : '']
+      ]), c.endereco ? h('div', { class: 'link-row small' }, verificar) : null,
+        h('p', { class: 'muted small', text: 'Verificado sozinho a cada 30 minutos enquanto o cliente estiver ativo.' })),
+      h('section', { class: 'card' }, h('h2', { text: 'Contato' }), dl([
+        ['Responsável', c.contato], ['WhatsApp', fmtPhone(c.whatsapp)], ['E-mail', c.email],
+        ['Origem', c.pedidoId ? h('span', null, h('a', { class: 'link', href: '#/pedido/' + c.pedidoId }, 'Pedido'),
+          c.propostaId ? ' · ' : null, c.propostaId ? h('a', { class: 'link', href: '#/proposta/' + c.propostaId }, 'Proposta') : null) : 'Criado à mão']
+      ])),
+      h('section', { class: 'card wide' }, h('h2', { text: 'Pagamentos (' + (c.pagamentos || []).length + ')' }),
+        linhas.length
+          ? h('div', { class: 'table-wrap' }, h('table', { class: 'pay-table' },
+              h('thead', null, h('tr', null, ['Mês', 'Valor', 'Pago em', 'Forma', 'Nota', ''].map(function (t) { return h('th', { text: t }); }))),
+              h('tbody', null, linhas)))
+          : h('p', { class: 'muted small', text: 'Nenhum pagamento registado ainda.' }),
+        payForm),
+      notesCard('cliente', c.id, { notas: c.notas, atualizadoEm: c.atualizadoEm })));
+  }
+
+  // Criar (ficha sugerida a partir do pedido, ou em branco) ou editar a ficha.
+  function renderClienteForm(f, id) {
+    f = f || {};
+    var hoje = hojeISO();
+    var plano = h('select', { name: 'plano' }, h('option', { value: 'essencial', text: 'Essencial' }), h('option', { value: 'profissional', text: 'Profissional' }));
+    plano.value = f.plano || 'essencial';
+    var desde = h('input', { type: 'date', name: 'clienteDesde' }); desde.value = f.clienteDesde || hoje;
+    var venc = h('input', { type: 'date', name: 'primeiroVencimento' }); venc.value = f.primeiroVencimento || '';
+    var form = h('form', { class: 'form-grid', novalidate: true },
+      formField('Nome do negócio *', textInput('nome', f.nome, { maxlength: '120' })),
+      formField('Responsável', textInput('contato', f.contato, { maxlength: '120' })),
+      formField('WhatsApp', textInput('whatsapp', f.whatsapp, { maxlength: '20', inputmode: 'tel' })),
+      formField('E-mail', textInput('email', f.email, { type: 'email', maxlength: '160' })),
+      formField('Plano', plano),
+      formField('Endereço da página', textInput('endereco', f.endereco, { maxlength: '120', placeholder: 'nome.lynxsites.com.br' }), 'Só o domínio, sem https://'),
+      formField('Mensalidade (R$)', textInput('mensalidade', fmtValor(f.mensalidade), { inputmode: 'decimal', placeholder: 'Ex.: 49,90' })),
+      formField('Cliente desde', desde),
+      formField('Primeiro vencimento *', venc, 'A mensalidade vence todos os meses neste dia.'),
+      h('div', { class: 'f wide form-actions' },
+        h('button', { type: 'submit', class: 'btn btn-primary' }, id ? 'Salvar ficha' : 'Criar cliente'),
+        h('button', { type: 'button', class: 'btn btn-ghost', onclick: function () { if (id) route(); else history.back(); } }, 'Cancelar')));
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var x = form.elements;
+      var ficha = { nome: x.nome.value, contato: x.contato.value, whatsapp: x.whatsapp.value, email: x.email.value, plano: plano.value,
+        endereco: x.endereco.value, mensalidade: x.mensalidade.value, clienteDesde: desde.value, primeiroVencimento: venc.value };
+      var pedido = id ? null : f.pedidoId;
+      (id ? api('PATCH', '/adm/clientes/' + id, { ficha: ficha }) : api('POST', '/adm/clientes', Object.assign({ pedidoId: pedido }, ficha)))
+        .then(function (r) { toast(id ? 'Ficha salva' : 'Cliente criado'); loadItems(); if (id) route(); else location.hash = '#/cliente/' + r.id; })
+        .catch(function (err) { toast(err.message, true); });
+    });
+    var el = $('detail');
+    el.textContent = '';
+    el.appendChild(backLink());
+    el.appendChild(h('div', { class: 'd-head' }, h('div', null,
+      h('h1', { text: id ? 'Editar ficha: ' + f.nome : (f.pedidoId ? 'Tornar cliente: ' + f.nome : 'Novo cliente') }),
+      h('p', { class: 'd-meta', text: f.pedidoId && !id ? 'Dados do pedido e da proposta: confira o valor e o primeiro vencimento antes de criar.' : 'Os pagamentos registam-se na ficha do cliente.' }))));
+    el.appendChild(h('section', { class: 'card wide' }, form));
+    window.scrollTo(0, 0);
+    form.elements.nome.focus();
   }
 
   // ---------- propostas ----------
@@ -898,7 +1074,7 @@
     }
     api('DELETE', '/adm/testes').then(function (r) {
       btn.classList.remove('confirm'); btn.textContent = 'Apagar todos os testes';
-      toast(r.propostasApagadas + ' propostas e ' + r.pedidosApagados + ' pedidos de teste apagados');
+      toast(r.propostasApagadas + ' propostas, ' + r.pedidosApagados + ' pedidos e ' + r.clientesApagados + ' clientes de teste apagados');
       location.hash = '';
       loadItems();
     }).catch(function (err) { toast(err.message, true); });

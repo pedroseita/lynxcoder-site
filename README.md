@@ -49,6 +49,7 @@ api/                     ← API (Node + Fastify), container lynxcoder-onboardin
 ├── routes/onboarding.js   POST /api/onboarding (formulário /comecar)
 ├── routes/contato.js      POST /api/contato (formulário de contato)
 ├── routes/propostas.js    propostas e convites (públicas + painel)
+├── routes/clientes.js     clientes ativos: mensalidade, pagamentos, estado do site (painel)
 ├── lib/proposta-template.js  texto da proposta
 ├── routes/admin.js        painel admin.lynxcoder.com.br (login + 2 etapas)
 ├── admin/                 interface do painel (fonts/ = cópia das fontes do site; manter iguais)

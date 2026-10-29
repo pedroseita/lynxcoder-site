@@ -322,8 +322,12 @@ async function adminRoutes(app) {
       const d = await readJson(path.join(DIRS.pedidos, id, 'dados.json'));
       if (d && d.teste) { await fsp.rm(path.join(DIRS.pedidos, id), { recursive: true, force: true }); pedidosApagados++; }
     }
-    req.log.info({ propostasApagadas, pedidosApagados }, 'testes apagados no painel');
-    return { ok: true, propostasApagadas, pedidosApagados };
+    let clientesApagados = 0;
+    for (const c of await require('./clientes').all()) {
+      if (c.teste) { await fsp.rm(path.join(DIRS.clientes, `${c.id}.json`), { force: true }); clientesApagados++; }
+    }
+    req.log.info({ propostasApagadas, pedidosApagados, clientesApagados }, 'testes apagados no painel');
+    return { ok: true, propostasApagadas, pedidosApagados, clientesApagados };
   });
 
   app.delete('/adm/propostas/:id', async (req) => {

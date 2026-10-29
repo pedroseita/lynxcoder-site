@@ -282,17 +282,29 @@ dialog.demo-dialog::backdrop{background:rgba(59,31,43,.6)}
           <rect x="96" y="210" width="30" height="46" rx="8" fill="#E7B7A6"/><rect x="101" y="190" width="20" height="24" rx="4" fill="#3B1F2B"/>
           <rect x="304" y="206" width="32" height="50" rx="8" fill="#7C2A3E"/><rect x="310" y="184" width="20" height="26" rx="4" fill="#3B1F2B"/>
         </g>
-        <!-- polegar (desenhado antes da mão para a junção ficar por baixo da palma) -->
-        <path d="M156 240 C144 226 134 204 128 182 Q124 164 136 162 Q147 162 149 176 L160 204 Z" fill="#E9C2AE"/>
-        <path d="M150 300 C150 240 140 200 150 150 L168 92 Q176 76 186 92 L184 150 L196 70 Q205 54 214 70 L210 150 L226 80 Q235 66 243 82 L234 156 L254 112 Q263 100 270 114 L252 190 C246 236 240 262 240 300 Z" fill="#E9C2AE"/>
-        <g fill="#B23F64">
-          <path d="M130 178 Q129 166 137 165.5 Q144.5 166 145 176 L143.5 184 Q137.5 187 132 184 Z"/>
-          <path d="M170 94 Q177 80 184 94 L182 112 Q176 116 170 110 Z"/>
-          <path d="M198 72 Q205 58 212 72 L210 92 Q204 96 197 91 Z"/>
-          <path d="M228 82 Q235 70 241 84 L238 102 Q232 106 226 100 Z"/>
-          <path d="M256 114 Q263 104 268 116 L263 132 Q257 134 253 128 Z"/>
+        <!-- mão: dedos são traços grossos de ponta redonda; a palma é desenhada por cima para esconder as junções -->
+        <g stroke="#E9C2AE" stroke-linecap="round" fill="none">
+          <path d="M174 238 L134 194" stroke-width="25"/>
+          <path d="M178 182 L170 94" stroke-width="24"/>
+          <path d="M204 178 L204 76" stroke-width="25"/>
+          <path d="M230 182 L238 92" stroke-width="24"/>
+          <path d="M252 194 L268 126" stroke-width="20"/>
         </g>
-        <g fill="#fff" opacity=".55"><ellipse cx="134" cy="170" rx="2.2" ry="4.5"/><ellipse cx="175" cy="96" rx="2.5" ry="6"/><ellipse cx="203" cy="74" rx="2.5" ry="6"/><ellipse cx="232" cy="85" rx="2.5" ry="6"/></g>
+        <path d="M165 186 Q165 166 186 164 H240 Q263 165 263 190 L259 234 C256 252 244 258 242 274 L240 300 H172 L172 274 C172 258 165 250 165 232 Z" fill="#E9C2AE"/>
+        <!-- unhas: cada uma rodada na direção do seu dedo -->
+        <g fill="#B23F64">
+          <rect x="128" y="186" width="16" height="20" rx="7" transform="rotate(-42.3 136 196)"/>
+          <rect x="162.7" y="85" width="15" height="20" rx="7" transform="rotate(-5.2 170.2 95)"/>
+          <rect x="196" y="67" width="16" height="21" rx="7.5"/>
+          <rect x="230.3" y="83" width="15" height="20" rx="7" transform="rotate(5.1 237.8 93)"/>
+          <rect x="261" y="119" width="13" height="17" rx="6" transform="rotate(13.2 267.5 127.5)"/>
+        </g>
+        <g fill="#fff" opacity=".55">
+          <ellipse cx="132.5" cy="193" rx="2" ry="4.5" transform="rotate(-42.3 136 196)"/>
+          <ellipse cx="166.7" cy="92" rx="2" ry="4.5" transform="rotate(-5.2 170.2 95)"/>
+          <ellipse cx="200.5" cy="74" rx="2.2" ry="5"/>
+          <ellipse cx="234.3" cy="90" rx="2" ry="4.5" transform="rotate(5.1 237.8 93)"/>
+        </g>
         <path d="M140 300h112" stroke="#D4A893" stroke-width="6" stroke-linecap="round"/>
       </svg>
     </div>

@@ -4,6 +4,7 @@
 //   lynxcoder.com.br/api/contato      formulário de contato       (routes/contato.js)
 //   lynxcoder.com.br/api/proposta|comecar  links individuais       (routes/propostas.js)
 //   admin.lynxcoder.com.br            painel com login + 2 etapas (routes/admin.js)
+//   blog.lynxcoder.com.br             blog, escrito no painel      (routes/blog.js)
 //
 // Os dados ficam no volume /data (ver docs/runbook.md).
 'use strict';
@@ -31,6 +32,11 @@ app.addContentTypeParser('application/x-www-form-urlencoded', { parseAs: 'string
 
 app.get('/api/health', async () => ({ ok: true }));
 
+// blog.lynxcoder.com.br: atendido inteiro neste hook, antes do roteamento,
+// para "/" e "/assets/…" do blog não chocarem com os do painel (routes/blog.js).
+const blog = require('./routes/blog');
+app.addHook('onRequest', blog.publicHook);
+
 // Manutenção ligada no painel: os formulários públicos ficam indisponíveis
 // (o site mostra a página de manutenção). O painel e o health não são afetados.
 app.addHook('onRequest', async (req, reply) => {
@@ -50,6 +56,7 @@ app.addHook('onRequest', async (req, reply) => {
 app.register(require('./routes/onboarding'));
 app.register(require('./routes/contato'));
 app.register(require('./routes/propostas').publicRoutes);
+app.register(blog.publicRoutes);
 app.register(require('./routes/admin'));
 
 app.setErrorHandler((err, req, reply) => {

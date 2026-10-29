@@ -39,7 +39,7 @@ jobs:
             --index-files index.html
             --fallback-extensions html
             --exclude '/api/(contato|onboarding)$'
-            --exclude '^https://(www\.)?lynxcoder\.com\.br'
+            --exclude '^https://(www\.|blog\.)?lynxcoder\.com\.br'
             "src/**/*.html"
           fail: true
 
@@ -80,6 +80,20 @@ jobs:
           test "$(curl -s -o /dev/null -w '%{http_code}' -H 'Host: admin.lynxcoder.com.br' http://localhost:3000/)" = "200"
           test "$(curl -s -o /dev/null -w '%{http_code}' -H 'Host: admin.lynxcoder.com.br' http://localhost:3000/adm/entradas)" = "401"
           curl -sI -H 'Host: admin.lynxcoder.com.br' http://localhost:3000/ | grep -iq "x-robots-tag: noindex"
+
+          echo "— blog: host proprio, sem posts ainda, 404 de verdade, RSS e sitemap"
+          B='Host: blog.lynxcoder.com.br'
+          test "$(curl -s -o /dev/null -w '%{http_code}' -H "$B" http://localhost:3000/)" = "200"
+          curl -s -H "$B" http://localhost:3000/ | grep -q 'Blog da LynxCoder'
+          curl -sI -H "$B" http://localhost:3000/ | grep -iq "content-security-policy: default-src 'none'"
+          test "$(curl -s -o /dev/null -w '%{http_code}' -H "$B" http://localhost:3000/post-que-nao-existe)" = "404"
+          test "$(curl -s -o /dev/null -w '%{http_code}' -H "$B" http://localhost:3000/assets/blog.css)" = "200"
+          curl -s -H "$B" http://localhost:3000/rss.xml | grep -q '<rss version="2.0">'
+          curl -s -H "$B" http://localhost:3000/sitemap.xml | grep -q '<urlset'
+          echo "— blog: as rotas do painel nao existem no host do blog"
+          test "$(curl -s -o /dev/null -w '%{http_code}' -H "$B" http://localhost:3000/adm/entradas)" = "404"
+          echo "— posts recentes para a pagina inicial"
+          curl -s http://localhost:3000/api/blog/recentes | grep -q '"posts":\[\]'
 
           docker rm -f lynx-api-ci
 

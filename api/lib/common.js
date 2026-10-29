@@ -14,6 +14,7 @@ const DIRS = {
   propostas: path.join(DATA_DIR, 'propostas'),
   config: path.join(DATA_DIR, 'config'),
   clientes: path.join(DATA_DIR, 'clientes'),
+  blog: path.join(DATA_DIR, 'blog'),
 };
 
 class HttpError extends Error {

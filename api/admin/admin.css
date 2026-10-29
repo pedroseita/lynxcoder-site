@@ -214,6 +214,12 @@ textarea { resize: vertical; min-height: 110px; }
 
 .blog { margin-top: 8px; padding-top: 16px; border-top: 1px solid var(--border); }
 .blog-head { display: flex; justify-content: space-between; align-items: center; }
+.blog-links { font-size: 13px; color: var(--faint); }
+.st-rascunho { background: rgba(255,255,255,.08); color: var(--dim); }
+.capa-box { display: grid; gap: 10px; }
+.capa-thumb { width: 100%; max-width: 420px; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 10px; border: 1px solid var(--border); background: var(--surface-2); }
+.editor-bar { margin-bottom: 4px; }
+.editor-bar + .code-editor { margin-top: 8px; min-height: 55vh; }
 .blog h2 { font-size: 15px; margin: 0; }
 .blog-list { list-style: none; margin: 10px 0 0; padding: 0; display: grid; gap: 8px; font-size: 13.5px; }
 .blog-list a { text-decoration: none; font-weight: 600; }

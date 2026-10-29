@@ -316,6 +316,25 @@ Servido pelo container `lynxcoder-onboarding` (`api/routes/admin.js` +
 situação, notas internas, fotos, download em ZIP e exclusão (direito de
 eliminação da LGPD). Mostra também os últimos posts do blog (Hashnode).
 
+### Blog (`blog.lynxcoder.com.br`)
+
+Blog próprio, sem Hashnode (`api/routes/blog.js`), servido pelo container
+`lynxcoder-onboarding` (router Traefik `lynx-blog`). Fica no ar durante a
+manutenção do site, como o painel.
+
+- Escrever: painel → **Blog** (coluna da esquerda) → **+ Escrever post**.
+  Formato simples (`## título`, `**negrito**`, listas, links, `> dica`,
+  tabelas); o botão **Imagem** envia a foto (reduzida no navegador) e insere-a.
+- **Publicar** exige título, texto e resumo (o resumo aparece no Google e na
+  partilha). **Pré-visualizar** mostra o post com o visual do blog, também em
+  rascunho. Mudar o endereço de um post publicado mantém o antigo a
+  redirecionar (301).
+- Dados: `/data/blog/posts/<id>.json` e `/data/blog/imagens/` (no backup).
+- O blog gera `/rss.xml` e `/sitemap.xml`; a página inicial do site mostra os
+  3 posts mais recentes (`/api/blog/recentes`).
+- DNS: no Registro.br (zona de lynxcoder.com.br) o `blog` tem de ser um
+  registo **A** → `187.127.22.113` (era um CNAME para o Hashnode).
+
 ### Clientes ativos
 
 Separador **Clientes** (`api/routes/clientes.js`, dados em `/data/clientes/<id>.json`).

@@ -266,3 +266,5 @@ LynxCoder · lynxcoder.com.br
 
 module.exports.validarDados = validarDados;
 module.exports.summary = summary;
+
+module.exports.sniff = sniff;

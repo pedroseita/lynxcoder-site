@@ -189,11 +189,11 @@
     api('GET', '/adm/blog').then(function (r) {
       var ul = $('blogList');
       ul.textContent = '';
-      if (!r.posts.length) { ul.appendChild(h('li', { class: 'muted', text: r.erro || 'Ainda sem posts publicados.' })); return; }
-      r.posts.forEach(function (p) {
+      if (!r.posts.length) { ul.appendChild(h('li', { class: 'muted', text: 'Ainda sem posts. Escreva o primeiro!' })); return; }
+      r.posts.slice(0, 5).forEach(function (p) {
         ul.appendChild(h('li', null,
-          h('a', { href: p.url, target: '_blank', rel: 'noopener noreferrer', text: p.title }),
-          h('span', { class: 'date', text: fmtDate(p.publishedAt) })));
+          h('a', { href: '#/blog/' + p.id, text: p.titulo }),
+          h('span', { class: 'date', text: p.status === 'publicado' ? 'Publicado em ' + fmtDate(p.publicadoEm) : 'Rascunho · ' + fmtDate(p.atualizadoEm) })));
       });
     }).catch(function () {});
   }
@@ -207,6 +207,18 @@
 
   function route() {
     var layout = document.querySelector('.layout');
+    var bm = /^#\/blog(?:\/([\w-]+))?$/.exec(location.hash);
+    if (bm) {
+      state.current = null;
+      layout.classList.add('showing-detail');
+      renderList();
+      (!bm[1] ? api('GET', '/adm/blog').then(renderBlogLista)
+        : bm[1] === 'novo' ? Promise.resolve(renderPostEditor(null))
+        : api('GET', '/adm/blog/posts/' + bm[1]).then(function (r) { renderPostEditor(r.post); }))
+        .then(showDetail)
+        .catch(function (err) { if (err.message !== '401') { toast(err.message, true); location.hash = '#/blog'; } });
+      return;
+    }
     var nc = /^#\/novo-cliente(?:\/([\w-]+))?$/.exec(location.hash);
     if (nc) {
       state.current = null;
@@ -259,7 +271,7 @@
   }
   window.addEventListener('hashchange', route);
 
-  var URLS = { pedido: '/adm/pedidos/', mensagem: '/adm/mensagens/', proposta: '/adm/propostas/', cliente: '/adm/clientes/' };
+  var URLS = { pedido: '/adm/pedidos/', mensagem: '/adm/mensagens/', proposta: '/adm/propostas/', cliente: '/adm/clientes/', post: '/adm/blog/posts/' };
 
   function backLink() {
     return h('button', { type: 'button', class: 'btn btn-ghost btn-sm back', onclick: function () { location.hash = ''; } }, '← Voltar');
@@ -295,9 +307,9 @@
       }
       clearTimeout(timer);
       api('DELETE', URLS[tipo] + id).then(function () {
-        toast({ pedido: 'Pedido excluído, com todos os ficheiros', mensagem: 'Mensagem excluída', proposta: 'Proposta excluída', cliente: 'Cliente excluído, com os pagamentos registados' }[tipo]);
-        location.hash = '';
-        loadItems();
+        toast({ pedido: 'Pedido excluído, com todos os ficheiros', mensagem: 'Mensagem excluída', proposta: 'Proposta excluída', cliente: 'Cliente excluído, com os pagamentos registados', post: 'Post excluído' }[tipo]);
+        location.hash = tipo === 'post' ? '#/blog' : '';
+        if (tipo === 'post') loadBlog(); else loadItems();
       }).catch(function (err) { toast(err.message, true); });
     });
     return btn;
@@ -673,6 +685,202 @@
     el.appendChild(h('section', { class: 'card wide' }, form));
     window.scrollTo(0, 0);
     form.elements.nome.focus();
+  }
+
+  // ---------- blog ----------
+  function renderBlogLista(r) {
+    var el = $('detail');
+    el.textContent = '';
+    el.appendChild(backLink());
+    el.appendChild(h('div', { class: 'd-head' },
+      h('div', null, h('h1', { text: 'Blog' }),
+        h('p', { class: 'd-meta' }, 'Publicado em ', h('a', { class: 'link', href: r.url, target: '_blank', rel: 'noopener noreferrer', text: r.url.replace(/^https?:\/\//, '') }))),
+      h('div', { class: 'd-actions' }, h('a', { class: 'btn btn-primary btn-sm', href: '#/blog/novo' }, '+ Escrever post'))));
+    el.appendChild(h('section', { class: 'card wide' },
+      r.posts.length ? h('div', { class: 'table-wrap' }, h('table', { class: 'pay-table' },
+        h('thead', null, h('tr', null, ['Título', 'Situação', 'Data', ''].map(function (t) { return h('th', { text: t }); }))),
+        h('tbody', null, r.posts.map(function (p) {
+          return h('tr', null,
+            h('td', null, h('a', { class: 'link', href: '#/blog/' + p.id, text: p.titulo })),
+            h('td', null, h('span', { class: 'badge st-' + p.status, text: p.status === 'publicado' ? 'Publicado' : 'Rascunho' })),
+            h('td', { text: p.status === 'publicado' ? fmtDate(p.publicadoEm) : 'editado ' + fmtDate(p.atualizadoEm) }),
+            h('td', null, p.url ? h('a', { class: 'link', href: p.url, target: '_blank', rel: 'noopener noreferrer' }, 'Ver ↗') : null));
+        }))))
+        : h('p', { class: 'muted', text: 'Ainda não há posts. Escreva o primeiro: um artigo útil para os seus clientes ajuda a página a aparecer no Google.' })));
+  }
+
+  // Reduz imagens grandes antes de enviar (como no /comecar): 2000 px chegam para o blog.
+  function reduzirImagem(file) {
+    if (!window.createImageBitmap) return Promise.resolve(file);
+    return createImageBitmap(file).then(function (bmp) {
+      var scale = Math.min(1, 2000 / Math.max(bmp.width, bmp.height));
+      if (scale === 1 && file.size <= 1.5 * 1024 * 1024) { if (bmp.close) bmp.close(); return file; }
+      var cv = document.createElement('canvas');
+      cv.width = Math.round(bmp.width * scale); cv.height = Math.round(bmp.height * scale);
+      cv.getContext('2d').drawImage(bmp, 0, 0, cv.width, cv.height);
+      if (bmp.close) bmp.close();
+      return new Promise(function (resolve) {
+        cv.toBlob(function (b) { resolve(b && b.size < file.size ? new File([b], 'imagem.jpg', { type: 'image/jpeg' }) : file); }, 'image/jpeg', 0.85);
+      });
+    }).catch(function () { return file; });
+  }
+  function enviarImagem(file) {
+    return reduzirImagem(file).then(function (f) {
+      var fd = new FormData();
+      fd.append('imagem', f, f.name || 'imagem.jpg');
+      return fetch('/adm/blog/imagens', { method: 'POST', credentials: 'same-origin', headers: { 'X-LX': '1' }, body: fd });
+    }).then(function (res) {
+      return res.json().catch(function () { return {}; }).then(function (d) {
+        if (res.status === 401) { showLogin(d.message); throw new Error('401'); }
+        if (!res.ok || !d.ok) throw new Error(d.message || (res.status === 413 ? 'Imagem grande demais.' : 'Erro ' + res.status));
+        return d;
+      });
+    });
+  }
+  function escolherFicheiro(cb) {
+    var inp = h('input', { type: 'file', accept: 'image/jpeg,image/png,image/webp', hidden: true });
+    inp.addEventListener('change', function () { if (inp.files[0]) cb(inp.files[0]); inp.remove(); });
+    document.body.appendChild(inp);
+    inp.click();
+  }
+  function slugBlog(s) {
+    return String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 80).replace(/-+$/, '');
+  }
+
+  function renderPostEditor(p) {
+    p = p || { titulo: '', slug: '', resumo: '', conteudo: '', capa: null, capaAlt: '', status: 'rascunho' };
+    var publicado = p.status === 'publicado';
+    var titulo = textInput('titulo', p.titulo, { maxlength: '140', placeholder: 'Ex.: 5 motivos para o seu negócio ter uma página própria' });
+    var slug = textInput('slug', p.slug, { maxlength: '80', spellcheck: 'false' });
+    var slugManual = !!p.slug;
+    titulo.addEventListener('input', function () { if (!slugManual) slug.value = slugBlog(titulo.value); });
+    slug.addEventListener('input', function () { slugManual = true; });
+    var resumo = textArea('resumo', p.resumo, { maxlength: '220', class: 'ta-sm', placeholder: 'Uma ou duas frases. Aparece no Google, na lista de artigos e quando alguém partilha o link.' });
+    var conta = h('span', { class: 'f-hint' });
+    var contar = function () { conta.textContent = resumo.value.length + '/220 caracteres (o ideal para o Google é até ~160)'; };
+    resumo.addEventListener('input', contar); contar();
+
+    // capa
+    var capa = p.capa;
+    var capaImg = h('img', { class: 'capa-thumb', alt: 'Capa do post' });
+    var capaBox = h('div', { class: 'capa-box' });
+    var capaAlt = textInput('capaAlt', p.capaAlt, { maxlength: '160', placeholder: 'Descrição da imagem (para quem não a vê)' });
+    function desenharCapa() {
+      capaBox.textContent = '';
+      if (capa) { capaImg.src = '/adm/blog/imagens/' + capa; capaBox.appendChild(capaImg); }
+      capaBox.appendChild(h('div', { class: 'link-row' },
+        h('button', { type: 'button', class: 'btn btn-ghost btn-sm', onclick: function () {
+          escolherFicheiro(function (f) {
+            toast('A enviar a capa…');
+            enviarImagem(f).then(function (r) { capa = r.nome; desenharCapa(); toast('Capa enviada: salve o post para a guardar'); })
+              .catch(function (e) { if (e.message !== '401') toast(e.message, true); });
+          });
+        } }, capa ? 'Trocar capa' : 'Escolher capa'),
+        capa ? h('button', { type: 'button', class: 'btn btn-ghost btn-sm', onclick: function () { capa = null; desenharCapa(); } }, 'Remover capa') : null));
+    }
+    desenharCapa();
+
+    // texto + barra de ferramentas
+    var ta = h('textarea', { class: 'code-editor', spellcheck: 'true', 'aria-label': 'Texto do post' });
+    ta.value = p.conteudo;
+    function inserir(antes, depois, exemplo) {
+      var a = ta.selectionStart, b = ta.selectionEnd, sel = ta.value.slice(a, b) || exemplo || '';
+      ta.value = ta.value.slice(0, a) + antes + sel + (depois || '') + ta.value.slice(b);
+      ta.focus();
+      ta.selectionStart = a + antes.length; ta.selectionEnd = a + antes.length + sel.length;
+    }
+    var bar = h('div', { class: 'link-row editor-bar' },
+      h('button', { type: 'button', class: 'chip', onclick: function () { inserir('\n## ', '\n', 'Título da secção'); } }, 'Título'),
+      h('button', { type: 'button', class: 'chip', onclick: function () { inserir('**', '**', 'texto em negrito'); } }, 'Negrito'),
+      h('button', { type: 'button', class: 'chip', onclick: function () { inserir('[', '](https://)', 'texto do link'); } }, 'Link'),
+      h('button', { type: 'button', class: 'chip', onclick: function () { inserir('\n- ', '\n', 'item da lista'); } }, 'Lista'),
+      h('button', { type: 'button', class: 'chip', onclick: function () { inserir('\n> ', '\n', 'dica em destaque'); } }, 'Destaque'),
+      h('button', { type: 'button', class: 'chip', onclick: function () {
+        escolherFicheiro(function (f) {
+          toast('A enviar a imagem…');
+          enviarImagem(f).then(function (r) { inserir('\n![', '](' + r.url + ')\n', 'descrição da imagem'); toast('Imagem inserida'); })
+            .catch(function (e) { if (e.message !== '401') toast(e.message, true); });
+        });
+      } }, 'Imagem'));
+
+    function dados(acao) {
+      return { titulo: titulo.value, slug: slug.value, resumo: resumo.value, conteudo: ta.value, capa: capa, capaAlt: capaAlt.value, acao: acao };
+    }
+    // Cria (se ainda não existe) e salva; devolve o post.
+    function salvar(acao) {
+      var d = dados(acao);
+      var criar = p.id ? Promise.resolve(p.id) : api('POST', '/adm/blog/posts', d).then(function (r) { p.id = r.id; return r.id; });
+      return criar.then(function (id) { return api('PUT', '/adm/blog/posts/' + id, d); }).then(function (r) { loadBlog(); return r.post; });
+    }
+    // Depois de salvar: atualiza o endereço sem disparar o route() (que recarregaria o editor).
+    function mostrar(post) {
+      if (location.hash !== '#/blog/' + post.id) history.replaceState(null, '', '#/blog/' + post.id);
+      renderPostEditor(post);
+    }
+    var bSalvar = h('button', { type: 'button', class: 'btn btn-ghost btn-sm' }, publicado ? 'Salvar alterações' : 'Salvar rascunho');
+    bSalvar.addEventListener('click', function () {
+      salvar().then(function (post) { toast(publicado ? 'Alterações publicadas' : 'Rascunho salvo'); mostrar(post); })
+        .catch(function (e) { toast(e.message, true); });
+    });
+    var bPublicar = h('button', { type: 'button', class: 'btn btn-primary btn-sm' }, 'Publicar');
+    bPublicar.addEventListener('click', function () {
+      salvar('publicar').then(function (post) { toast('Post publicado'); mostrar(post); })
+        .catch(function (e) { toast(e.message, true); });
+    });
+    var bDespublicar = h('button', { type: 'button', class: 'btn btn-ghost btn-sm' }, 'Voltar a rascunho');
+    bDespublicar.addEventListener('click', function () {
+      salvar('despublicar').then(function (post) { toast('O post saiu do blog e voltou a rascunho'); mostrar(post); })
+        .catch(function (e) { toast(e.message, true); });
+    });
+    var bPrevia = h('button', { type: 'button', class: 'btn btn-ghost btn-sm' }, 'Pré-visualizar');
+    bPrevia.addEventListener('click', function () {
+      // abre já: uma janela aberta só depois do salvar seria bloqueada pelo navegador
+      var w = window.open('about:blank', '_blank');
+      salvar().then(function (post) {
+        if (w) w.location = '/adm/blog/posts/' + post.id + '/previa';
+        mostrar(post);
+      }).catch(function (e) { if (w) w.close(); toast(e.message, true); });
+    });
+
+    var el = $('detail');
+    el.textContent = '';
+    el.appendChild(h('a', { class: 'btn btn-ghost btn-sm', href: '#/blog' }, '← Todos os posts'));
+    el.appendChild(h('div', { class: 'd-head' },
+      h('div', null,
+        h('h1', { text: p.id ? (p.titulo || 'Post sem título') : 'Novo post' }),
+        p.id ? h('span', { class: 'badge st-' + p.status, text: publicado ? 'Publicado em ' + fmtDate(p.publicadoEm) : 'Rascunho' }) : null),
+      h('div', { class: 'd-actions' },
+        bSalvar,
+        bPrevia,
+        publicado ? bDespublicar : bPublicar,
+        publicado && p.url ? h('a', { class: 'btn btn-ghost btn-sm', href: p.url, target: '_blank', rel: 'noopener noreferrer' }, 'Ver no blog ↗') : null,
+        p.id ? deleteButton('post', p.id) : null)));
+    el.appendChild(h('div', { class: 'd-grid' },
+      h('section', { class: 'card wide' }, h('div', { class: 'form-grid' },
+        wideField('Título', titulo),
+        formField('Endereço', slug, publicado ? 'Mudar o endereço de um post publicado mantém o antigo a redirecionar.' : 'blog.lynxcoder.com.br/… (sai do título)'),
+        formField('Descrição da capa', capaAlt),
+        groupField('Capa (opcional)', capaBox, 'Aparece no topo do post, na lista e na partilha. Ideal: horizontal, 1600×900.', true),
+        groupField('Resumo', h('div', null, resumo, conta), null, true))),
+      h('section', { class: 'card wide' }, h('h2', { text: 'Texto' }), bar, ta),
+      h('section', { class: 'card' }, h('h2', { text: 'Formato' }),
+        h('ul', { class: 'help-list' },
+          h('li', null, h('code', { text: '## Título' }), ' secção  ·  ', h('code', { text: '### Subtítulo' })),
+          h('li', null, 'Linha em branco separa parágrafos'),
+          h('li', null, h('code', { text: '- item' }), ' lista  ·  ', h('code', { text: '1. item' }), ' numerada'),
+          h('li', null, h('code', { text: '**negrito**' }), '  ·  ', h('code', { text: '_itálico_' }), '  ·  ', h('code', { text: '`código`' })),
+          h('li', null, h('code', { text: '[texto](https://…)' }), ' link  ·  ', h('code', { text: '> dica' }), ' destaque'),
+          h('li', null, h('code', { text: '![descrição](/imagens/…)' }), ' imagem (use o botão Imagem)'),
+          h('li', null, h('code', { text: '| a | b |' }), ' tabela'))),
+      h('section', { class: 'card' }, h('h2', { text: 'Antes de publicar' }),
+        h('ul', { class: 'help-list' },
+          h('li', null, 'Título claro, com o que a pessoa pesquisaria no Google'),
+          h('li', null, 'Resumo de 1 ou 2 frases (é obrigatório para publicar)'),
+          h('li', null, 'Imagens com descrição: ajuda no Google e na acessibilidade'),
+          h('li', null, 'Use "Pré-visualizar" para ver como fica no blog')))));
+    window.scrollTo(0, 0);
+    if (!p.id) titulo.focus();
   }
 
   // ---------- propostas ----------

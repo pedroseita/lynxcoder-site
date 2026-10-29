@@ -127,31 +127,6 @@ function mensagemFile(id) {
   return path.join(DIRS.mensagens, `${id}.json`);
 }
 
-// ---------- blog (Hashnode) ----------
-// Lido do RSS do blog: formato padrão e estável (a API GraphQL do Hashnode
-// mudou de endereço sem aviso, o RSS não).
-const BLOG_URL = 'https://blog.lynxcoder.com.br';
-let blogCache = { at: 0, data: null };
-const xmlText = (s) => String(s || '')
-  .replace(/^<!\[CDATA\[([\s\S]*)\]\]>$/, '$1')
-  .replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&amp;/g, '&')
-  .trim();
-const tag = (xml, name) => { const m = new RegExp(`<${name}>([\\s\\S]*?)</${name}>`).exec(xml); return m ? xmlText(m[1]) : ''; };
-
-async function blogPosts() {
-  if (blogCache.data && Date.now() - blogCache.at < 10 * 60 * 1000) return blogCache.data;
-  const res = await fetch(`${BLOG_URL}/rss.xml`, { signal: AbortSignal.timeout(6000) });
-  if (!res.ok) throw new Error(`RSS ${res.status}`);
-  const xml = await res.text();
-  const posts = (xml.match(/<item>[\s\S]*?<\/item>/g) || []).slice(0, 5).map((item) => {
-    const date = new Date(tag(item, 'pubDate'));
-    return { title: tag(item, 'title'), url: tag(item, 'link'), publishedAt: isNaN(date) ? null : date.toISOString() };
-  }).filter((p) => p.title && /^https:\/\//.test(p.url));
-  const data = { url: BLOG_URL, posts };
-  blogCache = { at: Date.now(), data };
-  return data;
-}
-
 module.exports = async function adminRoutes(app) {
   // Ficheiros estáticos do painel, carregados uma vez no arranque.
   const statics = {};
@@ -159,6 +134,8 @@ module.exports = async function adminRoutes(app) {
     ['/', 'index.html', 'text/html; charset=utf-8'],
     ['/assets/admin.css', 'admin.css', 'text/css; charset=utf-8'],
     ['/assets/admin.js', 'admin.js', 'text/javascript; charset=utf-8'],
+    // visual do blog, para a pré-visualização dos posts no painel
+    ['/assets/blog.css', '../blog/blog.css', 'text/css; charset=utf-8'],
     ['/assets/logo.png', 'logo.png', 'image/png'],
     ['/assets/fonts/space-grotesk-latin.woff2', 'fonts/space-grotesk-latin.woff2', 'font/woff2'],
     ['/assets/fonts/space-grotesk-latin-ext.woff2', 'fonts/space-grotesk-latin-ext.woff2', 'font/woff2'],
@@ -381,13 +358,6 @@ module.exports = async function adminRoutes(app) {
   // ---------- clientes ativos (routes/clientes.js) ----------
   await clientes.adminRoutes(app);
 
-  // ---------- blog ----------
-  app.get('/adm/blog', async (req) => {
-    try {
-      return { ok: true, ...(await blogPosts()) };
-    } catch (err) {
-      req.log.warn({ err: err.message }, 'falha ao ler posts do Hashnode');
-      return { ok: true, url: 'https://blog.lynxcoder.com.br', posts: [], erro: 'Não foi possível carregar os posts agora.' };
-    }
-  });
+  // ---------- blog próprio (routes/blog.js) ----------
+  await require('./blog').adminRoutes(app);
 };

@@ -95,6 +95,16 @@ jobs:
           echo "— posts recentes para a pagina inicial"
           curl -s http://localhost:3000/api/blog/recentes | grep -q '"posts":\[\]'
 
+          echo "— compra direta (/api/criar): catalogo, reservados, validacao, sem token nao entra"
+          curl -s http://localhost:3000/api/criar/catalogo | grep -q '"gateway":"manual"'
+          curl -s 'http://localhost:3000/api/criar/subdominio?nome=painel' | grep -q '"disponivel":false'
+          curl -s 'http://localhost:3000/api/criar/subdominio?nome=pagina-livre-ci' | grep -q '"disponivel":true'
+          test "$(curl -s -o /dev/null -w '%{http_code}' -H 'content-type: application/json' -d '{"etapa":2,"dados":{"prof":"eletricista","tipo":"apresentacao"}}' http://localhost:3000/api/criar/rascunho)" = "400"
+          test "$(curl -s -o /dev/null -w '%{http_code}' -H 'content-type: application/json' -d '{}' http://localhost:3000/api/criar/rascunho/20260101-0000-abcdef/checkout)" = "404"
+          echo "— webhook desligado enquanto nao ha gateway configurado"
+          test "$(curl -s -o /dev/null -w '%{http_code}' -H 'content-type: application/json' -d '{"event":"PAYMENT_CONFIRMED"}' http://localhost:3000/api/criar/pagamentos/webhook)" = "404"
+          test "$(curl -s -o /dev/null -w '%{http_code}' -H 'Host: admin.lynxcoder.com.br' http://localhost:3000/adm/catalogo)" = "401"
+
           docker rm -f lynx-api-ci
 
       # Confirma no container real aquilo que mais vezes se quebrou aqui:
@@ -205,6 +215,14 @@ jobs:
           body lynxsites.com.br / | grep -q 'Páginas criadas pela LynxCoder'
           test "$(code lynxsites.com.br /logo.png)" = "200"
           hdr www.lynxsites.com.br /x | grep -iq '^location: https://lynxsites.com.br/x'
+
+          echo "— /criar: pagina da compra com CSP estrita, e a inicial leva para la"
+          body lynxsites.com.br /criar | grep -q 'Criar a minha página'
+          hdr lynxsites.com.br /criar | grep -iq "content-security-policy: default-src 'self'; script-src 'self' https://challenges.cloudflare.com"
+          test "$(code lynxsites.com.br /criar/criar.js)" = "200"
+          test "$(code lynxsites.com.br /criar/fonts/manrope-latin.woff2)" = "200"
+          hdr lynxsites.com.br /criar/ | grep -iq '^location: /criar'
+          body lynxsites.com.br / | grep -q 'href="/criar"'
 
           docker rm -f lynxsites-paginas
 

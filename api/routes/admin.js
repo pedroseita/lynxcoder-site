@@ -22,6 +22,7 @@ const totp = require('../lib/totp');
 const { zipStream } = require('../lib/zip');
 const propostas = require('./propostas');
 const clientes = require('./clientes');
+const criar = require('./criar');
 const flags = require('../lib/flags');
 const { validarDados, summary } = require('./onboarding');
 
@@ -221,7 +222,7 @@ module.exports = async function adminRoutes(app) {
 
   // ---------- entradas ----------
   app.get('/adm/entradas', async () => {
-    const items = [...await listPedidos(), ...await listMensagens(), ...(await propostas.all()).map(propostas.resumo), ...(await clientes.all()).map(clientes.resumo)]
+    const items = [...await listPedidos(), ...await listMensagens(), ...(await propostas.all()).map(propostas.resumo), ...(await clientes.all()).map(clientes.resumo), ...(await criar.todas()).map(criar.resumo)]
       .sort((a, b) => String(b.recebidoEm).localeCompare(String(a.recebidoEm)));
     return {
       ok: true,
@@ -232,6 +233,7 @@ module.exports = async function adminRoutes(app) {
         propostasAceitas: items.filter((i) => i.tipo === 'proposta' && i.status === 'aceita' && !i.teste).length,
         clientesAtivos: items.filter((i) => i.tipo === 'cliente' && ['em_dia', 'vence', 'atraso'].includes(i.status) && !i.teste).length,
         clientesAtraso: items.filter((i) => i.tipo === 'cliente' && i.status === 'atraso' && !i.teste).length,
+        comprasPagas: items.filter((i) => i.tipo === 'compra' && i.status === 'pago').length,
         testes: items.filter((i) => i.teste).length,
       },
     };
@@ -357,6 +359,9 @@ module.exports = async function adminRoutes(app) {
 
   // ---------- clientes ativos (routes/clientes.js) ----------
   await clientes.adminRoutes(app);
+
+  // ---------- compras do lynxsites.com.br/criar e catálogo (routes/criar.js) ----------
+  await criar.adminRoutes(app);
 
   // ---------- blog próprio (routes/blog.js) ----------
   await require('./blog').adminRoutes(app);

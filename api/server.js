@@ -5,6 +5,7 @@
 //   lynxcoder.com.br/api/proposta|comecar  links individuais       (routes/propostas.js)
 //   admin.lynxcoder.com.br            painel com login + 2 etapas (routes/admin.js)
 //   blog.lynxcoder.com.br             blog, escrito no painel      (routes/blog.js)
+//   lynxsites.com.br/api/criar        compra direta de páginas     (routes/criar.js)
 //
 // Os dados ficam no volume /data (ver docs/runbook.md).
 'use strict';
@@ -57,6 +58,7 @@ app.register(require('./routes/onboarding'));
 app.register(require('./routes/contato'));
 app.register(require('./routes/propostas').publicRoutes);
 app.register(blog.publicRoutes);
+app.register(require('./routes/criar').publicRoutes);
 app.register(require('./routes/admin'));
 
 app.setErrorHandler((err, req, reply) => {

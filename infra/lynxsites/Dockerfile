@@ -8,6 +8,9 @@ RUN { echo 'map $host $lx_reservado {'; echo '    default 0;'; \
       sed -e 's/#.*//' -e 's/[[:space:]]//g' /tmp/reservados.txt | grep -v '^$' | sed 's/.*/    &.lynxsites.com.br 1;/'; \
       echo '}'; } > /etc/nginx/conf.d/00-reservados.conf \
  && rm /tmp/reservados.txt
+COPY infra/lynxsites/criar-headers.conf /etc/nginx/snippets/criar-headers.conf
 COPY infra/lynxsites/inicio/ /usr/share/nginx/inicio/
+COPY infra/lynxsites/criar/ /usr/share/nginx/inicio/criar/
+COPY src/assets/fonts/manrope-latin.woff2 src/assets/fonts/manrope-latin-ext.woff2 /usr/share/nginx/inicio/criar/fonts/
 COPY src/favicon.ico /usr/share/nginx/inicio/favicon.ico
 COPY src/assets/img/logo.png /usr/share/nginx/inicio/logo.png

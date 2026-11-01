@@ -44,6 +44,7 @@ infra/
 └── lynxsites/             páginas dos clientes em <nome>.lynxsites.com.br (projeto à parte)
     ├── nginx.conf         host -> pasta do cliente; lynxsites.com.br -> inicio/
     ├── inicio/            página de apresentação do lynxsites.com.br
+    ├── criar/             compra de página em 6 passos (lynxsites.com.br/criar; API em api/routes/criar.js)
     └── docker-compose.yml router único *.lynxsites.com.br; subir com scripts/lynxsites.sh
 
 api/                     ← API (Node + Fastify), container lynxcoder-onboarding

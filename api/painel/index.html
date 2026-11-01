@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<meta name="theme-color" content="#08090b">
+<title>Painel da sua página · LynxSites</title>
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="icon" type="image/png" href="/assets/logo.png" sizes="192x192">
+<link rel="stylesheet" href="/assets/painel.css?v=1">
+</head>
+<body>
+
+<!-- ===== Entrar: e-mail -> código ===== -->
+<main id="loginView" class="login" hidden>
+  <div class="login-card">
+    <img class="login-logo" src="/assets/logo.png" alt="" width="80" height="94">
+    <p class="brand brand-center">LynxCoder <span class="brand-sub">Sites</span></p>
+    <h1>Painel da sua página</h1>
+
+    <form id="emailForm" novalidate>
+      <p class="hint">Escreva o e-mail com que contratou a página. Enviamos um código para entrar, sem senha.</p>
+      <label for="fEmail">E-mail</label>
+      <input id="fEmail" name="email" type="email" autocomplete="email" autocapitalize="none" spellcheck="false" required>
+      <button class="btn btn-primary" type="submit" id="emailBtn">Receber código</button>
+    </form>
+
+    <form id="codeForm" novalidate hidden>
+      <p class="hint" id="codeHint"></p>
+      <label for="fCode">Código de 6 dígitos</label>
+      <input id="fCode" name="codigo" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="7" placeholder="000000" required>
+      <button class="btn btn-primary" type="submit" id="codeBtn">Entrar</button>
+      <button class="btn-link" type="button" id="otherEmail">Usar outro e-mail</button>
+    </form>
+
+    <p class="form-error" id="loginError" role="alert"></p>
+  </div>
+</main>
+
+<!-- ===== Painel ===== -->
+<div id="appView" hidden>
+  <header class="top">
+    <a class="brand" href="/"><img class="brand-logo" src="/assets/logo.png" alt="" width="28" height="33"> LynxCoder <span class="brand-sub">Sites</span></a>
+    <button class="btn btn-ghost btn-sm" type="button" id="logoutBtn">Sair</button>
+  </header>
+
+  <main class="wrap" aria-live="polite">
+    <h1 id="negocio"></h1>
+
+    <section class="card" aria-labelledby="hSite">
+      <h2 id="hSite">A sua página</h2>
+      <div id="siteBox"></div>
+    </section>
+
+    <section class="card" aria-labelledby="hMens">
+      <h2 id="hMens">Mensalidade</h2>
+      <div id="mensBox"></div>
+    </section>
+
+    <section class="card" aria-labelledby="hAlt">
+      <h2 id="hAlt">Pedir uma alteração</h2>
+      <p class="hint">Diga o que quer mudar na página: um preço, um serviço, um horário, uma foto. Nós tratamos disso e avisamos quando estiver feito.</p>
+      <form id="altForm" novalidate>
+        <label class="sr-only" for="fTexto">O que quer alterar</label>
+        <textarea id="fTexto" name="texto" maxlength="2000" rows="4" placeholder="Ex.: trocar o preço da troca de tomada para R$ 90"></textarea>
+        <div class="alt-row">
+          <label class="btn btn-ghost btn-sm file-btn">📎 Juntar foto<input type="file" id="fFoto" accept="image/jpeg,image/png,image/webp" class="sr-only"></label>
+          <span class="muted small" id="fotoNome"></span>
+          <button class="btn btn-primary btn-sm" type="submit" id="altBtn">Enviar pedido</button>
+        </div>
+      </form>
+      <ul class="alts" id="altList"></ul>
+    </section>
+
+    <section class="card" aria-labelledby="hDados">
+      <h2 id="hDados">Os seus dados</h2>
+      <dl id="dadosBox"></dl>
+      <p class="hint small">Para mudar algum destes dados, faça um pedido de alteração acima.</p>
+    </section>
+  </main>
+</div>
+
+<div class="toast" id="toast" role="status" hidden></div>
+<script src="/assets/painel.js?v=1"></script>
+</body>
+</html>

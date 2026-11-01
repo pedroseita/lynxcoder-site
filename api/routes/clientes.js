@@ -286,4 +286,11 @@ function estadoSites(lista) {
   return { ativos: ativos.length, comProblema };
 }
 
-module.exports = { adminRoutes, all, resumo, clienteDoPedido, situacao, valor, estadoSites };
+// Para o painel do cliente (routes/painel.js): ficha com situação e site.
+async function porId(id) {
+  if (!ID_RE.test(String(id || ''))) return null;
+  const c = await readJson(fileOf(id));
+  return c ? comSituacao(c) : null;
+}
+
+module.exports = { adminRoutes, all, resumo, clienteDoPedido, situacao, valor, estadoSites, porId };

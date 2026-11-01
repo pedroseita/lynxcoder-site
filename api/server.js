@@ -6,6 +6,7 @@
 //   admin.lynxcoder.com.br            painel com login + 2 etapas (routes/admin.js)
 //   blog.lynxcoder.com.br             blog, escrito no painel      (routes/blog.js)
 //   lynxsites.com.br/api/criar        compra direta de páginas     (routes/criar.js)
+//   painel.lynxsites.com.br           painel do cliente            (routes/painel.js)
 //
 // Os dados ficam no volume /data (ver docs/runbook.md).
 'use strict';
@@ -37,12 +38,16 @@ app.get('/api/health', async () => ({ ok: true }));
 // para "/" e "/assets/…" do blog não chocarem com os do painel (routes/blog.js).
 const blog = require('./routes/blog');
 app.addHook('onRequest', blog.publicHook);
+// painel.lynxsites.com.br (painel do cliente): estáticos servidos aqui também.
+const painel = require('./routes/painel');
+app.addHook('onRequest', painel.publicHook);
 
 // Manutenção ligada no painel: os formulários públicos ficam indisponíveis
 // (o site mostra a página de manutenção). O painel e o health não são afetados.
 app.addHook('onRequest', async (req, reply) => {
   const url = req.url.split('?')[0];
-  if (!url.startsWith('/api/') || url === '/api/health' || !flags.manutencaoAtiva()) return;
+  // O painel do cliente não depende do site da LynxCoder: fica no ar.
+  if (!url.startsWith('/api/') || url === '/api/health' || url.startsWith('/api/painel/') || !flags.manutencaoAtiva()) return;
   const message = 'O site está em manutenção neste momento. Tente de novo daqui a pouco.';
   reply.code(503).header('retry-after', '3600');
   if (url === '/api/contato') {
@@ -59,6 +64,7 @@ app.register(require('./routes/contato'));
 app.register(require('./routes/propostas').publicRoutes);
 app.register(blog.publicRoutes);
 app.register(require('./routes/criar').publicRoutes);
+app.register(painel.publicRoutes);
 app.register(require('./routes/admin'));
 
 app.setErrorHandler((err, req, reply) => {

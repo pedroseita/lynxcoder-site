@@ -105,6 +105,17 @@ jobs:
           test "$(curl -s -o /dev/null -w '%{http_code}' -H 'content-type: application/json' -d '{"event":"PAYMENT_CONFIRMED"}' http://localhost:3000/api/criar/pagamentos/webhook)" = "404"
           test "$(curl -s -o /dev/null -w '%{http_code}' -H 'Host: admin.lynxcoder.com.br' http://localhost:3000/adm/catalogo)" = "401"
 
+          echo "— painel do cliente: so no host proprio, CSP estrita, sem sessao nao entra"
+          PH='Host: painel.lynxsites.com.br'
+          curl -s -H "$PH" http://localhost:3000/ | grep -q 'Painel da sua página'
+          curl -sI -H "$PH" http://localhost:3000/ | grep -iq "content-security-policy: default-src 'self'; script-src 'self'"
+          test "$(curl -s -o /dev/null -w '%{http_code}' -H "$PH" http://localhost:3000/api/painel/eu)" = "401"
+          test "$(curl -s -o /dev/null -w '%{http_code}' -H "$PH" http://localhost:3000/adm/entradas)" = "404"
+          test "$(curl -s -o /dev/null -w '%{http_code}' -H 'x-lx: 1' -H 'content-type: application/json' -d '{"email":"a@b.com"}' http://localhost:3000/api/painel/codigo)" = "404"
+          test "$(curl -s -o /dev/null -w '%{http_code}' -H "$PH" -H 'content-type: application/json' -d '{"email":"a@b.com"}' http://localhost:3000/api/painel/codigo)" = "403"
+          echo "— sem SMTP o pedido de codigo diz que o acesso ainda nao esta ativo"
+          test "$(curl -s -o /dev/null -w '%{http_code}' -H "$PH" -H 'x-lx: 1' -H 'content-type: application/json' -d '{"email":"a@b.com"}' http://localhost:3000/api/painel/codigo)" = "503"
+
           docker rm -f lynx-api-ci
 
       # Confirma no container real aquilo que mais vezes se quebrou aqui:

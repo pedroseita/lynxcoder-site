@@ -178,6 +178,7 @@
       state.items = r.items;
       state.contagem = r.contagem;
       state.sites = r.sites || { ativos: 0, comProblema: [] };
+      state.alteracoes = r.alteracoes || [];
       updateCounts();
       renderList();
       if (state.section === 'inicio') renderHome();
@@ -196,7 +197,7 @@
     set('cCompras', c.comprasPagas + c.comprasAguardando);
     set('cPropostas', c.propostasAceitas);
     set('cPedidos', c.pedidosNovos);
-    set('cClientes', c.clientesAtraso, true);
+    set('cClientes', c.clientesAtraso + (state.alteracoes || []).length, c.clientesAtraso > 0);
     set('cMensagens', c.mensagensNovas);
   }
 
@@ -271,6 +272,16 @@
     todo.textContent = '';
     var reais = state.items.filter(function (it) { return !it.teste; });
     var n = 0;
+    (state.alteracoes || []).forEach(function (a) {
+      n++;
+      todo.appendChild(h('li', { class: 'todo-item p0' },
+        h('span', { class: 'todo-dot', 'aria-hidden': 'true' }),
+        h('span', { class: 'todo-body' },
+          h('span', { class: 'todo-what', text: 'Pedido de alteração pelo painel' }),
+          h('a', { class: 'todo-title', href: '#/cliente/' + a.clienteId, text: a.nome }),
+          h('span', { class: 'todo-sub', text: a.texto.slice(0, 120) + ' · ' + fmtDate(a.criadoEm) })),
+        h('a', { class: 'btn btn-ghost btn-sm', href: '#/cliente/' + a.clienteId }, 'Ver pedido')));
+    });
     A_FAZER.forEach(function (regra, prio) {
       reais.filter(function (it) { return it.tipo === regra[0] && it.status === regra[1]; }).forEach(function (it) {
         n++;
@@ -889,7 +900,40 @@
               h('tbody', null, linhas)))
           : h('p', { class: 'muted small', text: 'Nenhum pagamento registado ainda.' }),
         payForm),
+      altCard(c),
       notesCard('cliente', c.id, { notas: c.notas, atualizadoEm: c.atualizadoEm })));
+  }
+
+  // Pedidos de alteração feitos pelo cliente em painel.lynxsites.com.br.
+  function altCard(c) {
+    var box = h('div', null, h('p', { class: 'muted small', text: 'A carregar…' }));
+    var card = h('section', { class: 'card wide' }, h('h2', { text: 'Pedidos de alteração (painel do cliente)' }), box);
+    api('GET', '/adm/clientes/' + c.id + '/alteracoes').then(function (r) {
+      box.textContent = '';
+      box.appendChild(h('p', { class: 'muted small', text: c.email
+        ? 'O cliente entra em ' + r.painel + ' com o e-mail ' + c.email + ' e um código enviado por e-mail.'
+        : 'Sem e-mail na ficha: o cliente não consegue entrar no painel. Edite a ficha e acrescente o e-mail.' }));
+      if (!r.alteracoes.length) { box.appendChild(h('p', { class: 'muted small', text: 'Nenhum pedido ainda.' })); return; }
+      box.appendChild(h('ul', { class: 'alt-list' }, r.alteracoes.map(function (a) {
+        var base = '/adm/clientes/' + c.id + '/alteracoes/' + a.id;
+        var resp = h('input', { type: 'text', maxlength: '1000', placeholder: 'Resposta para o cliente (opcional)', 'aria-label': 'Resposta para o cliente' });
+        resp.value = a.resposta || '';
+        var btn = h('button', { type: 'button', class: 'btn btn-sm ' + (a.estado === 'aberta' ? 'btn-primary' : 'btn-ghost') }, a.estado === 'aberta' ? 'Marcar como feito' : 'Reabrir');
+        btn.addEventListener('click', function () {
+          api('PATCH', base, { estado: a.estado === 'aberta' ? 'feita' : 'aberta', resposta: resp.value })
+            .then(function () { toast(a.estado === 'aberta' ? 'Marcado como feito' : 'Pedido reaberto'); loadItems(); route(); })
+            .catch(function (err) { toast(err.message, true); });
+        });
+        return h('li', { class: 'alt-item' + (a.estado === 'aberta' ? ' aberta' : '') },
+          h('div', { class: 'alt-head' },
+            h('span', { class: 'badge st-' + (a.estado === 'aberta' ? 'aceita' : 'concluida'), text: a.estado === 'aberta' ? 'Por fazer' : 'Feito' }),
+            h('span', { class: 'item-date', text: fmtDate(a.criadoEm) + (a.feitaEm ? ' · feito ' + fmtDate(a.feitaEm) : '') })),
+          h('p', { class: 'prose', text: a.texto }),
+          a.anexo ? h('button', { type: 'button', class: 'link alt-foto', onclick: function () { openLightbox(base + '/anexo', 'Foto do pedido'); } }, 'Ver foto anexada') : null,
+          h('div', { class: 'alt-actions' }, resp, btn));
+      })));
+    }).catch(function (err) { box.textContent = ''; box.appendChild(h('p', { class: 'alerta-txt', text: err.message })); });
+    return card;
   }
 
   // Criar (ficha sugerida a partir do pedido, ou em branco) ou editar a ficha.

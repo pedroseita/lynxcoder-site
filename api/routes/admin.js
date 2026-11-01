@@ -222,11 +222,23 @@ module.exports = async function adminRoutes(app) {
 
   // ---------- entradas ----------
   app.get('/adm/entradas', async () => {
-    const items = [...await listPedidos(), ...await listMensagens(), ...(await propostas.all()).map(propostas.resumo), ...(await clientes.all()).map(clientes.resumo), ...(await criar.todas()).map(criar.resumo)]
+    const listaClientes = await clientes.all();
+    const listaCompras = await criar.todas();
+    const items = [...await listPedidos(), ...await listMensagens(), ...(await propostas.all()).map(propostas.resumo), ...listaClientes.map(clientes.resumo), ...listaCompras.map(criar.resumo)]
       .sort((a, b) => String(b.recebidoEm).localeCompare(String(a.recebidoEm)));
+    // Recebido no mês (hora de Brasília): mensalidades registadas + compras pagas no /criar.
+    const mes = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Sao_Paulo' }).slice(0, 7);
+    const cents = (v) => Math.round(Number(v || 0) * 100);
+    let recebido = 0;
+    for (const c of listaClientes) if (!c.teste) for (const p of c.pagamentos || []) if (String(p.pagoEm).startsWith(mes)) recebido += cents(p.valor);
+    for (const c of listaCompras) {
+      if (!['pago', 'em_revisao', 'publicado'].includes(c.estado) || !c.pagoEm || !c.totais) continue;
+      if (new Date(c.pagoEm).toLocaleDateString('en-CA', { timeZone: 'America/Sao_Paulo' }).startsWith(mes)) recebido += cents(c.totais.total);
+    }
     return {
       ok: true,
       items,
+      sites: clientes.estadoSites(listaClientes),
       contagem: {
         pedidosNovos: items.filter((i) => i.tipo === 'pedido' && i.status === 'novo' && !i.teste).length,
         mensagensNovas: items.filter((i) => i.tipo === 'mensagem' && i.status === 'nova').length,
@@ -234,6 +246,11 @@ module.exports = async function adminRoutes(app) {
         clientesAtivos: items.filter((i) => i.tipo === 'cliente' && ['em_dia', 'vence', 'atraso'].includes(i.status) && !i.teste).length,
         clientesAtraso: items.filter((i) => i.tipo === 'cliente' && i.status === 'atraso' && !i.teste).length,
         comprasPagas: items.filter((i) => i.tipo === 'compra' && i.status === 'pago').length,
+        comprasAguardando: items.filter((i) => i.tipo === 'compra' && i.status === 'aguardando_pagamento').length,
+        comprasRevisao: items.filter((i) => i.tipo === 'compra' && i.status === 'em_revisao').length,
+        clientesVence: items.filter((i) => i.tipo === 'cliente' && i.status === 'vence' && !i.teste).length,
+        recebidoMes: recebido / 100,
+        mes,
         testes: items.filter((i) => i.teste).length,
       },
     };

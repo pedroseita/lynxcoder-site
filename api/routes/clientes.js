@@ -279,4 +279,11 @@ async function verificarTodos() {
 setTimeout(() => { verificarTodos().catch(() => {}); }, 20 * 1000).unref();
 setInterval(() => { verificarTodos().catch(() => {}); }, 30 * 60 * 1000).unref();
 
-module.exports = { adminRoutes, all, resumo, clienteDoPedido, situacao, valor };
+// Para o Início do painel: sites de clientes ativos verificados e com problema.
+function estadoSites(lista) {
+  const ativos = lista.filter((c) => c.status === 'ativo' && c.endereco && !c.teste);
+  const comProblema = ativos.filter((c) => sites.has(c.id) && !sites.get(c.id).ok).map((c) => ({ id: c.id, nome: c.nome, erro: sites.get(c.id).erro }));
+  return { ativos: ativos.length, comProblema };
+}
+
+module.exports = { adminRoutes, all, resumo, clienteDoPedido, situacao, valor, estadoSites };

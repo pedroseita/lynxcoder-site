@@ -384,6 +384,11 @@ eventos repetidos e confirma o pagamento perguntando ao Asaas pelo id.
 
 ## Painel admin (`admin.lynxcoder.com.br`)
 
+Menu lateral: **Início** (o que pede ação hoje, recebido no mês, estado dos
+sites), **Vendas** (Compras, Propostas, Pedidos), **Clientes e mensalidades**,
+**Mensagens**, **Blog** e **Configurações**; em baixo, Manutenção e Sair. Os
+números ao lado de cada secção contam só o que espera por ti.
+
 Servido pelo container `lynxcoder-onboarding` (`api/routes/admin.js` +
 `api/admin/`). Lista pedidos do `/comecar` e mensagens de contato, com
 situação, notas internas, fotos, download em ZIP e exclusão (direito de
@@ -395,7 +400,7 @@ Blog próprio, sem Hashnode (`api/routes/blog.js`), servido pelo container
 `lynxcoder-onboarding` (router Traefik `lynx-blog`). Fica no ar durante a
 manutenção do site, como o painel.
 
-- Escrever: painel → **Blog** (coluna da esquerda) → **+ Escrever post**.
+- Escrever: painel → **Blog** (menu lateral) → **+ Escrever post**.
   Formato simples (`## título`, `**negrito**`, listas, links, `> dica`,
   tabelas); o botão **Imagem** envia a foto (reduzida no navegador) e insere-a.
 - **Publicar** exige título, texto e resumo (o resumo aparece no Google e na

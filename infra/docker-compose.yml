@@ -134,11 +134,12 @@ services:
       - "traefik.http.middlewares.lynx-blog-ratelimit.ratelimit.burst=100"
       # Compra direta em lynxsites.com.br/criar (routes/criar.js). A página é
       # estática, no container das páginas dos clientes; só a API vem para aqui.
-      # Prioridade 50: ganha ao router da página inicial do lynxsites.com.br.
+      # Prioridade 200: o router da página inicial do lynxsites.com.br não tem
+      # prioridade fixa e o Traefik usa o comprimento da regra (52); com 50 perdia.
       - "traefik.http.routers.lynx-criar.rule=Host(`lynxsites.com.br`) && PathPrefix(`/api/criar/`)"
       - "traefik.http.routers.lynx-criar.entrypoints=websecure"
       - "traefik.http.routers.lynx-criar.tls.certresolver=cloudflare"
-      - "traefik.http.routers.lynx-criar.priority=50"
+      - "traefik.http.routers.lynx-criar.priority=200"
       - "traefik.http.routers.lynx-criar.service=lynx-api"
       - "traefik.http.routers.lynx-criar.middlewares=lynx-api-hsts,lynx-criar-ratelimit,lynx-criar-body"
       # A verificação do endereço corre enquanto o cliente escreve e as fotos

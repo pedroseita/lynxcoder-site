@@ -9,10 +9,12 @@
     proposta: [['enviada', 'Enviada'], ['aberta', 'Aberta'], ['aceita', 'Aceita'], ['formulario', 'Formulário liberado'],
       ['concluida', 'Pedido recebido'], ['expirada', 'Expirada'], ['cancelada', 'Cancelada']],
     // situação calculada pelo servidor (mensalidades) ou a escolhida no painel
-    cliente: [['em_dia', 'Em dia'], ['vence', 'Vence em breve'], ['atraso', 'Em atraso'], ['pausado', 'Pausado'], ['cancelado', 'Cancelado']]
+    cliente: [['em_dia', 'Em dia'], ['vence', 'Vence em breve'], ['atraso', 'Em atraso'], ['pausado', 'Pausado'], ['cancelado', 'Cancelado']],
+    // compra direta em lynxsites.com.br/criar (routes/criar.js)
+    compra: [['rascunho', 'Rascunho'], ['aguardando_pagamento', 'Aguarda pagamento'], ['pago', 'Paga'], ['em_revisao', 'Em revisão'], ['publicado', 'Publicada'], ['recusado', 'Recusada']]
   };
-  var ARCHIVED = ['arquivado', 'arquivada', 'cancelada', 'expirada', 'concluida', 'cancelado'];
-  var KIND = { pedido: 'Pedido', mensagem: 'Contato', proposta: 'Proposta', cliente: 'Cliente' };
+  var ARCHIVED = ['arquivado', 'arquivada', 'cancelada', 'expirada', 'concluida', 'cancelado', 'recusado'];
+  var KIND = { pedido: 'Pedido', mensagem: 'Contato', proposta: 'Proposta', cliente: 'Cliente', compra: 'Compra' };
   var PLANOS = { essencial: 'Essencial', profissional: 'Profissional' };
   var EXTRAS = { manutencao: 'Manutenção' };
   var PALETAS = { confianca: 'Confiança', natureza: 'Natureza', energia: 'Energia', elegante: 'Elegante', moderno: 'Moderno', claro: 'Claro', personalizada: 'Personalizada' };
@@ -229,22 +231,23 @@
         .catch(function (err) { if (err.message !== '401') toast(err.message, true); });
       return;
     }
-    if (location.hash === '#/nova-proposta' || /^#\/config(\/(texto|formulario))?$/.test(location.hash)) {
+    if (location.hash === '#/nova-proposta' || /^#\/config(\/(texto|formulario|catalogo))?$/.test(location.hash)) {
       state.current = null;
       layout.classList.add('showing-detail');
       renderList();
       var view = location.hash;
-      var url = view === '#/config/texto' ? '/adm/proposta-texto' : (view === '#/config/formulario' ? '/adm/formulario' : '/adm/config');
+      var url = view === '#/config/texto' ? '/adm/proposta-texto' : (view === '#/config/formulario' ? '/adm/formulario' : (view === '#/config/catalogo' ? '/adm/catalogo' : '/adm/config'));
       api('GET', url).then(function (r) {
         if (view === '#/config') renderConfig(r);
         else if (view === '#/config/texto') renderTexto(r);
         else if (view === '#/config/formulario') renderFormulario(r);
+        else if (view === '#/config/catalogo') renderCatalogo(r);
         else renderNovaProposta(r);
         showDetail();
       }).catch(function (err) { if (err.message !== '401') toast(err.message, true); });
       return;
     }
-    var m = /^#\/(pedido|mensagem|proposta|cliente)\/([\w-]+)$/.exec(location.hash);
+    var m = /^#\/(pedido|mensagem|proposta|cliente|compra)\/([\w-]+)$/.exec(location.hash);
     if (!m) {
       state.current = null;
       layout.classList.remove('showing-detail');
@@ -261,6 +264,7 @@
       if (m[1] === 'pedido') renderPedido(m[2], r);
       else if (m[1] === 'mensagem') renderMensagem(r.mensagem);
       else if (m[1] === 'cliente') renderCliente(r.cliente, r.formas);
+      else if (m[1] === 'compra') renderCompra(r);
       else renderProposta(r.proposta);
       showDetail();
     }).catch(function (err) {
@@ -271,7 +275,7 @@
   }
   window.addEventListener('hashchange', route);
 
-  var URLS = { pedido: '/adm/pedidos/', mensagem: '/adm/mensagens/', proposta: '/adm/propostas/', cliente: '/adm/clientes/', post: '/adm/blog/posts/' };
+  var URLS = { pedido: '/adm/pedidos/', mensagem: '/adm/mensagens/', proposta: '/adm/propostas/', cliente: '/adm/clientes/', compra: '/adm/compras/', post: '/adm/blog/posts/' };
 
   function backLink() {
     return h('button', { type: 'button', class: 'btn btn-ghost btn-sm back', onclick: function () { location.hash = ''; } }, '← Voltar');
@@ -530,6 +534,132 @@
       h('section', { class: 'card wide' }, h('h2', { text: 'Mensagem' }), dl([['De', m.nome], ['E-mail', m.email]]),
         h('p', { class: 'prose', text: m.mensagem })),
       notesCard('mensagem', m.id, admin)));
+  }
+
+  // ---------- compras (lynxsites.com.br/criar, routes/criar.js) ----------
+  var CORES_NOME = { amarelo: 'Amarelo', azul: 'Azul', verde: 'Verde', roxo: 'Roxo', coral: 'Coral' };
+  var ATENDE_NOME = { local: 'Local fixo', domicilio: 'Vai até o cliente', online: 'Online' };
+  var FORMA_NOME = { pix: 'PIX', cartao: 'Cartão', dinheiro: 'Dinheiro' };
+
+  function renderCompra(r) {
+    var c = r.compra, n = c.negocio || {};
+    var fotoUrl = function (f) { return '/adm/compras/' + encodeURIComponent(c.id) + '/fotos/' + encodeURIComponent(f); };
+    var thumb = function (f, label) {
+      return h('div', null,
+        h('button', { type: 'button', 'aria-label': 'Ampliar ' + label, onclick: function () { openLightbox(fotoUrl(f), label); } },
+          h('img', { src: fotoUrl(f), alt: label, loading: 'lazy' })),
+        h('p', { class: 'photo-label', text: label }));
+    };
+    // Botão de mudança de estado; os que não se desfazem pedem confirmação.
+    var acao = function (label, estado, cls, confirmar) {
+      var btn = h('button', { type: 'button', class: 'btn btn-sm ' + (cls || 'btn-ghost') }, label);
+      var armed = false;
+      btn.addEventListener('click', function () {
+        if (confirmar && !armed) {
+          armed = true; btn.classList.add('confirm'); btn.textContent = confirmar;
+          setTimeout(function () { armed = false; btn.classList.remove('confirm'); btn.textContent = label; }, 5000);
+          return;
+        }
+        api('PATCH', '/adm/compras/' + c.id, { estado: estado }).then(function () { toast(statusLabel('compra', estado)); loadItems(); route(); })
+          .catch(function (err) { toast(err.message, true); });
+      });
+      return btn;
+    };
+    var acoes = [];
+    if (c.estado === 'aguardando_pagamento') acoes.push(acao('Confirmar pagamento', 'pago', 'btn-primary', 'Confirmar: o PIX caiu?'));
+    if (c.estado === 'pago') acoes.push(acao('Começar revisão', 'em_revisao', 'btn-primary'));
+    if (c.estado === 'em_revisao') acoes.push(acao('Marcar como publicada', 'publicado', 'btn-primary', 'Confirmar: já está no ar?'));
+    if (c.estado === 'pago' || c.estado === 'em_revisao') acoes.push(acao('Recusar', 'recusado', 'btn-danger', 'Confirmar recusa (reembolsar à parte)'));
+    acoes.push(deleteButton('compra', c.id));
+
+    var cob = c.cobranca || {};
+    var totais = c.totais;
+    var swatch = function (id) { var s = h('span', { class: 'swatch' }); s.style.backgroundColor = (r.cores || {})[id] || '#ccc'; return s; };
+    var el = $('detail');
+    el.textContent = '';
+    el.appendChild(backLink());
+    el.appendChild(h('div', { class: 'd-head' },
+      h('div', null,
+        h('h1', { text: n.nome || '(rascunho sem nome)' }),
+        h('p', { class: 'd-meta' }, 'Compra em lynxsites.com.br/criar · ' + fmtDate(c.criadoEm) + ' ', badge('compra', c.estado))),
+      h('div', { class: 'd-actions' }, acoes)));
+    if (c.estado === 'aguardando_pagamento') {
+      el.appendChild(h('p', { class: 'aviso-config', text: cob.modo === 'manual'
+        ? 'PIX manual: confira no extrato um PIX de ' + fmtMoney(cob.valor) + ' (identificador ' + c.id.replace(/-/g, '') + ') antes de confirmar.'
+        : 'A aguardar a confirmação automática do gateway.' }));
+    }
+    el.appendChild(h('div', { class: 'd-grid' },
+      h('section', { class: 'card' }, h('h2', { text: 'Negócio' }), dl([
+        ['Profissão', c.profNome || c.prof],
+        ['Tipo de página', c.tipoNome || c.tipo],
+        ['WhatsApp', n.whatsapp ? h('a', { class: 'link', href: 'https://wa.me/55' + n.whatsapp, target: '_blank', rel: 'noopener' }, fmtPhone(n.whatsapp)) : ''],
+        ['E-mail', n.email ? h('a', { class: 'link', href: 'mailto:' + n.email }, n.email) : ''],
+        ['Cidade', n.cidade],
+        ['Atende', (n.atende || []).map(function (a) { return ATENDE_NOME[a] || a; }).join(', ')],
+        ['Dias', (n.dias || []).join(', ') + (n.inicio ? ' · ' + n.inicio + '–' + n.fim : '')],
+        ['Endereço', c.subdominio ? c.subdominio + '.lynxsites.com.br' : ''],
+        ['Cor', c.cor ? h('span', null, swatch(c.cor), ' ' + (CORES_NOME[c.cor] || c.cor)) : '']
+      ])),
+      h('section', { class: 'card' }, h('h2', { text: 'Pagamento' }), totais
+        ? h('div', null,
+          h('div', { class: 'dl-money' }, dl(totais.linhas.map(function (l) { return [l.descricao, fmtMoney(l.valor)]; })
+            .concat([['Total', h('strong', { text: fmtMoney(totais.total) })], ['Depois', totais.plano === 'anual' ? 'Anual' : fmtMoney(totais.mensal) + '/mês']]))),
+          c.comprador ? dl([
+            ['Comprador', c.comprador.nome], ['CPF/CNPJ', c.comprador.documento], ['Forma', FORMA_NOME[c.comprador.forma] || c.comprador.forma],
+            ['Cobrança', cob.gateway || cob.modo || ''], ['Pago em', c.pagoEm ? fmtDate(c.pagoEm) : '—'],
+            ['Lembrete', c.consentimentos && c.consentimentos.lembrete ? 'Aceitou receber' : 'Não']
+          ]) : null)
+        : h('p', { class: 'muted', text: 'Ainda não chegou ao pagamento (passo ' + (c.etapa || 1) + ' de 6).' })),
+      h('section', { class: 'card wide' }, h('h2', { text: 'Serviços' }),
+        (c.servicos || []).length ? h('ol', { class: 'services' }, c.servicos.map(function (s) {
+          return h('li', null, h('strong', { text: s.nome }), ' — ' + (s.preco === 'sob_orcamento' ? 'sob orçamento' : (s.preco === 'a_partir_de' ? 'a partir de ' : '') + fmtMoney(s.valor)));
+        })) : h('p', { class: 'muted', text: '—' }),
+        dl([['Aceita', (c.pagamentos || []).map(function (x) { return FORMA_NOME[x] || x; }).join(', ')], ['Extras', (c.extras || []).map(function (x) { return (r.extrasNomes || {})[x] || x; }).join(', ')]])),
+      h('section', { class: 'card wide' }, h('h2', { text: 'Fotos' }),
+        h('div', { class: 'photos' }, [r.fotos.retrato ? thumb(r.fotos.retrato, 'Retrato') : null]
+          .concat(r.fotos.trabalho.map(function (f, i) { return thumb(f, 'Trabalho ' + (i + 1)); })))),
+      notesCard('compra', c.id, { notas: c.notas || '' })));
+  }
+
+  // ---------- configurações: catálogo do /criar ----------
+  function renderCatalogo(r) {
+    var ta = h('textarea', { class: 'code-editor', spellcheck: 'false', 'aria-label': 'Catálogo em JSON' });
+    ta.value = JSON.stringify(r.catalogo, null, 2);
+    var estado = h('span', { class: 'muted small' });
+    var btnSalvar = h('button', { type: 'button', class: 'btn btn-primary btn-sm' }, 'Salvar');
+    btnSalvar.addEventListener('click', function () {
+      var dados;
+      try { dados = JSON.parse(ta.value); } catch (e) { toast('JSON inválido: ' + e.message, true); return; }
+      api('PUT', '/adm/catalogo', { catalogo: dados }).then(function (x) {
+        ta.value = JSON.stringify(x.catalogo, null, 2);
+        estado.textContent = 'Salvo. O /criar já usa estes valores.';
+        toast('Catálogo salvo');
+      }).catch(function (e) { toast(e.message, true); });
+    });
+    var armed = false;
+    var btnPadrao = h('button', { type: 'button', class: 'btn btn-danger btn-sm' }, 'Restaurar catálogo padrão');
+    var desarmar = function () { armed = false; btnPadrao.classList.remove('confirm'); btnPadrao.textContent = 'Restaurar catálogo padrão'; };
+    btnPadrao.addEventListener('click', function () {
+      if (!armed) { armed = true; btnPadrao.classList.add('confirm'); btnPadrao.textContent = 'Confirmar: perder as edições'; setTimeout(desarmar, 5000); return; }
+      api('POST', '/adm/catalogo/restaurar').then(function (x) { ta.value = JSON.stringify(x.catalogo, null, 2); toast('Catálogo padrão restaurado'); desarmar(); })
+        .catch(function (e) { toast(e.message, true); });
+    });
+    var el = $('detail');
+    el.textContent = '';
+    el.appendChild(backLink());
+    el.appendChild(configNav('#/config/catalogo'));
+    el.appendChild(h('div', { class: 'd-head' }, h('div', null, h('h1', { text: 'Catálogo do /criar' }),
+      h('p', { class: 'd-meta', text: 'Profissões, tipos de página, extras e preços da compra direta em lynxsites.com.br/criar. O valor cobrado vem sempre daqui.' }))));
+    el.appendChild(h('div', { class: 'd-grid' },
+      h('section', { class: 'card wide' }, h('div', { class: 'link-row editor-actions' }, btnSalvar, btnPadrao, estado), ta),
+      h('section', { class: 'card wide' }, h('h2', { text: 'Como editar' }),
+        h('ul', { class: 'help-list' },
+          h('li', null, 'Uma profissão só aparece com ', h('code', { text: '"ativa": true' }), ' e pelo menos um tipo.'),
+          h('li', null, 'Cada profissão lista os ', h('code', { text: 'tipos' }), ' e os ', h('code', { text: 'extras' }), ' que pode escolher, pelos ids.'),
+          h('li', null, 'Preços com ponto (', h('code', { text: '19.90' }), '). ', h('code', { text: 'implantacao' }), ' e ', h('code', { text: 'unico' }), ' cobram uma vez; ', h('code', { text: 'mensal' }), ' todos os meses.'),
+          h('li', null, h('code', { text: 'plano_anual.meses_pagos' }), ': meses pagos no plano anual (10 = 2 meses grátis).'),
+          h('li', null, h('code', { text: '"pagamentos_ativos": false' }), ' deixa o pagamento "em breve" no /criar; ', h('code', { text: 'true' }), ' liga-o.'),
+          h('li', null, 'Com um erro, a mensagem diz onde está e nada é salvo.')))));
   }
 
   // ---------- clientes ----------
@@ -1301,7 +1431,7 @@
 
   // ---------- configurações: sub-navegação ----------
   function configNav(atual) {
-    var tabs = [['#/config', 'Valores'], ['#/config/texto', 'Texto da proposta'], ['#/config/formulario', 'Formulário']];
+    var tabs = [['#/config', 'Valores'], ['#/config/texto', 'Texto da proposta'], ['#/config/formulario', 'Formulário'], ['#/config/catalogo', 'Catálogo /criar']];
     return h('nav', { class: 'subnav', 'aria-label': 'Configurações' }, tabs.map(function (t) {
       return h('a', { href: t[0], class: t[0] === atual ? 'on' : '', 'aria-current': t[0] === atual ? 'page' : null }, t[1]);
     }));

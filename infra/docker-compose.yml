@@ -132,6 +132,22 @@ services:
       - "traefik.http.middlewares.lynx-blog-ratelimit.ratelimit.average=300"
       - "traefik.http.middlewares.lynx-blog-ratelimit.ratelimit.period=1m"
       - "traefik.http.middlewares.lynx-blog-ratelimit.ratelimit.burst=100"
+      # Compra direta em lynxsites.com.br/criar (routes/criar.js). A página é
+      # estática, no container das páginas dos clientes; só a API vem para aqui.
+      # Prioridade 50: ganha ao router da página inicial do lynxsites.com.br.
+      - "traefik.http.routers.lynx-criar.rule=Host(`lynxsites.com.br`) && PathPrefix(`/api/criar/`)"
+      - "traefik.http.routers.lynx-criar.entrypoints=websecure"
+      - "traefik.http.routers.lynx-criar.tls.certresolver=cloudflare"
+      - "traefik.http.routers.lynx-criar.priority=50"
+      - "traefik.http.routers.lynx-criar.service=lynx-api"
+      - "traefik.http.routers.lynx-criar.middlewares=lynx-api-hsts,lynx-criar-ratelimit,lynx-criar-body"
+      # A verificação do endereço corre enquanto o cliente escreve e as fotos
+      # sobem uma a uma: mais largo que o da API do site.
+      - "traefik.http.middlewares.lynx-criar-ratelimit.ratelimit.average=120"
+      - "traefik.http.middlewares.lynx-criar-ratelimit.ratelimit.period=1m"
+      - "traefik.http.middlewares.lynx-criar-ratelimit.ratelimit.burst=40"
+      # Uma foto de cada vez (já reduzida no navegador), até 8 MB.
+      - "traefik.http.middlewares.lynx-criar-body.buffering.maxRequestBodyBytes=10485760"
     networks:
       - proxy
 

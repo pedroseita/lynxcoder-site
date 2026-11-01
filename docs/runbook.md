@@ -324,6 +324,64 @@ uma pasta com esses nomes (mapa gerado no build da imagem). Para reservar um nom
 fictício) e publica; `… cliente-teste.sh --remover` tira-o do ar. Só apaga
 pastas que ele próprio criou.
 
+## Compra direta (`lynxsites.com.br/criar`)
+
+O cliente escolhe a profissão e o tipo de página, preenche os dados, envia as
+fotos, escolhe o endereço e paga, tudo em 6 passos. Especificação: `docs/specs/active/fase-02-compra-de-pagina/`.
+
+- **Página**: estática, em `infra/lynxsites/criar/`, servida pelo container
+  `lynxsites-paginas` com CSP própria (`criar-headers.conf`).
+- **API**: `api/routes/criar.js` no container `lynxcoder-onboarding`; o Traefik
+  manda `lynxsites.com.br/api/criar/` para lá (router `lynx-criar`, prioridade 50).
+- **Dados**: `/data/criar/<id>/` (`compra.json` + `fotos/`). O token do
+  rascunho fica no navegador do cliente; no servidor só o hash. Rascunhos e
+  cobranças por pagar há 48 h são apagados com as fotos (verificação de hora a hora).
+- **Catálogo** (profissões, tipos, extras, preços): painel → Configurações →
+  **Catálogo /criar** (JSON, validado ao salvar). O valor cobrado vem sempre
+  daqui; o browser só mostra uma prévia.
+- **Endereços**: 3 a 32 caracteres, nunca os de `api/lib/reservados.txt`, nem
+  um já usado por outra compra, pedido ou cliente.
+
+### Pagamento
+
+**Desligado por omissão** (`"pagamentos_ativos": false` no catálogo): o
+/criar percorre os 6 passos e o botão final diz "Pagamentos em breve"; a API
+recusa o checkout. Para ligar: painel → Configurações → Catálogo /criar →
+`"pagamentos_ativos": true` → Salvar (sem deploy).
+
+Ligado: **PIX manual**. O passo 6 mostra QR Code e "copia e cola" com o valor
+exato e o id da compra como identificador. Painel → Compras → a compra →
+**Confirmar pagamento** quando o PIX cair no extrato. Depois: Começar revisão →
+Marcar como publicada (a página publica-se à mão, criando a pasta em
+`/root/lynxsites/<endereço>/`).
+
+Variáveis em `infra/onboarding.env` (o mesmo ficheiro do SMTP):
+
+```bash
+PIX_CHAVE=<chave PIX da LynxCoder>
+PIX_NOME=LynxCoder          # até 25 letras, sem acentos
+PIX_CIDADE=<cidade>         # até 15 letras
+# Rodapé do /criar (Decreto 7.962/2013: identificação de quem vende)
+VENDEDOR_NOME=<nome ou razão social>
+VENDEDOR_DOCUMENTO=<CPF ou CNPJ>
+VENDEDOR_ENDERECO=<endereço>
+# Anti-robô (opcional): Cloudflare → Turnstile → widget para lynxsites.com.br
+TURNSTILE_SITEKEY=<site key>
+TURNSTILE_SECRET=<secret key>
+```
+
+Sem `PIX_CHAVE`, a confirmação diz que as instruções de pagamento seguem por
+WhatsApp/e-mail. Depois de mudar o ficheiro:
+`docker compose -f /root/lynxcoder-site/infra/docker-compose.yml up -d onboarding`.
+
+**Gateway (preparado, desligado)**: `api/lib/gateway.js` já tem o Asaas (PIX e
+cartão, com o cartão na página do próprio Asaas). Para ligar, depois de criar a
+conta: `GATEWAY=asaas`, `ASAAS_API_KEY`, `ASAAS_WEBHOOK_TOKEN` (o mesmo token
+configurado no webhook do Asaas, URL
+`https://lynxsites.com.br/api/criar/pagamentos/webhook`) e, para testes,
+`ASAAS_SANDBOX=1`. Testar primeiro no sandbox. O webhook valida o token, ignora
+eventos repetidos e confirma o pagamento perguntando ao Asaas pelo id.
+
 ## Painel admin (`admin.lynxcoder.com.br`)
 
 Servido pelo container `lynxcoder-onboarding` (`api/routes/admin.js` +

@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Criar a minha página · LynxSites</title>
+<meta name="description" content="Crie a página do seu negócio em 6 passos: escolha, preencha, pague e ela fica no ar em até 24 horas.">
+<meta name="theme-color" content="#ffffff">
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="preload" href="/criar/fonts/manrope-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/criar/criar.css?v=1">
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <div class="top-row">
+      <button type="button" class="back" id="backBtn" hidden aria-label="Voltar ao passo anterior">‹ Voltar</button>
+      <a class="brand" id="brand" href="/">Lynx<b>Sites</b></a>
+      <span class="step-count" id="stepCount" aria-live="polite"></span>
+    </div>
+    <div class="progress" aria-hidden="true"><span id="progressBar"></span></div>
+  </header>
+
+  <main id="main" tabindex="-1">
+    <p class="loading" id="loading">A carregar…</p>
+
+    <!-- Passo 1 · Profissão e tipo -->
+    <section class="step" data-step="1" hidden aria-labelledby="h1">
+      <h1 id="h1">Qual é a sua profissão?</h1>
+      <label class="search">
+        <span class="sr-only">Procurar profissão</span>
+        <input type="search" id="profSearch" placeholder="Procurar profissão" autocomplete="off">
+      </label>
+      <div class="chips" id="profList" role="radiogroup" aria-label="Profissão"></div>
+      <p class="empty" id="profEmpty" hidden>Nenhuma profissão encontrada. <a href="https://lynxcoder.com.br/#contato">Fale connosco</a> e fazemos a sua.</p>
+      <div id="tipoBox" hidden>
+        <h2 class="sub" id="tipoTitle"></h2>
+        <p class="hint">Todos incluem a página no ar, o endereço e as alterações simples.</p>
+        <div class="options" id="tipoList" role="radiogroup" aria-label="Tipo de página"></div>
+      </div>
+      <p class="aside"><a href="https://lynxcoder.com.br/#contato">Precisa de um site maior, loja ou sistema? Peça uma proposta</a></p>
+    </section>
+
+    <!-- Passo 2 · Dados do negócio -->
+    <section class="step" data-step="2" hidden aria-labelledby="h2">
+      <h1 id="h2">Sobre o seu negócio</h1>
+      <form id="form2" novalidate>
+        <label class="field">Nome do negócio
+          <input name="nome" maxlength="60" autocomplete="organization" required placeholder="Ex.: Duarte Elétrica">
+        </label>
+        <div class="row2">
+          <label class="field">WhatsApp
+            <input name="whatsapp" inputmode="tel" autocomplete="tel-national" required placeholder="(19) 99999-0000">
+          </label>
+          <label class="field">Cidade
+            <input name="cidade" maxlength="60" autocomplete="address-level2" required placeholder="Campinas, SP">
+          </label>
+        </div>
+        <label class="field">E-mail
+          <input name="email" type="email" maxlength="120" autocomplete="email" required placeholder="voce@exemplo.com">
+          <small>Para o recibo e para entrar no painel da sua página.</small>
+        </label>
+        <fieldset class="field">
+          <legend>Como atende</legend>
+          <div class="chips" id="atendeList"></div>
+        </fieldset>
+        <fieldset class="field">
+          <legend>Dias de atendimento</legend>
+          <div class="days" id="diasList"></div>
+        </fieldset>
+        <div class="row2">
+          <label class="field">Das
+            <input name="inicio" type="time" required value="08:00">
+          </label>
+          <label class="field">Até
+            <input name="fim" type="time" required value="18:00">
+          </label>
+        </div>
+        <div id="turnstile"></div>
+      </form>
+    </section>
+
+    <!-- Passo 3 · Serviços e preços -->
+    <section class="step" data-step="3" hidden aria-labelledby="h3">
+      <h1 id="h3">Serviços e preços</h1>
+      <p class="hint">Até 8 serviços. Se não quiser mostrar o preço, escolha "Sob orçamento".</p>
+      <div id="servList"></div>
+      <button type="button" class="add" id="addServ">+ Adicionar serviço</button>
+      <fieldset class="field">
+        <legend>Formas de pagamento que você aceita</legend>
+        <div class="chips" id="pagList"></div>
+      </fieldset>
+    </section>
+
+    <!-- Passo 4 · Extras -->
+    <section class="step" data-step="4" hidden aria-labelledby="h4">
+      <h1 id="h4">Quer acrescentar algo?</h1>
+      <p class="hint">Tudo opcional. Pode acrescentar mais tarde.</p>
+      <div class="options" id="extraList"></div>
+    </section>
+
+    <!-- Passo 5 · Fotos e endereço -->
+    <section class="step" data-step="5" hidden aria-labelledby="h5">
+      <h1 id="h5">Fotos e endereço</h1>
+      <div class="card retrato">
+        <div class="avatar" id="retratoPrev" aria-hidden="true"></div>
+        <div>
+          <strong>Sua foto</strong>
+          <p class="hint">De rosto, com boa luz. Os clientes confiam mais quando veem quem vai atender.</p>
+        </div>
+        <label class="btn-sm">Enviar<input type="file" id="retratoInput" accept="image/*" class="sr-only"></label>
+      </div>
+      <div class="field">
+        <div class="label-row"><span>Fotos do seu trabalho</span><span class="hint" id="fotosCount"></span></div>
+        <div class="grid" id="fotosGrid"></div>
+        <small>Mínimo 3, máximo 5. As fotos são reduzidas antes de enviar.</small>
+      </div>
+      <fieldset class="field">
+        <legend>Cor principal da página</legend>
+        <div class="swatches" id="corList"></div>
+      </fieldset>
+      <label class="field">Endereço da sua página
+        <span class="addr"><input id="subInput" maxlength="32" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="duarteeletrica"><span>.lynxsites.com.br</span></span>
+        <small id="subMsg" aria-live="polite"></small>
+      </label>
+    </section>
+
+    <!-- Passo 6 · Revisão e pagamento -->
+    <section class="step" data-step="6" hidden aria-labelledby="h6">
+      <h1 id="h6">Revise e pague</h1>
+      <p class="notice" id="payNotice" hidden>Os pagamentos abrem em breve. Por agora pode experimentar todos os passos e ver o valor final.</p>
+      <div class="card resumo" id="resumoCard"></div>
+      <div class="toggle" id="planoToggle" role="radiogroup" aria-label="Cobrança"></div>
+      <div class="card" id="linhas"></div>
+      <form id="form6" novalidate>
+        <label class="field">Nome completo
+          <input name="nome" autocomplete="name" maxlength="100" required>
+        </label>
+        <label class="field">CPF ou CNPJ
+          <input name="documento" inputmode="numeric" maxlength="18" required>
+          <small>Pedido para emitir a cobrança.</small>
+        </label>
+        <div class="toggle" id="formaToggle" role="radiogroup" aria-label="Forma de pagamento"></div>
+        <label class="check"><input type="checkbox" name="termos" required>
+          <span>Li e aceito os <a href="https://lynxcoder.com.br/terms.html" target="_blank" rel="noopener">termos de uso</a> e a <a href="https://lynxcoder.com.br/privacy.html" target="_blank" rel="noopener">política de privacidade</a>. Tenho 7 dias para desistir, com o dinheiro devolvido.</span>
+        </label>
+        <label class="check"><input type="checkbox" name="lembrete">
+          <span>Pode avisar-me por e-mail se eu deixar a compra a meio (opcional).</span>
+        </label>
+      </form>
+      <p class="hint center" id="comprovante"></p>
+    </section>
+
+    <!-- Confirmação -->
+    <section class="step" data-step="7" hidden aria-labelledby="h7">
+      <div class="done-icon" aria-hidden="true">✓</div>
+      <h1 id="h7">Pedido recebido</h1>
+      <div id="doneBody"></div>
+      <ol class="timeline" id="timeline"></ol>
+      <a class="btn btn-ghost" href="/">Voltar ao início</a>
+    </section>
+
+    <p class="error" id="error" role="alert" hidden></p>
+  </main>
+
+  <footer class="bar" id="bar" hidden>
+    <div class="bar-sum" id="barSum"></div>
+    <button type="button" class="btn" id="nextBtn">Continuar</button>
+  </footer>
+
+  <p class="seller" id="seller"></p>
+</div>
+<script src="/criar/criar.js?v=1"></script>
+</body>
+</html>

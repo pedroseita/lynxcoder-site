@@ -321,3 +321,10 @@ textarea { resize: vertical; min-height: 110px; }
   .col-list, .col-detail { padding: 16px; }
 }
 #clearTests { justify-self: start; }
+.alt-list { list-style: none; margin: 10px 0 0; padding: 0; display: grid; gap: 10px; }
+.alt-item { padding: 12px 14px; border-radius: 12px; border: 1px solid var(--border); background: var(--surface); display: grid; gap: 8px; }
+.alt-item.aberta { border-color: rgba(242,177,52,.45); }
+.alt-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+.alt-actions { display: flex; gap: 8px; align-items: center; }
+.alt-actions input { flex: 1; }
+.alt-foto { border: 0; background: none; padding: 0; cursor: zoom-in; justify-self: start; }

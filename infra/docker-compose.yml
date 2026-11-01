@@ -149,6 +149,14 @@ services:
       - "traefik.http.middlewares.lynx-criar-ratelimit.ratelimit.burst=40"
       # Uma foto de cada vez (já reduzida no navegador), até 8 MB.
       - "traefik.http.middlewares.lynx-criar-body.buffering.maxRequestBodyBytes=10485760"
+      # Painel do cliente (routes/painel.js), no mesmo certificado *.lynxsites.com.br.
+      # Ganha ao router único das páginas dos clientes (prioridade 1).
+      - "traefik.http.routers.lynx-painel.rule=Host(`painel.lynxsites.com.br`)"
+      - "traefik.http.routers.lynx-painel.entrypoints=websecure"
+      - "traefik.http.routers.lynx-painel.tls.certresolver=cloudflare"
+      - "traefik.http.routers.lynx-painel.priority=300"
+      - "traefik.http.routers.lynx-painel.service=lynx-api"
+      - "traefik.http.routers.lynx-painel.middlewares=lynx-api-hsts,lynx-criar-ratelimit,lynx-criar-body"
     networks:
       - proxy
 

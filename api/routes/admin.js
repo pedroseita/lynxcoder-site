@@ -23,6 +23,7 @@ const { zipStream } = require('../lib/zip');
 const propostas = require('./propostas');
 const clientes = require('./clientes');
 const criar = require('./criar');
+const painel = require('./painel');
 const flags = require('../lib/flags');
 const { validarDados, summary } = require('./onboarding');
 
@@ -239,6 +240,7 @@ module.exports = async function adminRoutes(app) {
       ok: true,
       items,
       sites: clientes.estadoSites(listaClientes),
+      alteracoes: await painel.abertas(),
       contagem: {
         pedidosNovos: items.filter((i) => i.tipo === 'pedido' && i.status === 'novo' && !i.teste).length,
         mensagensNovas: items.filter((i) => i.tipo === 'mensagem' && i.status === 'nova').length,
@@ -379,6 +381,9 @@ module.exports = async function adminRoutes(app) {
 
   // ---------- compras do lynxsites.com.br/criar e catálogo (routes/criar.js) ----------
   await criar.adminRoutes(app);
+
+  // ---------- pedidos de alteração do painel do cliente (routes/painel.js) ----------
+  await painel.adminRoutes(app);
 
   // ---------- blog próprio (routes/blog.js) ----------
   await require('./blog').adminRoutes(app);

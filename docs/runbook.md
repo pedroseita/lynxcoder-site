@@ -382,6 +382,28 @@ configurado no webhook do Asaas, URL
 `ASAAS_SANDBOX=1`. Testar primeiro no sandbox. O webhook valida o token, ignora
 eventos repetidos e confirma o pagamento perguntando ao Asaas pelo id.
 
+## Painel do cliente (`painel.lynxsites.com.br`)
+
+Fase 1: o cliente vê a página dele e o estado dela, as mensalidades (com PIX
+para o mês em aberto) e **pede alterações**, que a LynxCoder faz. Editar
+sozinho fica para a fase 2 (gerador de páginas).
+
+- Servido pelo container `lynxcoder-onboarding` (`api/routes/painel.js`,
+  `api/painel/`), router Traefik `lynx-painel`. Fica no ar com o site em
+  manutenção.
+- **Entrar**: o e-mail da **ficha de cliente** + código de 6 dígitos enviado por
+  e-mail (10 min, 5 tentativas). Sem e-mail na ficha, o cliente não entra.
+  Clientes cancelados não entram.
+- **Precisa do SMTP** (`SMTP_*` no `infra/onboarding.env`, ver "Aviso por
+  e-mail"). Sem ele, pedir o código responde "o acesso por e-mail ainda está a
+  ser ativado".
+- Sessão de 30 dias (14 sem uso), guardada em `/data/painel/sessoes.json` (só o
+  hash): um deploy não desliga os clientes.
+- Pedidos de alteração em `/data/painel/alteracoes/<cliente>.json` e fotos em
+  `/data/painel/anexos/`. Aparecem no Início do admin e na ficha do cliente,
+  onde se marca "feito" com uma resposta opcional que o cliente vê.
+- O PIX da mensalidade usa as mesmas variáveis `PIX_*` da compra direta.
+
 ## Painel admin (`admin.lynxcoder.com.br`)
 
 Menu lateral: **Início** (o que pede ação hoje, recebido no mês, estado dos

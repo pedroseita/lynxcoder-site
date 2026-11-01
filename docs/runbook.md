@@ -332,7 +332,7 @@ fotos, escolhe o endereço e paga, tudo em 6 passos. Especificação: `docs/spec
 - **Página**: estática, em `infra/lynxsites/criar/`, servida pelo container
   `lynxsites-paginas` com CSP própria (`criar-headers.conf`).
 - **API**: `api/routes/criar.js` no container `lynxcoder-onboarding`; o Traefik
-  manda `lynxsites.com.br/api/criar/` para lá (router `lynx-criar`, prioridade 50).
+  manda `lynxsites.com.br/api/criar/` para lá (router `lynx-criar`, prioridade 200).
 - **Dados**: `/data/criar/<id>/` (`compra.json` + `fotos/`). O token do
   rascunho fica no navegador do cliente; no servidor só o hash. Rascunhos e
   cobranças por pagar há 48 h são apagados com as fotos (verificação de hora a hora).

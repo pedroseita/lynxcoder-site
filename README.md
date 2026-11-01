@@ -44,7 +44,7 @@ infra/
 └── lynxsites/             páginas dos clientes em <nome>.lynxsites.com.br (projeto à parte)
     ├── nginx.conf         host -> pasta do cliente; lynxsites.com.br -> inicio/
     ├── inicio/            página de apresentação do lynxsites.com.br
-    └── docker-compose.yml subir com scripts/lynxsites.sh (gera clientes.yml)
+    └── docker-compose.yml router único *.lynxsites.com.br; subir com scripts/lynxsites.sh
 
 api/                     ← API (Node + Fastify), container lynxcoder-onboarding
 ├── routes/onboarding.js   POST /api/onboarding (formulário /comecar)

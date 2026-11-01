@@ -290,33 +290,39 @@ derruba as páginas dos clientes.
   formulário (só minúsculas, números e hífen).
 - `lynxsites.com.br` mostra a página de apresentação (`infra/lynxsites/inicio/`);
   `www.` redireciona para lá.
-- O DNS está no Registro.br, que **não aceita `*`**: cada cliente precisa do seu
-  registo A. Registos fixos: `lynxsites.com.br` (nome em branco) e `www`,
-  ambos → `187.127.22.113`.
+- O DNS está na **Cloudflare** (só o lynxsites.com.br; o lynxcoder.com.br
+  continua no Registro.br): registos A `lynxsites.com.br`, `www` e **`*`**, todos
+  → `187.127.22.113` e todos **"Somente DNS" (nuvem cinzenta)**. Com a nuvem
+  laranja o tráfego passava pela Cloudflare; não ligar.
+- Um só certificado `lynxsites.com.br` + `*.lynxsites.com.br`, pedido pelo
+  resolver **`cloudflare`** do Traefik (desafio DNS-01). A chave da Cloudflare
+  (só "Editar DNS" do lynxsites.com.br, limitada ao IP do VPS) está em
+  `/root/.secrets/cf_dns_token` e entra no Traefik por
+  `CF_DNS_API_TOKEN_FILE` (`/docker/traefik/docker-compose.yml`, fora deste
+  repositório). Certificados em `/letsencrypt/acme-cloudflare.json`.
 
 ### Publicar um cliente
 
-1. Registro.br → lynxsites.com.br → Configurar zona DNS → registo **A**
-   `<nome>` → `187.127.22.113`.
-2. No VPS, copiar a página para `/root/lynxsites/<nome>/` (com `index.html`).
-3. `bash /root/lynxcoder-site/scripts/lynxsites.sh`
+1. No VPS, copiar a página para `/root/lynxsites/<nome>/` (com `index.html`).
+2. Já está no ar: `https://<nome>.lynxsites.com.br`. Sem DNS nem script.
 
-O script gera um router Traefik (e um certificado) por cliente em
-`infra/lynxsites/clientes.yml` (não vai para o git) e sobe o container. Uma
-pasta cujo nome ainda não aponta para o VPS fica de fora com aviso, para o
-Let's Encrypt não falhar em repetição: criar o registo e correr de novo.
-Atualizar ficheiros de um cliente que já está no ar não precisa do script.
+Um só router (`lynxsites-clientes`, `HostRegexp`, prioridade 1) apanha qualquer
+`<nome>.lynxsites.com.br`, e o nginx escolhe a pasta pelo host; nome sem pasta
+dá 404. A prioridade 1 deixa qualquer `Host()` de outro container (o painel)
+ganhar. `bash /root/lynxcoder-site/scripts/lynxsites.sh` (o deploy.sh também o
+corre) sobe o container e avisa de pastas que nunca vão ao ar: nomes inválidos,
+reservados ou sem `index.html`.
 
-Para tirar um cliente do ar: apagar (ou mover) a pasta e correr o script.
+Para tirar um cliente do ar: apagar (ou mover) a pasta.
 
 **Endereços reservados** (`painel`, `admin`, `api`, `criar`…): lista única em
-`api/lib/reservados.txt`. O formulário e a API recusam-nos e o `lynxsites.sh` não
-publica pastas com esses nomes. Para reservar um nome novo, acrescentá-lo lá.
+`api/lib/reservados.txt`. O formulário e a API recusam-nos e o nginx nunca serve
+uma pasta com esses nomes (mapa gerado no build da imagem). Para reservar um nome novo, acrescentá-lo lá.
 
 **Cliente de teste**: `bash /root/lynxcoder-site/scripts/cliente-teste.sh` monta
 `pedroeletricista.lynxsites.com.br` a partir do exemplo do eletricista (WhatsApp
 fictício) e publica; `… cliente-teste.sh --remover` tira-o do ar. Só apaga
-pastas que ele próprio criou. Precisa do registo A `pedroeletricista` no DNS.
+pastas que ele próprio criou.
 
 ## Painel admin (`admin.lynxcoder.com.br`)
 

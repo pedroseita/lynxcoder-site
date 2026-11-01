@@ -145,8 +145,8 @@ jobs:
           docker rm -f lynx-maint-ci
 
       # Páginas dos clientes (lynxsites.com.br): corre o próprio scripts/lynxsites.sh
-      # com um getent falso (DNS "a apontar" para 127.0.0.1) e confirma os
-      # routers gerados e o nginx a escolher a pasta certa pelo host.
+      # e confirma o router único com o certificado *.lynxsites.com.br e o nginx
+      # a escolher a pasta certa pelo host.
       - name: Testar as páginas dos clientes
         run: |
           docker network create proxy
@@ -159,24 +159,25 @@ jobs:
           echo 'x' > "$sites/quentinhas/.git/x.js"
           echo '<h1>x</h1>' > "$sites/Maiusculas/index.html"
           echo '<h1>x</h1>' > "$sites/painel/index.html"
-          mkdir -p "$RUNNER_TEMP/bin"
-          printf '#!/bin/sh\necho "127.0.0.1 STREAM $2"\n' > "$RUNNER_TEMP/bin/getent"
-          chmod +x "$RUNNER_TEMP/bin/getent"
 
-          PATH="$RUNNER_TEMP/bin:$PATH" LYNX_SITE_DIR="$GITHUB_WORKSPACE" LYNXSITES_DIR="$sites" LYNXSITES_IP=127.0.0.1 \
-            bash scripts/lynxsites.sh 2>&1 | tee /tmp/lynxsites.log
+          LYNX_SITE_DIR="$GITHUB_WORKSPACE" LYNXSITES_DIR="$sites" bash scripts/lynxsites.sh 2>&1 | tee /tmp/lynxsites.log
 
-          echo "— só a pasta valida, com index.html, entra"
+          echo "— o script avisa das pastas que nao vao ao ar"
           grep -q 'https://quentinhas.lynxsites.com.br' /tmp/lynxsites.log
           grep -q 'Ignorado: "Maiusculas"' /tmp/lynxsites.log
           grep -q 'semindex: falta o index.html' /tmp/lynxsites.log
           grep -q 'Ignorado: "painel" é um endereço reservado' /tmp/lynxsites.log
-          grep -q 'routers.lynxsites-quentinhas.rule=Host(`quentinhas.lynxsites.com.br`)' infra/lynxsites/clientes.yml
-          # "! grep" não falha o passo (comandos negados ficam fora do set -e)
-          if grep -q 'semindex\|Maiusculas\|lynxsites-painel' infra/lynxsites/clientes.yml; then echo "pasta invalida entrou"; exit 1; fi
+          grep -q '(1 no ar)' /tmp/lynxsites.log
 
-          echo "— o container tem os routers do cliente"
-          docker inspect lynxsites-paginas --format '{{json .Config.Labels}}' | grep -q 'lynxsites-quentinhas-http'
+          echo "— router unico, prioridade minima, certificado *.lynxsites.com.br"
+          lbl() { docker inspect lynxsites-paginas --format "{{index .Config.Labels \"traefik.http.routers.$1\"}}"; }
+          test "$(lbl lynxsites-clientes.rule)" = 'HostRegexp(`^[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?\.lynxsites\.com\.br$`)'
+          test "$(lbl lynxsites-clientes.priority)" = "1"
+          test "$(lbl 'lynxsites-clientes.tls.domains[0].sans')" = '*.lynxsites.com.br'
+          test "$(lbl lynxsites-clientes.tls.certresolver)" = "cloudflare"
+          test "$(lbl lynxsites-inicio.tls.certresolver)" = "cloudflare"
+          labels="$(docker inspect lynxsites-paginas --format '{{json .Config.Labels}}')"
+          if echo "$labels" | grep -q 'certresolver":"letsencrypt"'; then echo "resolver antigo"; exit 1; fi
 
           for i in $(seq 1 15); do
             [ "$(docker inspect -f '{{.State.Health.Status}}' lynxsites-paginas)" = healthy ] && break || sleep 2
@@ -189,6 +190,8 @@ jobs:
           body quentinhas.lynxsites.com.br / | grep -q 'Quentinhas CI'
           test "$(code quentinhas.lynxsites.com.br /sobre)" = "200"
           test "$(code naoexiste.lynxsites.com.br /)" = "404"
+          echo "— endereco reservado nunca serve a pasta, mesmo que exista"
+          test "$(code painel.lynxsites.com.br /)" = "404"
           test "$(code outro-dominio.com /)" = "404"
 
           echo "— ficheiros escondidos nunca saem (nem com extensao de asset)"

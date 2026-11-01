@@ -3,8 +3,10 @@
 # compose; aqui ficam de fora, e pôr o lynxcoder.com.br em manutenção não
 # derruba as páginas dos clientes.
 #
-# Não subir à mão: usar scripts/lynxsites.sh, que junta os routers de cada
-# cliente (clientes.yml, gerado a partir das pastas em /root/lynxsites).
+# Um só certificado *.lynxsites.com.br (DNS-01 na Cloudflare, resolver
+# "cloudflare" do Traefik) e um só router para todos os clientes: publicar um
+# cliente é só criar a pasta. O nginx escolhe a pasta pelo nome do host.
+# Subir com scripts/lynxsites.sh, que também avisa de pastas com nomes inválidos.
 name: lynxsites
 services:
   paginas:
@@ -31,12 +33,24 @@ services:
       - "traefik.enable=true"
       - "traefik.http.services.lynxsites.loadbalancer.server.port=80"
       # lynxsites.com.br e www (a página "Páginas criadas pela LynxCoder").
-      # Os routers de cada cliente vêm de clientes.yml.
       - "traefik.http.routers.lynxsites-inicio.rule=Host(`lynxsites.com.br`) || Host(`www.lynxsites.com.br`)"
       - "traefik.http.routers.lynxsites-inicio.entrypoints=websecure"
-      - "traefik.http.routers.lynxsites-inicio.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.lynxsites-inicio.tls.certresolver=cloudflare"
+      - "traefik.http.routers.lynxsites-inicio.tls.domains[0].main=lynxsites.com.br"
+      - "traefik.http.routers.lynxsites-inicio.tls.domains[0].sans=*.lynxsites.com.br"
       - "traefik.http.routers.lynxsites-inicio.service=lynxsites"
       - "traefik.http.routers.lynxsites-inicio.middlewares=lynxsites-hsts"
+      # <cliente>.lynxsites.com.br, todos com o mesmo certificado. Prioridade 1
+      # (a mínima): sem ela o Traefik usava o comprimento da regra e esta regex
+      # ganhava a qualquer Host() de outro container, como o painel.
+      - "traefik.http.routers.lynxsites-clientes.rule=HostRegexp(`^[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?\\.lynxsites\\.com\\.br$$`)"
+      - "traefik.http.routers.lynxsites-clientes.priority=1"
+      - "traefik.http.routers.lynxsites-clientes.entrypoints=websecure"
+      - "traefik.http.routers.lynxsites-clientes.tls.certresolver=cloudflare"
+      - "traefik.http.routers.lynxsites-clientes.tls.domains[0].main=lynxsites.com.br"
+      - "traefik.http.routers.lynxsites-clientes.tls.domains[0].sans=*.lynxsites.com.br"
+      - "traefik.http.routers.lynxsites-clientes.service=lynxsites"
+      - "traefik.http.routers.lynxsites-clientes.middlewares=lynxsites-hsts"
       - "traefik.http.routers.lynxsites-inicio-http.rule=Host(`lynxsites.com.br`) || Host(`www.lynxsites.com.br`)"
       - "traefik.http.routers.lynxsites-inicio-http.entrypoints=web"
       - "traefik.http.routers.lynxsites-inicio-http.service=lynxsites"

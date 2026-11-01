@@ -7,7 +7,6 @@ set -euo pipefail
 #   bash scripts/cliente-teste.sh              cria e publica
 #   bash scripts/cliente-teste.sh --remover    apaga e tira do ar
 #
-# Antes: registo A "<nome>" -> IP do VPS na zona lynxsites.com.br (Registro.br).
 # Só apaga pastas criadas por este script (marcadas com .teste-lynxcoder).
 
 SITE_DIR="${LYNX_SITE_DIR:-/root/lynxcoder-site}"
@@ -35,8 +34,6 @@ if [ "$ACAO" = "remover" ]; then
   fi
   rm -rf "$DEST"
   echo "✔ Pasta de teste removida: $DEST"
-  bash "$SITE_DIR/scripts/lynxsites.sh"
-  echo "Lembrete: apague também o registo \"$NOME\" no Registro.br."
   exit 0
 fi
 
@@ -58,8 +55,4 @@ sed -e 's/Duarte Elétrica/Pedro Eletricista/g' \
     "$SITE_DIR/src/exemplos/eletricista.html" > "$DEST/index.html"
 date -u +%FT%TZ > "$MARCA"
 
-bash "$SITE_DIR/scripts/lynxsites.sh"
-echo ""
-echo "Se apareceu \"✔ https://$NOME.lynxsites.com.br\" acima, abra o endereço (o HTTPS"
-echo "pode levar um minuto na primeira visita). Se apareceu o aviso de DNS, espere o"
-echo "Registro.br publicar o registo e corra este script de novo."
+echo "✔ No ar: https://$NOME.lynxsites.com.br"

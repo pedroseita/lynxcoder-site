@@ -16,7 +16,7 @@ const MB = 1024 * 1024;
 const LIMITS = { logo: 5 * MB, fotos: 8 * MB, retrato: 8 * MB };
 const MAX_FOTOS = 12;
 const MIN_FOTOS = 3;
-const RESERVED = new Set(['www', 'api', 'blog', 'mail', 'email', 'admin', 'app', 'ftp', 'smtp', 'cdn', 'static', 'dev', 'staging', 'teste', 'test', 'lynx', 'lynxcoder', 'comecar']);
+const { RESERVADOS: RESERVED } = require('../lib/reservados'); // lib/reservados.txt
 
 // Por IP e por hora: 5 pedidos aceites e 20 tentativas (inclui recusadas).
 const limiter = createLimiter({ windowMs: 60 * 60 * 1000, maxTries: 20, maxOk: 5 });

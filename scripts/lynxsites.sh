@@ -23,6 +23,9 @@ cd "$SITE_DIR"
 OUT="infra/lynxsites/clientes.yml"
 mkdir -p "$LYNXSITES_DIR"
 
+# Nomes reservados (painel, admin, api…): fonte única em api/lib/reservados.txt.
+RESERVADOS=" $(sed -e 's/#.*//' -e 's/[[:space:]]//g' api/lib/reservados.txt | grep -v '^$' | tr '\n' ' ') "
+
 labels=""
 ativos=0
 for dir in "$LYNXSITES_DIR"/*/; do
@@ -30,6 +33,10 @@ for dir in "$LYNXSITES_DIR"/*/; do
   nome="$(basename "$dir")"
   if ! [[ "$nome" =~ ^[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?$ ]]; then
     echo "  ! Ignorado: \"$nome\" (use só letras minúsculas, números e hífen)" >&2
+    continue
+  fi
+  if [[ "$RESERVADOS" == *" $nome "* ]]; then
+    echo "  ! Ignorado: \"$nome\" é um endereço reservado da LynxSites (api/lib/reservados.txt)" >&2
     continue
   fi
   if [ ! -f "$dir/index.html" ]; then

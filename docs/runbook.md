@@ -309,6 +309,10 @@ Atualizar ficheiros de um cliente que já está no ar não precisa do script.
 
 Para tirar um cliente do ar: apagar (ou mover) a pasta e correr o script.
 
+**Endereços reservados** (`painel`, `admin`, `api`, `criar`…): lista única em
+`api/lib/reservados.txt`. O formulário e a API recusam-nos e o `lynxsites.sh` não
+publica pastas com esses nomes. Para reservar um nome novo, acrescentá-lo lá.
+
 **Cliente de teste**: `bash /root/lynxcoder-site/scripts/cliente-teste.sh` monta
 `pedroeletricista.lynxsites.com.br` a partir do exemplo do eletricista (WhatsApp
 fictício) e publica; `… cliente-teste.sh --remover` tira-o do ar. Só apaga

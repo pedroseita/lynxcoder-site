@@ -18,7 +18,8 @@
   var MIN_PHOTOS = 3;
   var MAX_LOGO_BYTES = 5 * 1024 * 1024;
   var MAX_PHOTO_BYTES = 8 * 1024 * 1024;
-  var RESERVED_SUBDOMAINS = ['www', 'api', 'blog', 'mail', 'email', 'admin', 'app', 'ftp', 'smtp', 'cdn', 'static', 'dev', 'staging', 'teste', 'test', 'lynx', 'lynxcoder', 'comecar'];
+  // Vem da API (api/lib/reservados.txt, fonte única); o servidor recusa-os de novo no envio.
+  var RESERVED_SUBDOMAINS = [];
 
   // Extras oferecidos na etapa 2. Para acrescentar um, basta uma linha aqui.
   var EXTRAS = [
@@ -823,6 +824,7 @@
 
   function start(info) {
     renderOptions(info && info.opcoes);
+    if (info && Array.isArray(info.reservados)) RESERVED_SUBDOMAINS = info.reservados;
     applyTexts(info && info.opcoes && info.opcoes.textos);
     if (info && info.mensagem) { $('#welcomeNote').textContent = info.mensagem; $('#welcomeNote').hidden = false; }
     if (PREVIA) {

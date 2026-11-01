@@ -18,6 +18,7 @@ const config = require('../lib/config');
 const { render, AJUDA_CAMPOS } = require('../lib/proposta-template');
 const propostaTexto = require('../lib/proposta-texto');
 const formulario = require('../lib/formulario');
+const { LISTA: RESERVADOS } = require('../lib/reservados');
 const mail = require('../lib/mail');
 
 const PUBLIC_URL = (process.env.PUBLIC_URL || 'https://lynxcoder.com.br').replace(/\/$/, '');
@@ -212,6 +213,7 @@ async function publicRoutes(app) {
       plano: p.aceite ? p.aceite.plano : null,
       preenchido: pf.preenchido || null,
       mensagem: pf.mensagem || '',
+      reservados: RESERVADOS,
       opcoes: await opcoesDoCliente(p),
     };
   });

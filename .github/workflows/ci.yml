@@ -151,13 +151,14 @@ jobs:
         run: |
           docker network create proxy
           sites="$RUNNER_TEMP/lynxsites"
-          mkdir -p "$sites/quentinhas/css" "$sites/quentinhas/.git" "$sites/semindex" "$sites/Maiusculas"
+          mkdir -p "$sites/quentinhas/css" "$sites/quentinhas/.git" "$sites/semindex" "$sites/Maiusculas" "$sites/painel"
           echo '<h1>Quentinhas CI</h1>' > "$sites/quentinhas/index.html"
           echo '<p>sobre</p>' > "$sites/quentinhas/sobre.html"
           echo 'body{}' > "$sites/quentinhas/css/a.css"
           echo 'segredo' > "$sites/quentinhas/.git/config"
           echo 'x' > "$sites/quentinhas/.git/x.js"
           echo '<h1>x</h1>' > "$sites/Maiusculas/index.html"
+          echo '<h1>x</h1>' > "$sites/painel/index.html"
           mkdir -p "$RUNNER_TEMP/bin"
           printf '#!/bin/sh\necho "127.0.0.1 STREAM $2"\n' > "$RUNNER_TEMP/bin/getent"
           chmod +x "$RUNNER_TEMP/bin/getent"
@@ -169,9 +170,10 @@ jobs:
           grep -q 'https://quentinhas.lynxsites.com.br' /tmp/lynxsites.log
           grep -q 'Ignorado: "Maiusculas"' /tmp/lynxsites.log
           grep -q 'semindex: falta o index.html' /tmp/lynxsites.log
+          grep -q 'Ignorado: "painel" é um endereço reservado' /tmp/lynxsites.log
           grep -q 'routers.lynxsites-quentinhas.rule=Host(`quentinhas.lynxsites.com.br`)' infra/lynxsites/clientes.yml
           # "! grep" não falha o passo (comandos negados ficam fora do set -e)
-          if grep -q 'semindex\|Maiusculas' infra/lynxsites/clientes.yml; then echo "pasta invalida entrou"; exit 1; fi
+          if grep -q 'semindex\|Maiusculas\|lynxsites-painel' infra/lynxsites/clientes.yml; then echo "pasta invalida entrou"; exit 1; fi
 
           echo "— o container tem os routers do cliente"
           docker inspect lynxsites-paginas --format '{{json .Config.Labels}}' | grep -q 'lynxsites-quentinhas-http'

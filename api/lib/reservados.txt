@@ -1,0 +1,40 @@
+# Subdomínios de lynxsites.com.br que nenhum cliente pode usar.
+# FONTE ÚNICA: lida pela API (lib/reservados.js), pelo formulário /comecar
+# (recebe-a da API) e pelo scripts/lynxsites.sh (não publica estas pastas).
+# Um nome por linha; "#" começa um comentário.
+
+# serviços da própria LynxSites / LynxCoder
+painel
+admin
+api
+app
+www
+blog
+criar
+comecar
+suporte
+ajuda
+status
+login
+conta
+docs
+lynx
+lynxcoder
+lynxsites
+
+# e-mail e infraestrutura
+mail
+email
+webmail
+smtp
+ftp
+cdn
+static
+ns1
+ns2
+
+# ambientes
+dev
+staging
+teste
+test

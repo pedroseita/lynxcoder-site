@@ -95,7 +95,6 @@
     $('appView').hidden = false;
     $('topUser').textContent = user;
     loadItems().then(route);
-    loadBlog();
     loadMaint();
     loadFormOptions();
   }
@@ -121,28 +120,93 @@
   });
 
   $('logoutBtn').addEventListener('click', function () {
-    api('POST', '/adm/logout').catch(function () {}).then(function () { location.hash = ''; showLogin(); });
+    api('POST', '/adm/logout').catch(function () {}).then(function () { location.hash = '#/'; showLogin(); });
   });
 
-  // ---------- lista ----------
+  // ---------- secções (menu lateral) ----------
+  var SECOES = {
+    inicio: { titulo: 'Início' },
+    compras: { titulo: 'Compras', tipo: 'compra', vazio: 'Ainda não há compras no /criar.' },
+    propostas: { titulo: 'Propostas', tipo: 'proposta', acao: ['+ Nova proposta', '#/nova-proposta'], vazio: 'Nenhuma proposta.' },
+    pedidos: { titulo: 'Pedidos', tipo: 'pedido', vazio: 'Ainda não há pedidos do formulário.' },
+    clientes: { titulo: 'Clientes e mensalidades', tipo: 'cliente', acao: ['+ Cliente sem pedido', '#/novo-cliente'], vazio: 'Ainda não há clientes.' },
+    mensagens: { titulo: 'Mensagens', tipo: 'mensagem', vazio: 'Nenhuma mensagem.' },
+    blog: { titulo: 'Blog', acao: ['+ Escrever post', '#/blog/novo'] },
+    config: { titulo: 'Configurações' }
+  };
+  var TIPO_SECAO = { compra: 'compras', proposta: 'propostas', pedido: 'pedidos', cliente: 'clientes', mensagem: 'mensagens' };
+  state.section = 'inicio';
+
+  function secHash() { return state.section && state.section !== 'inicio' ? '#/' + state.section : '#/'; }
+
+  // mode: 'home' (Início) | 'list' (lista + detalhe) | 'full' (só o conteúdo: blog, configurações)
+  function setSection(sec, mode) {
+    var cfg = SECOES[sec];
+    if (state.section !== sec && cfg.tipo) { state.status = 'abertos'; $('statusFilter').value = 'abertos'; }
+    state.section = sec;
+    $('pageTitle').textContent = cfg.titulo;
+    document.title = cfg.titulo + ' — Painel LynxCoder';
+    Array.prototype.forEach.call(document.querySelectorAll('#sideNav a'), function (a) {
+      if (a.getAttribute('data-sec') === sec) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
+    });
+    var acts = $('pageActions');
+    acts.textContent = '';
+    if (cfg.acao) acts.appendChild(h('a', { class: 'btn btn-primary btn-sm', href: cfg.acao[1] }, cfg.acao[0]));
+    $('home').hidden = mode !== 'home';
+    $('layout').hidden = mode === 'home';
+    $('layout').classList.toggle('full', mode === 'full');
+    closeMenu();
+  }
+
+  // ---------- menu no telemóvel ----------
+  function closeMenu() {
+    $('side').classList.remove('open');
+    $('sideScrim').hidden = true;
+    $('menuBtn').setAttribute('aria-expanded', 'false');
+  }
+  $('menuBtn').addEventListener('click', function () {
+    var open = !$('side').classList.contains('open');
+    $('side').classList.toggle('open', open);
+    $('sideScrim').hidden = !open;
+    this.setAttribute('aria-expanded', String(open));
+  });
+  $('sideScrim').addEventListener('click', closeMenu);
+
+  // ---------- dados ----------
   function loadItems() {
     return api('GET', '/adm/entradas').then(function (r) {
       state.items = r.items;
-      $('statPedidos').textContent = r.contagem.pedidosNovos;
-      $('statMensagens').textContent = r.contagem.mensagensNovas;
-      $('statPropostas').textContent = r.contagem.propostasAceitas;
-      $('statAtraso').textContent = r.contagem.clientesAtraso;
-      $('statAtrasoL').textContent = 'em atraso de ' + r.contagem.clientesAtivos + (r.contagem.clientesAtivos === 1 ? ' cliente' : ' clientes');
-      $('statAtraso').parentNode.classList.toggle('alerta', r.contagem.clientesAtraso > 0);
+      state.contagem = r.contagem;
+      state.sites = r.sites || { ativos: 0, comProblema: [] };
+      updateCounts();
       renderList();
+      if (state.section === 'inicio') renderHome();
     }).catch(function (err) { if (err.message !== '401') toast(err.message, true); });
+  }
+
+  // Números no menu: só o que pede atenção.
+  function updateCounts() {
+    var c = state.contagem;
+    var set = function (id, n, alerta) {
+      var el = $(id);
+      el.textContent = n;
+      el.hidden = !n;
+      el.classList.toggle('alerta', !!alerta);
+    };
+    set('cCompras', c.comprasPagas + c.comprasAguardando);
+    set('cPropostas', c.propostasAceitas);
+    set('cPedidos', c.pedidosNovos);
+    set('cClientes', c.clientesAtraso, true);
+    set('cMensagens', c.mensagensNovas);
   }
 
   function renderList() {
     var list = $('items');
     list.textContent = '';
+    var tipo = (SECOES[state.section] || {}).tipo;
+    if (!tipo) return;
     var visible = state.items.filter(function (it) {
-      if (state.type !== 'todos' && it.tipo !== state.type) return false;
+      if (it.tipo !== tipo) return false;
       var arch = ARCHIVED.indexOf(it.status) !== -1;
       if (state.status === 'testes') return !!it.teste;
       if (state.status === 'todos') return true;
@@ -153,13 +217,11 @@
     });
     visible.forEach(function (it) {
       var active = state.current && state.current.tipo === it.tipo && state.current.id === it.id;
-      list.appendChild(h('li', null, h('button', {
-        type: 'button',
+      list.appendChild(h('li', null, h('a', {
         class: 'item' + (active ? ' active' : ''),
-        onclick: function () { location.hash = '#/' + it.tipo + '/' + it.id; }
+        href: '#/' + it.tipo + '/' + it.id
       },
         h('span', { class: 'item-top' },
-          h('span', { class: 'kind', text: KIND[it.tipo] }),
           h('span', { class: 'item-title', text: it.titulo }),
           it.teste ? h('span', { class: 'badge st-teste', text: 'Teste' }) : null,
           badge(it.tipo, it.status)),
@@ -169,35 +231,84 @@
           h('span', { class: 'item-date', text: fmtDate(it.recebidoEm) }))
       )));
     });
+    $('emptyList').textContent = state.status === 'abertos' ? (SECOES[state.section].vazio || 'Nada por aqui.') : 'Nada por aqui.';
     $('emptyList').hidden = visible.length > 0;
     $('clearTests').hidden = state.status !== 'testes' || !visible.length;
-    $('newClient').hidden = state.type !== 'cliente';
   }
 
-  $('typeTabs').addEventListener('click', function (e) {
-    var t = e.target.getAttribute('data-type');
-    if (!t) return;
-    state.type = t;
-    Array.prototype.forEach.call(this.querySelectorAll('button'), function (b) {
-      b.setAttribute('aria-selected', String(b === e.target));
-    });
-    renderList();
-  });
   $('statusFilter').addEventListener('change', function (e) { state.status = e.target.value; renderList(); });
   $('refreshBtn').addEventListener('click', function () { loadItems().then(function () { toast('Atualizado'); }); });
 
-  // ---------- blog ----------
-  function loadBlog() {
-    api('GET', '/adm/blog').then(function (r) {
-      var ul = $('blogList');
-      ul.textContent = '';
-      if (!r.posts.length) { ul.appendChild(h('li', { class: 'muted', text: 'Ainda sem posts. Escreva o primeiro!' })); return; }
-      r.posts.slice(0, 5).forEach(function (p) {
-        ul.appendChild(h('li', null,
-          h('a', { href: '#/blog/' + p.id, text: p.titulo }),
-          h('span', { class: 'date', text: p.status === 'publicado' ? 'Publicado em ' + fmtDate(p.publicadoEm) : 'Rascunho · ' + fmtDate(p.atualizadoEm) })));
+  // ---------- Início ----------
+  // O que pede uma ação tua, por ordem de urgência: [tipo, situação, o que fazer, botão].
+  var A_FAZER = [
+    ['compra', 'pago', 'Compra paga: rever e publicar a página', 'Começar revisão'],
+    ['compra', 'aguardando_pagamento', 'Compra à espera do PIX', 'Confirmar pagamento'],
+    ['cliente', 'atraso', 'Mensalidade em atraso', 'Registar pagamento'],
+    ['pedido', 'novo', 'Pedido novo do formulário', 'Ver pedido'],
+    ['proposta', 'aceita', 'Proposta aceita: liberar o formulário', 'Liberar'],
+    ['mensagem', 'nova', 'Mensagem por responder', 'Responder'],
+    ['compra', 'em_revisao', 'Página em revisão: publicar quando estiver pronta', 'Abrir'],
+    ['cliente', 'vence', 'Mensalidade vence em breve', 'Abrir']
+  ];
+
+  function renderHome() {
+    var c = state.contagem;
+    if (!c) return;
+    var mesNome = c.mes ? new Date(c.mes + '-15T12:00:00').toLocaleDateString('pt-BR', { month: 'long' }) : 'este mês';
+    var kpi = function (n, label, href, cls) {
+      return h('a', { class: 'kpi' + (cls ? ' ' + cls : ''), href: href }, h('span', { class: 'kpi-n', text: String(n) }), h('span', { class: 'kpi-l', text: label }));
+    };
+    var k = $('kpis');
+    k.textContent = '';
+    k.appendChild(kpi(c.comprasPagas + c.comprasRevisao, 'compras a rever', '#/compras', c.comprasPagas ? 'on' : ''));
+    k.appendChild(kpi(c.pedidosNovos, c.pedidosNovos === 1 ? 'pedido novo' : 'pedidos novos', '#/pedidos', c.pedidosNovos ? 'on' : ''));
+    k.appendChild(kpi(c.mensagensNovas, c.mensagensNovas === 1 ? 'mensagem nova' : 'mensagens novas', '#/mensagens', c.mensagensNovas ? 'on' : ''));
+    k.appendChild(kpi(c.clientesAtraso, c.clientesAtraso === 1 ? 'mensalidade em atraso' : 'mensalidades em atraso', '#/clientes', c.clientesAtraso ? 'alerta' : ''));
+    k.appendChild(kpi(fmtMoney(c.recebidoMes || 0), 'recebido em ' + mesNome.toLowerCase(), '#/clientes', 'money'));
+
+    var todo = $('todo');
+    todo.textContent = '';
+    var reais = state.items.filter(function (it) { return !it.teste; });
+    var n = 0;
+    A_FAZER.forEach(function (regra, prio) {
+      reais.filter(function (it) { return it.tipo === regra[0] && it.status === regra[1]; }).forEach(function (it) {
+        n++;
+        todo.appendChild(h('li', { class: 'todo-item p' + Math.min(prio, 3) },
+          h('span', { class: 'todo-dot', 'aria-hidden': 'true' }),
+          h('span', { class: 'todo-body' },
+            h('span', { class: 'todo-what', text: regra[2] }),
+            h('a', { class: 'todo-title', href: '#/' + it.tipo + '/' + it.id, text: it.titulo }),
+            h('span', { class: 'todo-sub', text: [it.detalhe, fmtDate(it.recebidoEm)].filter(Boolean).join(' · ') })),
+          h('a', { class: 'btn btn-ghost btn-sm', href: '#/' + it.tipo + '/' + it.id }, regra[3])));
       });
-    }).catch(function () {});
+    });
+    if (!n) todo.appendChild(h('li', { class: 'todo-empty' }, '✓ Tudo em dia. Não há nada à tua espera.'));
+
+    var sb = $('sitesBox');
+    sb.textContent = '';
+    var s = state.sites;
+    if (!s.ativos) sb.appendChild(h('p', { class: 'muted', text: 'Ainda não há sites de clientes no ar.' }));
+    else {
+      sb.appendChild(h('p', { class: 'sites-line' },
+        h('strong', { class: 'ok-txt', text: (s.ativos - s.comProblema.length) + ' no ar' }),
+        s.comProblema.length ? h('span', { class: 'alerta-txt', text: ' · ' + s.comProblema.length + ' com problema' }) : null));
+      if (s.comProblema.length) {
+        sb.appendChild(h('ul', { class: 'recent' }, s.comProblema.map(function (x) {
+          return h('li', null, h('a', { href: '#/cliente/' + x.id, text: x.nome }), h('span', { class: 'date', text: x.erro }));
+        })));
+      }
+    }
+
+    var rec = $('recent');
+    rec.textContent = '';
+    reais.filter(function (it) { return !(it.tipo === 'compra' && it.status === 'rascunho'); }).slice(0, 7).forEach(function (it) {
+      rec.appendChild(h('li', null,
+        h('span', { class: 'kind', text: KIND[it.tipo] }),
+        h('a', { href: '#/' + it.tipo + '/' + it.id, text: it.titulo }),
+        h('span', { class: 'date', text: fmtDate(it.recebidoEm) })));
+    });
+    if (!rec.childNodes.length) rec.appendChild(h('li', { class: 'muted', text: 'Nada ainda.' }));
   }
 
   // ---------- detalhe ----------
@@ -206,49 +317,25 @@
     $('detail').hidden = false;
     window.scrollTo(0, 0);
   }
+  function openDetail(sec, mode, current) {
+    setSection(sec, mode);
+    state.current = current || null;
+    $('layout').classList.add('showing-detail');
+    renderList();
+  }
 
   function route() {
-    var layout = document.querySelector('.layout');
-    var bm = /^#\/blog(?:\/([\w-]+))?$/.exec(location.hash);
-    if (bm) {
+    var hash = location.hash;
+    var layout = $('layout');
+    if (!hash || hash === '#' || hash === '#/') {
+      setSection('inicio', 'home');
       state.current = null;
-      layout.classList.add('showing-detail');
-      renderList();
-      (!bm[1] ? api('GET', '/adm/blog').then(renderBlogLista)
-        : bm[1] === 'novo' ? Promise.resolve(renderPostEditor(null))
-        : api('GET', '/adm/blog/posts/' + bm[1]).then(function (r) { renderPostEditor(r.post); }))
-        .then(showDetail)
-        .catch(function (err) { if (err.message !== '401') { toast(err.message, true); location.hash = '#/blog'; } });
+      renderHome();
       return;
     }
-    var nc = /^#\/novo-cliente(?:\/([\w-]+))?$/.exec(location.hash);
-    if (nc) {
-      state.current = null;
-      layout.classList.add('showing-detail');
-      renderList();
-      (nc[1] ? api('GET', '/adm/clientes/sugestao/' + nc[1]).then(function (r) { return r.ficha; }) : Promise.resolve(null))
-        .then(function (ficha) { renderClienteForm(ficha, null); showDetail(); })
-        .catch(function (err) { if (err.message !== '401') toast(err.message, true); });
-      return;
-    }
-    if (location.hash === '#/nova-proposta' || /^#\/config(\/(texto|formulario|catalogo))?$/.test(location.hash)) {
-      state.current = null;
-      layout.classList.add('showing-detail');
-      renderList();
-      var view = location.hash;
-      var url = view === '#/config/texto' ? '/adm/proposta-texto' : (view === '#/config/formulario' ? '/adm/formulario' : (view === '#/config/catalogo' ? '/adm/catalogo' : '/adm/config'));
-      api('GET', url).then(function (r) {
-        if (view === '#/config') renderConfig(r);
-        else if (view === '#/config/texto') renderTexto(r);
-        else if (view === '#/config/formulario') renderFormulario(r);
-        else if (view === '#/config/catalogo') renderCatalogo(r);
-        else renderNovaProposta(r);
-        showDetail();
-      }).catch(function (err) { if (err.message !== '401') toast(err.message, true); });
-      return;
-    }
-    var m = /^#\/(pedido|mensagem|proposta|cliente|compra)\/([\w-]+)$/.exec(location.hash);
-    if (!m) {
+    var sm = /^#\/(compras|propostas|pedidos|clientes|mensagens)$/.exec(hash);
+    if (sm) {
+      setSection(sm[1], 'list');
       state.current = null;
       layout.classList.remove('showing-detail');
       $('detail').hidden = true;
@@ -256,11 +343,41 @@
       renderList();
       return;
     }
-    state.current = { tipo: m[1], id: m[2] };
-    layout.classList.add('showing-detail');
-    renderList();
-    var url = URLS[m[1]] + m[2];
-    api('GET', url).then(function (r) {
+    var bm = /^#\/blog(?:\/([\w-]+))?$/.exec(hash);
+    if (bm) {
+      openDetail('blog', 'full');
+      (!bm[1] ? api('GET', '/adm/blog').then(renderBlogLista)
+        : bm[1] === 'novo' ? Promise.resolve(renderPostEditor(null))
+        : api('GET', '/adm/blog/posts/' + bm[1]).then(function (r) { renderPostEditor(r.post); }))
+        .then(showDetail)
+        .catch(function (err) { if (err.message !== '401') { toast(err.message, true); location.hash = '#/blog'; } });
+      return;
+    }
+    var nc = /^#\/novo-cliente(?:\/([\w-]+))?$/.exec(hash);
+    if (nc) {
+      openDetail('clientes', 'list');
+      (nc[1] ? api('GET', '/adm/clientes/sugestao/' + nc[1]).then(function (r) { return r.ficha; }) : Promise.resolve(null))
+        .then(function (ficha) { renderClienteForm(ficha, null); showDetail(); })
+        .catch(function (err) { if (err.message !== '401') toast(err.message, true); });
+      return;
+    }
+    if (hash === '#/nova-proposta' || /^#\/config(\/(texto|formulario|catalogo))?$/.test(hash)) {
+      if (hash === '#/nova-proposta') openDetail('propostas', 'list'); else openDetail('config', 'full');
+      var url = hash === '#/config/texto' ? '/adm/proposta-texto' : (hash === '#/config/formulario' ? '/adm/formulario' : (hash === '#/config/catalogo' ? '/adm/catalogo' : '/adm/config'));
+      api('GET', url).then(function (r) {
+        if (hash === '#/config') renderConfig(r);
+        else if (hash === '#/config/texto') renderTexto(r);
+        else if (hash === '#/config/formulario') renderFormulario(r);
+        else if (hash === '#/config/catalogo') renderCatalogo(r);
+        else renderNovaProposta(r);
+        showDetail();
+      }).catch(function (err) { if (err.message !== '401') toast(err.message, true); });
+      return;
+    }
+    var m = /^#\/(pedido|mensagem|proposta|cliente|compra)\/([\w-]+)$/.exec(hash);
+    if (!m) { location.hash = '#/'; return; }
+    openDetail(TIPO_SECAO[m[1]], 'list', { tipo: m[1], id: m[2] });
+    api('GET', URLS[m[1]] + m[2]).then(function (r) {
       if (m[1] === 'pedido') renderPedido(m[2], r);
       else if (m[1] === 'mensagem') renderMensagem(r.mensagem);
       else if (m[1] === 'cliente') renderCliente(r.cliente, r.formas);
@@ -270,7 +387,7 @@
     }).catch(function (err) {
       if (err.message === '401') return;
       toast(err.message, true);
-      location.hash = '';
+      location.hash = secHash();
     });
   }
   window.addEventListener('hashchange', route);
@@ -278,7 +395,7 @@
   var URLS = { pedido: '/adm/pedidos/', mensagem: '/adm/mensagens/', proposta: '/adm/propostas/', cliente: '/adm/clientes/', compra: '/adm/compras/', post: '/adm/blog/posts/' };
 
   function backLink() {
-    return h('button', { type: 'button', class: 'btn btn-ghost btn-sm back', onclick: function () { location.hash = ''; } }, '← Voltar');
+    return h('button', { type: 'button', class: 'btn btn-ghost btn-sm back', onclick: function () { location.hash = state.section === 'blog' ? '#/blog' : (state.section === 'config' ? '#/' : secHash()); } }, '← Voltar');
   }
 
   function statusSelect(tipo, id, current) {
@@ -312,8 +429,8 @@
       clearTimeout(timer);
       api('DELETE', URLS[tipo] + id).then(function () {
         toast({ pedido: 'Pedido excluído, com todos os ficheiros', mensagem: 'Mensagem excluída', proposta: 'Proposta excluída', cliente: 'Cliente excluído, com os pagamentos registados', post: 'Post excluído' }[tipo]);
-        location.hash = tipo === 'post' ? '#/blog' : '';
-        if (tipo === 'post') loadBlog(); else loadItems();
+        location.hash = tipo === 'post' ? '#/blog' : secHash();
+        if (tipo !== 'post') loadItems();
       }).catch(function (err) { toast(err.message, true); });
     });
     return btn;
@@ -941,7 +1058,7 @@
     function salvar(acao) {
       var d = dados(acao);
       var criar = p.id ? Promise.resolve(p.id) : api('POST', '/adm/blog/posts', d).then(function (r) { p.id = r.id; return r.id; });
-      return criar.then(function (id) { return api('PUT', '/adm/blog/posts/' + id, d); }).then(function (r) { loadBlog(); return r.post; });
+      return criar.then(function (id) { return api('PUT', '/adm/blog/posts/' + id, d); }).then(function (r) { return r.post; });
     }
     // Depois de salvar: atualiza o endereço sem disparar o route() (que recarregaria o editor).
     function mostrar(post) {
@@ -1424,7 +1541,7 @@
     api('DELETE', '/adm/testes').then(function (r) {
       btn.classList.remove('confirm'); btn.textContent = 'Apagar todos os testes';
       toast(r.propostasApagadas + ' propostas, ' + r.pedidosApagados + ' pedidos e ' + r.clientesApagados + ' clientes de teste apagados');
-      location.hash = '';
+      location.hash = secHash();
       loadItems();
     }).catch(function (err) { toast(err.message, true); });
   });

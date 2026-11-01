@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#08090b">
 <title>Painel — LynxCoder</title>
 <link rel="icon" type="image/png" href="/assets/logo.png">
-<link rel="stylesheet" href="/assets/admin.css">
+<link rel="stylesheet" href="/assets/admin.css?v=2">
 </head>
 <body>
 
@@ -30,72 +30,86 @@
 </main>
 
 <!-- ===== Painel ===== -->
-<div id="appView" hidden>
-  <header class="top">
-    <p class="brand"><img class="brand-logo" src="/assets/logo.png" alt="" width="30" height="36"> LynxCoder <span class="brand-sub">Painel</span></p>
-    <div class="top-right">
+<div id="appView" class="shell" hidden>
+  <aside class="side" id="side" aria-label="Menu do painel">
+    <a class="brand side-brand" href="#/"><img class="brand-logo" src="/assets/logo.png" alt="" width="30" height="36"> LynxCoder <span class="brand-sub">Painel</span></a>
+    <nav class="side-nav" id="sideNav">
+      <a href="#/" data-sec="inicio"><span>Início</span></a>
+      <p class="side-group">Vendas</p>
+      <a href="#/compras" data-sec="compras"><span>Compras</span><b class="count" id="cCompras" hidden></b></a>
+      <a href="#/propostas" data-sec="propostas"><span>Propostas</span><b class="count" id="cPropostas" hidden></b></a>
+      <a href="#/pedidos" data-sec="pedidos"><span>Pedidos</span><b class="count" id="cPedidos" hidden></b></a>
+      <p class="side-group">Clientes</p>
+      <a href="#/clientes" data-sec="clientes"><span>Clientes e mensalidades</span><b class="count" id="cClientes" hidden></b></a>
+      <p class="side-group">Conteúdo</p>
+      <a href="#/mensagens" data-sec="mensagens"><span>Mensagens</span><b class="count" id="cMensagens" hidden></b></a>
+      <a href="#/blog" data-sec="blog"><span>Blog</span></a>
+      <a href="#/config" data-sec="config"><span>Configurações</span></a>
+    </nav>
+    <div class="side-foot">
       <button type="button" class="btn btn-ghost btn-sm" id="maintBtn" aria-pressed="false">Manutenção</button>
-      <a class="btn btn-primary btn-sm" href="#/nova-proposta">+ Nova proposta</a>
-      <a class="btn btn-ghost btn-sm" href="#/config" title="Valores da proposta">Configurações</a>
-      <span class="top-user" id="topUser"></span>
-      <button class="btn btn-ghost btn-sm" type="button" id="logoutBtn">Sair</button>
+      <div class="side-user"><span id="topUser"></span><button class="btn btn-ghost btn-sm" type="button" id="logoutBtn">Sair</button></div>
     </div>
-  </header>
+  </aside>
+  <div class="side-scrim" id="sideScrim" hidden></div>
 
-  <div class="maint-banner" id="maintBanner" hidden role="status">
-    <span><strong>O site está em manutenção</strong><span id="maintSince"></span>: os visitantes veem a página de manutenção e os formulários estão parados.</span>
-    <button type="button" class="btn btn-sm" id="maintOff">Tirar de manutenção</button>
-  </div>
+  <div class="main">
+    <header class="top">
+      <button type="button" class="menu-btn" id="menuBtn" aria-label="Abrir o menu" aria-controls="side" aria-expanded="false">☰</button>
+      <h1 class="page-title" id="pageTitle">Início</h1>
+      <div class="top-actions" id="pageActions"></div>
+      <button class="btn btn-ghost btn-sm" type="button" id="refreshBtn" title="Atualizar">↻</button>
+    </header>
 
-  <main class="layout" aria-label="Painel">
-    <section class="col-list" id="listCol" aria-label="Entradas">
-      <div class="stats">
-        <div class="stat"><span class="stat-n" id="statPedidos">–</span><span class="stat-l">pedidos novos</span></div>
-        <div class="stat"><span class="stat-n" id="statMensagens">–</span><span class="stat-l">mensagens novas</span></div>
-        <div class="stat"><span class="stat-n" id="statPropostas">–</span><span class="stat-l">aceitas a liberar</span></div>
-        <div class="stat"><span class="stat-n" id="statAtraso">–</span><span class="stat-l" id="statAtrasoL">clientes em atraso</span></div>
+    <div class="maint-banner" id="maintBanner" hidden role="status">
+      <span><strong>O site está em manutenção</strong><span id="maintSince"></span>: os visitantes veem a página de manutenção e os formulários estão parados.</span>
+      <button type="button" class="btn btn-sm" id="maintOff">Tirar de manutenção</button>
+    </div>
+
+    <!-- Início: só o que pede atenção -->
+    <section class="home" id="home" aria-label="Início" hidden>
+      <div class="kpis" id="kpis"></div>
+      <div class="home-grid">
+        <section class="card wide">
+          <h2>A fazer</h2>
+          <ul class="todo" id="todo"></ul>
+        </section>
+        <section class="card">
+          <h2>Sites dos clientes</h2>
+          <div id="sitesBox"></div>
+        </section>
+        <section class="card">
+          <h2>Últimas entradas</h2>
+          <ul class="recent" id="recent"></ul>
+        </section>
       </div>
+    </section>
 
-      <div class="filters">
-        <div class="tabs" role="tablist" id="typeTabs">
-          <button type="button" role="tab" data-type="todos" aria-selected="true">Todas</button>
-          <button type="button" role="tab" data-type="pedido" aria-selected="false">Pedidos</button>
-          <button type="button" role="tab" data-type="mensagem" aria-selected="false">Mensagens</button>
-          <button type="button" role="tab" data-type="proposta" aria-selected="false">Propostas</button>
-          <button type="button" role="tab" data-type="cliente" aria-selected="false">Clientes</button>
-          <button type="button" role="tab" data-type="compra" aria-selected="false">Compras</button>
+    <!-- Secções com lista + detalhe -->
+    <main class="layout" id="layout" aria-label="Conteúdo" hidden>
+      <section class="col-list" id="listCol" aria-label="Lista">
+        <div class="filters">
+          <label class="sr-only" for="statusFilter">Situação</label>
+          <select id="statusFilter">
+            <option value="abertos">Em aberto</option>
+            <option value="todos">Todas as situações</option>
+            <option value="arquivados">Arquivados</option>
+            <option value="testes">Testes</option>
+          </select>
         </div>
-        <label class="sr-only" for="statusFilter">Situação</label>
-        <select id="statusFilter">
-          <option value="abertos">Em aberto</option>
-          <option value="todos">Todas as situações</option>
-          <option value="arquivados">Arquivados</option>
-          <option value="testes">Testes</option>
-        </select>
-        <button class="btn btn-ghost btn-sm" type="button" id="refreshBtn" title="Atualizar">↻</button>
-      </div>
-
-      <button type="button" class="btn btn-danger btn-sm" id="clearTests" hidden>Apagar todos os testes</button>
-      <a class="btn btn-ghost btn-sm" id="newClient" href="#/novo-cliente" hidden>+ Cliente sem pedido</a>
-      <ul class="items" id="items"></ul>
-      <p class="empty" id="emptyList" hidden>Nada por aqui.</p>
-
-      <section class="blog" aria-labelledby="blogTitle">
-        <div class="blog-head">
-          <h2 id="blogTitle">Blog</h2>
-          <span class="blog-links"><a class="link" href="#/blog">Todos</a> · <a class="link" href="#/blog/novo">+ Escrever post</a></span>
-        </div>
-        <ul class="blog-list" id="blogList"><li class="muted">A carregar…</li></ul>
+        <button type="button" class="btn btn-danger btn-sm" id="clearTests" hidden>Apagar todos os testes</button>
+        <ul class="items" id="items"></ul>
+        <p class="empty" id="emptyList" hidden>Nada por aqui.</p>
       </section>
-    </section>
 
-    <section class="col-detail" id="detailCol" aria-live="polite">
-      <div class="placeholder" id="detailEmpty">
-        <p>Escolha um item da lista para ver os detalhes.</p>
-      </div>
-      <article id="detail" hidden></article>
-    </section>
-  </main>
+      <section class="col-detail" id="detailCol" aria-live="polite">
+        <div class="placeholder" id="detailEmpty">
+          <p>Escolha um item da lista para ver os detalhes.</p>
+        </div>
+        <article id="detail" hidden></article>
+      </section>
+    </main>
+  </div>
 </div>
 
 <div class="lightbox" id="lightbox" hidden>
@@ -105,6 +119,6 @@
 
 <div class="toast" id="toast" role="status" hidden></div>
 
-<script src="/assets/admin.js"></script>
+<script src="/assets/admin.js?v=2"></script>
 </body>
 </html>

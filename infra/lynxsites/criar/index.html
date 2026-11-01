@@ -5,17 +5,19 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Criar a minha página · LynxSites</title>
 <meta name="description" content="Crie a página do seu negócio em 6 passos: escolha, preencha, pague e ela fica no ar em até 24 horas.">
-<meta name="theme-color" content="#ffffff">
+<meta name="theme-color" content="#08090b">
 <link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="icon" type="image/png" href="/logo.png" sizes="192x192">
 <link rel="preload" href="/criar/fonts/manrope-latin.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="/criar/criar.css?v=1">
+<link rel="preload" href="/criar/fonts/space-grotesk-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/criar/criar.css?v=2">
 </head>
 <body>
 <div class="app">
   <header class="top">
     <div class="top-row">
       <button type="button" class="back" id="backBtn" hidden aria-label="Voltar ao passo anterior">‹ Voltar</button>
-      <a class="brand" id="brand" href="/">Lynx<b>Sites</b></a>
+      <a class="brand" id="brand" href="/"><img src="/logo.png" alt="" width="34" height="34"><span>LynxCoder</span><small>Sites</small></a>
       <span class="step-count" id="stepCount" aria-live="polite"></span>
     </div>
     <div class="progress" aria-hidden="true"><span id="progressBar"></span></div>
@@ -170,6 +172,6 @@
 
   <p class="seller" id="seller"></p>
 </div>
-<script src="/criar/criar.js?v=1"></script>
+<script src="/criar/criar.js?v=2"></script>
 </body>
 </html>

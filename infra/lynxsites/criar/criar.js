@@ -539,7 +539,7 @@
     } else if (cob && cob.pix && cob.pix.payload) {
       var total = S.totais ? money(S.totais.total) : '';
       body.appendChild(h('p', { text: 'Falta só o pagamento' + (total ? ' de ' + total : '') + '. Pague por PIX com o QR Code ou o código abaixo.' }));
-      var ta = h('textarea', { rows: '4', readonly: true, 'aria-label': 'Código PIX copia e cola' });
+      var ta = h('textarea', { rows: '5', readonly: true, 'aria-label': 'Código PIX copia e cola' });
       ta.value = cob.pix.payload;
       var copy = h('button', { type: 'button', class: 'btn btn-ghost btn-copy', text: 'Copiar código PIX' });
       copy.addEventListener('click', function () {

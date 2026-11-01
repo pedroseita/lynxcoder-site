@@ -396,6 +396,19 @@ h3 { font-size: clamp(20px, 2.2vw, 26px); }
 }
 /* fundos: brilho da cor de cada exemplo sobre um tom escuro */
 .pf-amber { background: radial-gradient(120% 60% at 50% 100%, rgba(246,195,67,.26), transparent 62%), linear-gradient(180deg, #17222d, #0c1218); }
+.pf-buy {
+  display: block; margin-top: 10px; text-align: center; padding: 11px 16px; border-radius: 999px;
+  border: 1px solid var(--border-2); font-weight: 700; font-size: 14.5px; color: var(--text);
+  transition: border-color .2s, color .2s, background .2s;
+}
+.pf-buy:hover, .pf-buy:focus-visible { border-color: var(--accent); color: var(--accent); background: var(--glow-soft); }
+.pf-cta {
+  margin-top: 34px; padding: 22px 24px; border: 1px solid var(--border); border-radius: var(--radius);
+  background: var(--surface); display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px 24px;
+}
+.pf-cta p { margin: 0; color: var(--dim); max-width: 560px; }
+.pf-cta strong { color: var(--text); font-family: var(--font-display); font-weight: 600; }
+.pf-cta-actions { display: flex; flex-wrap: wrap; gap: 10px; }
 .pf-card:hover, .pf-card:focus-visible { transform: translateY(-4px); border-color: var(--border-2); box-shadow: 0 30px 70px -36px rgba(0,0,0,.9); }
 
 .pf-text { align-self: stretch; display: grid; gap: 6px; }

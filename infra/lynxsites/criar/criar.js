@@ -684,6 +684,35 @@
     }
   }
 
+  // Profissões com página de exemplo: a prévia mostra esse modelo (criar/modelos/,
+  // marcado com data-pv) e manda-lhe os dados. As outras usam a prévia genérica.
+  var MODELOS = { eletricista: '/criar/modelos/eletricista.html?v=1' };
+  var pvFrame = null, pvFrameProf = null, pvPronto = false;
+
+  function dadosPrevia() {
+    var p = prof();
+    return {
+      profNome: p ? p.nome : '',
+      tipo: S.tipo,
+      negocio: S.negocio,
+      servicos: S.servicos.filter(function (s) { return s.nome.trim(); }),
+      pagamentos: S.pagamentos,
+      extras: extrasValidos(),
+      cor: S.cor && cfg.cores ? cfg.cores[S.cor] : '',
+      fotos: {
+        retrato: S.fotos.retrato ? thumbs[S.fotos.retrato] || '' : '',
+        trabalho: S.fotos.trabalho.map(function (f) { return thumbs[f] || ''; })
+      }
+    };
+  }
+  function enviarPrevia() {
+    if (pvFrame && pvPronto && pvFrame.contentWindow) pvFrame.contentWindow.postMessage({ tipo: 'lx-previa', dados: dadosPrevia() }, location.origin);
+  }
+  window.addEventListener('message', function (e) {
+    if (e.origin !== location.origin || !e.data || e.data.tipo !== 'lx-previa-pronta') return;
+    if (pvFrame && e.source === pvFrame.contentWindow) { pvPronto = true; enviarPrevia(); }
+  });
+
   function renderPreview() {
     var box = $('pvScreen');
     if (!box || !cfg) return;
@@ -695,6 +724,25 @@
     var dominio = extras.indexOf('dominio') > -1;
     var sub = S.subdominio || slug(n.nome) || 'seunegocio';
     $('pvUrl').textContent = dominio ? sub + '.com.br' : sub + '.lynxsites.com.br';
+
+    var modelo = MODELOS[S.prof];
+    $('pvNote').textContent = modelo
+      ? 'Prévia com o modelo de ' + (p ? p.nome.toLowerCase() : 'exemplo') + '. Os textos de exemplo (sobre, perguntas) trocamos pelos seus antes de publicar.'
+      : 'Prévia ilustrativa. A sua página final é revista por nós antes de ir para o ar.';
+    if (modelo) {
+      if (pvFrameProf !== S.prof) {
+        clear(box);
+        pvPronto = false;
+        pvFrame = h('iframe', { src: modelo, title: 'Prévia da página', class: 'pv-frame', tabindex: '-1' });
+        box.appendChild(pvFrame);
+        box.classList.add('com-modelo');
+        pvFrameProf = S.prof;
+      }
+      enviarPrevia();
+      return;
+    }
+    pvFrame = null; pvFrameProf = null;
+    box.classList.remove('com-modelo');
 
     clear(box);
     box.style.setProperty('--pv', cor);

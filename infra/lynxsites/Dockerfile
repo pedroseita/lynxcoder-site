@@ -13,6 +13,7 @@ COPY infra/lynxsites/inicio/ /usr/share/nginx/inicio/
 COPY infra/lynxsites/criar/ /usr/share/nginx/inicio/criar/
 COPY src/assets/fonts/manrope-latin.woff2 src/assets/fonts/manrope-latin-ext.woff2 \
      src/assets/fonts/space-grotesk-latin.woff2 src/assets/fonts/space-grotesk-latin-ext.woff2 \
-     src/assets/fonts/jetbrains-mono-latin.woff2 /usr/share/nginx/inicio/criar/fonts/
+     src/assets/fonts/jetbrains-mono-latin.woff2 \
+     src/assets/fonts/archivo-latin.woff2 src/assets/fonts/archivo-latin-ext.woff2 /usr/share/nginx/inicio/criar/fonts/
 COPY src/favicon.ico /usr/share/nginx/inicio/favicon.ico
 COPY src/assets/img/logo.png /usr/share/nginx/inicio/logo.png

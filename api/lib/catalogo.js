@@ -16,6 +16,7 @@ const PADRAO = {
     { id: 'hidraulica', nome: 'Encanador', ativa: true, tipos: ['apresentacao', 'orcamento'], extras: ['edicao', 'qr', 'logo', 'textos', 'google', 'avaliacoes', 'dominio'] },
     { id: 'quentinhas', nome: 'Quentinhas', ativa: true, tipos: ['apresentacao', 'cardapio'], extras: ['edicao', 'qr', 'logo', 'textos', 'google', 'avaliacoes', 'dominio'] },
     { id: 'churrasco', nome: 'Churrasqueiro', ativa: true, tipos: ['apresentacao', 'orcamento'], extras: ['edicao', 'qr', 'logo', 'textos', 'google', 'avaliacoes', 'dominio'] },
+    { id: 'dog-walker', nome: 'Dog walker', ativa: true, tipos: ['apresentacao', 'calculo'], extras: ['edicao', 'qr', 'logo', 'textos', 'google', 'avaliacoes', 'dominio'] },
   ],
   tipos: {
     apresentacao: { nome: 'Página de apresentação', descricao: 'Serviços, fotos, avaliações e botão de WhatsApp.', implantacao: 147, mensal: 19.90 },

@@ -76,7 +76,7 @@ A página padrão já resolve o essencial. Os extras abaixo podem ser contratado
 | **Galeria antes e depois** | Fotos de antes e depois lado a lado, para mostrar a diferença do seu trabalho | Única | {{extra_antes_depois}} |
 | **Vídeo de apresentação** | Seu vídeo (do YouTube ou gravado no celular) em destaque na página | Única | {{extra_video}} |
 | **Perfil da Empresa no Google** | Criação ou otimização do seu perfil no Google Maps e na Busca, ligado à página | Única | {{extra_perfil_google}} |
-| **Avaliações do Google na página** | Exibição automática das suas avaliações do Google | Única | {{extra_avaliacoes_google}} |
+| **Avaliações do Google na página** | Exibição automática das suas avaliações do Google | Mensal | {{extra_avaliacoes_google}}/mês |
 | **Avaliação dos serviços pelos seus clientes** | Ao terminar um serviço, você envia um link pelo WhatsApp; o cliente dá de 1 a 5 estrelas, comenta e pode enviar uma foto. As avaliações aparecem na página com a nota média | Mensal | {{extra_avaliacao_servicos}}/mês |
 | **Feed do Instagram na página** | Suas últimas publicações aparecem automaticamente na página. Exige conta profissional (Comercial ou Criador de conteúdo) no Instagram | Mensal | {{extra_feed_instagram}}/mês |
 | **E-mail profissional** | contato@seudominio.com.br configurado no celular (só no Plano Profissional) | Única + custo do provedor | {{extra_email}} |

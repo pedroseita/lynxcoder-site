@@ -372,17 +372,21 @@
         .catch(function (err) { if (err.message !== '401') toast(err.message, true); });
       return;
     }
-    if (hash === '#/nova-proposta' || /^#\/config(\/(texto|formulario|catalogo))?$/.test(hash)) {
+    var CFG_VIEWS = {
+      '#/nova-proposta': ['/adm/config', function (r) { renderNovaProposta(r); }],
+      '#/config': ['/adm/empresa', renderEmpresa],
+      '#/config/pagamentos': ['/adm/pagamentos', renderPagamentos],
+      '#/config/estado': ['/adm/estado', renderEstado],
+      '#/config/catalogo': ['/adm/catalogo', renderCatalogoVisual],
+      '#/config/catalogo/json': ['/adm/catalogo', renderCatalogo],
+      '#/config/precos': ['/adm/config', renderConfig],
+      '#/config/texto': ['/adm/proposta-texto', renderTexto],
+      '#/config/formulario': ['/adm/formulario', renderFormulario]
+    };
+    if (CFG_VIEWS[hash]) {
       if (hash === '#/nova-proposta') openDetail('propostas', 'list'); else openDetail('config', 'full');
-      var url = hash === '#/config/texto' ? '/adm/proposta-texto' : (hash === '#/config/formulario' ? '/adm/formulario' : (hash === '#/config/catalogo' ? '/adm/catalogo' : '/adm/config'));
-      api('GET', url).then(function (r) {
-        if (hash === '#/config') renderConfig(r);
-        else if (hash === '#/config/texto') renderTexto(r);
-        else if (hash === '#/config/formulario') renderFormulario(r);
-        else if (hash === '#/config/catalogo') renderCatalogo(r);
-        else renderNovaProposta(r);
-        showDetail();
-      }).catch(function (err) { if (err.message !== '401') toast(err.message, true); });
+      api('GET', CFG_VIEWS[hash][0]).then(function (r) { CFG_VIEWS[hash][1](r); showDetail(); })
+        .catch(function (err) { if (err.message !== '401') toast(err.message, true); });
       return;
     }
     var m = /^#\/(pedido|mensagem|proposta|cliente|compra)\/([\w-]+)$/.exec(hash);
@@ -775,8 +779,8 @@
     var el = $('detail');
     el.textContent = '';
     el.appendChild(backLink());
-    el.appendChild(configNav('#/config/catalogo'));
-    el.appendChild(h('div', { class: 'd-head' }, h('div', null, h('h1', { text: 'Catálogo do /criar' }),
+    el.appendChild(configNav('#/config/catalogo/json'));
+    el.appendChild(h('div', { class: 'd-head' }, h('div', null, h('h1', { text: 'Catálogo do /criar (JSON)' }),
       h('p', { class: 'd-meta', text: 'Profissões, tipos de página, extras e preços da compra direta em lynxsites.com.br/criar. O valor cobrado vem sempre daqui.' }))));
     el.appendChild(h('div', { class: 'd-grid' },
       h('section', { class: 'card wide' }, h('div', { class: 'link-row editor-actions' }, btnSalvar, btnPadrao, estado), ta),
@@ -1471,7 +1475,7 @@
         h('textarea', { name: 'mensagem', maxlength: '1000', placeholder: 'Ex.: Como combinamos por telefone, segue a proposta com 10% de desconto na implantação.' })),
       h('div', { class: 'f wide form-actions' },
         h('button', { type: 'submit', class: 'btn btn-primary' }, 'Criar proposta'),
-        h('a', { class: 'link', href: '#/config' }, 'Editar os valores padrão →')));
+        h('a', { class: 'link', href: '#/config/precos' }, 'Editar os preços e prazos padrão →')));
     form.addEventListener('submit', function (e) {
       e.preventDefault();
       var f = form.elements;
@@ -1498,7 +1502,7 @@
         h('strong', { text: vazios.length + (vazios.length === 1 ? ' valor padrão em branco' : ' valores padrão em branco') }),
         ' (' + vazios.slice(0, 4).map(function (c) { return c[2]; }).join(', ') + (vazios.length > 4 ? '…' : '') + '). ',
         'Na proposta aparecem como "a combinar". Preencha uma vez em ',
-        h('a', { class: 'link', href: '#/config' }, 'Configurações › Valores'),
+        h('a', { class: 'link', href: '#/config/precos' }, 'Configurações › Preços e prazos'),
         ' e todas as propostas novas já vêm com eles.'));
     }
     el.appendChild(h('section', { class: 'card wide' }, form));
@@ -1508,7 +1512,9 @@
   function renderConfig(cfg) {
     var form = h('form', { class: 'form-grid', novalidate: true });
     var grupo = null;
-    cfg.campos.forEach(function (c) {
+    var deFora = cfg.deFora || [];
+    var campos = cfg.campos.filter(function (c) { return deFora.indexOf(c[0]) < 0; });
+    campos.forEach(function (c) {
       if (c[0] !== grupo) { grupo = c[0]; form.appendChild(h('h2', { class: 'wide form-group', text: grupo })); }
       var ph = c[3] === 'dinheiro' ? 'Ex.: 490' : (c[3] === 'numero' ? 'Ex.: 5' : '');
       form.appendChild(formField(c[2], textInput(c[1], cfg.valores[c[1]], { maxlength: '120', placeholder: ph })));
@@ -1517,17 +1523,22 @@
     form.addEventListener('submit', function (e) {
       e.preventDefault();
       var out = {};
-      cfg.campos.forEach(function (c) { out[c[1]] = form.elements[c[1]].value; });
-      api('PUT', '/adm/config', out).then(function () { toast('Valores salvos'); })
+      campos.forEach(function (c) { out[c[1]] = form.elements[c[1]].value; });
+      api('PUT', '/adm/config', out).then(function () { toast('Preços e prazos salvos'); })
         .catch(function (err) { toast(err.message, true); });
     });
-    var el = $('detail');
-    el.textContent = '';
-    el.appendChild(backLink());
-    el.appendChild(configNav('#/config'));
-    el.appendChild(h('div', { class: 'd-head' }, h('div', null, h('h1', { text: 'Valores da proposta' }),
-      h('p', { class: 'd-meta', text: 'Valores usados nas propostas novas. Em branco aparece "a combinar". Propostas já criadas não mudam.' }))));
-    el.appendChild(h('section', { class: 'card wide' }, form));
+    var el = cfgPage('#/config/precos', 'Preços e prazos das propostas', 'Usados nas propostas novas. Em branco aparece "a combinar". Propostas já criadas não mudam.');
+    var extras = cfg.campos.filter(function (c) { return c[0] === 'Extras'; });
+    el.appendChild(h('div', { class: 'd-grid' },
+      h('section', { class: 'card wide' }, form),
+      h('section', { class: 'card' }, h('h2', { text: 'Extras' }),
+        h('p', { class: 'muted small', text: 'Os preços dos extras vêm do catálogo, os mesmos do /criar.' }),
+        h('div', { class: 'dl-money' }, dl(extras.map(function (c) { var v = cfg.valores[c[1]]; return [c[2], v ? fmtMoney(Number(v)) : 'a combinar']; }))),
+        h('a', { class: 'link', href: '#/config/catalogo' }, 'Mudar no catálogo →')),
+      h('section', { class: 'card' }, h('h2', { text: 'Contato e horário' }),
+        h('p', { class: 'muted small', text: 'Vêm dos dados da empresa.' }),
+        dl([['WhatsApp', fmtPhone(cfg.valores.whatsapp) || '—'], ['E-mail', cfg.valores.email || '—'], ['Horário', cfg.valores.horario_inicio ? cfg.valores.horario_inicio + ' às ' + cfg.valores.horario_fim : '—']]),
+        h('a', { class: 'link', href: '#/config' }, 'Mudar em Empresa →'))));
   }
 
   // ---------- manutenção (bandeira) ----------
@@ -1590,12 +1601,263 @@
     }).catch(function (err) { toast(err.message, true); });
   });
 
-  // ---------- configurações: sub-navegação ----------
+  // ---------- configurações: navegação por assunto ----------
+  var CONFIG_GRUPOS = [
+    ['Geral', [['#/config', 'Empresa'], ['#/config/pagamentos', 'Pagamentos'], ['#/config/estado', 'Estado do sistema']]],
+    ['Compra direta', [['#/config/catalogo', 'Catálogo do /criar']]],
+    ['Propostas', [['#/config/precos', 'Preços e prazos'], ['#/config/texto', 'Texto da proposta'], ['#/config/formulario', 'Formulário do cliente']]]
+  ];
   function configNav(atual) {
-    var tabs = [['#/config', 'Valores'], ['#/config/texto', 'Texto da proposta'], ['#/config/formulario', 'Formulário'], ['#/config/catalogo', 'Catálogo /criar']];
-    return h('nav', { class: 'subnav', 'aria-label': 'Configurações' }, tabs.map(function (t) {
-      return h('a', { href: t[0], class: t[0] === atual ? 'on' : '', 'aria-current': t[0] === atual ? 'page' : null }, t[1]);
+    if (atual === '#/config/catalogo/json') atual = '#/config/catalogo';
+    return h('nav', { class: 'cfg-nav', 'aria-label': 'Configurações' }, CONFIG_GRUPOS.map(function (g) {
+      return h('div', { class: 'cfg-group' }, h('span', { class: 'cfg-label', text: g[0] }),
+        h('div', { class: 'subnav' }, g[1].map(function (t) {
+          return h('a', { href: t[0], class: t[0] === atual ? 'on' : '', 'aria-current': t[0] === atual ? 'page' : null }, t[1]);
+        })));
     }));
+  }
+  function cfgPage(hash, titulo, meta) {
+    var el = $('detail');
+    el.textContent = '';
+    el.appendChild(backLink());
+    el.appendChild(configNav(hash));
+    el.appendChild(h('div', { class: 'd-head' }, h('div', null, h('h1', { text: titulo }), meta ? h('p', { class: 'd-meta', text: meta }) : null)));
+    return el;
+  }
+
+  // ---------- Empresa ----------
+  function renderEmpresa(r) {
+    var form = h('form', { class: 'form-grid', novalidate: true });
+    r.campos.forEach(function (c) {
+      var inp = textInput(c[0], r.empresa[c[0]], { maxlength: String(c[2]) });
+      form.appendChild((c[0] === 'endereco' ? wideField : formField)(c[1], inp, c[3] || null));
+    });
+    form.appendChild(h('div', { class: 'f wide form-actions' }, h('button', { type: 'submit', class: 'btn btn-primary' }, 'Salvar')));
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var out = {};
+      r.campos.forEach(function (c) { out[c[0]] = form.elements[c[0]].value; });
+      api('PUT', '/adm/empresa', out).then(function () { toast('Dados da empresa salvos'); }).catch(function (err) { toast(err.message, true); });
+    });
+    var el = cfgPage('#/config', 'Empresa', 'Um só sítio para os dados da LynxCoder: aparecem nas propostas, no rodapé da compra (lynxsites.com.br/criar) e no painel do cliente.');
+    el.appendChild(h('section', { class: 'card wide' }, form));
+  }
+
+  // ---------- Pagamentos ----------
+  function renderPagamentos(r) {
+    var el = cfgPage('#/config/pagamentos', 'Pagamentos', 'Como os clientes pagam a compra no /criar e as mensalidades no painel do cliente.');
+
+    var sw = h('button', { type: 'button', class: 'switch' + (r.ativos ? ' on' : ''), role: 'switch', 'aria-checked': String(r.ativos) },
+      h('span', { class: 'switch-knob', 'aria-hidden': 'true' }));
+    var swTxt = h('div', null,
+      h('strong', { text: r.ativos ? 'Pagamentos no /criar: LIGADOS' : 'Pagamentos no /criar: DESLIGADOS' }),
+      h('p', { class: 'muted small', text: r.ativos ? 'No fim da compra o cliente vê o PIX e paga.' : 'O cliente faz os 6 passos e vê "Pagamentos em breve" no fim.' }));
+    var armed = false;
+    sw.addEventListener('click', function () {
+      if (!armed) {
+        armed = true; sw.classList.add('confirm');
+        toast(r.ativos ? 'Toque outra vez para DESLIGAR os pagamentos' : 'Toque outra vez para LIGAR os pagamentos');
+        setTimeout(function () { armed = false; sw.classList.remove('confirm'); }, 4000);
+        return;
+      }
+      api('PUT', '/adm/pagamentos', { ativos: !r.ativos }).then(function (x) { toast(x.ativos ? 'Pagamentos ligados' : 'Pagamentos desligados'); renderPagamentos(x); })
+        .catch(function (err) { armed = false; sw.classList.remove('confirm'); toast(err.message, true); });
+    });
+
+    var form = h('form', { class: 'form-grid', novalidate: true },
+      wideField('Chave PIX', textInput('chave', r.pix.chave, { maxlength: '77', placeholder: 'E-mail, telefone (+55…), CPF, CNPJ ou chave aleatória' }), 'Vai dentro de cada QR Code: não é secreta.'),
+      formField('Nome que aparece no PIX', textInput('nome', r.pix.nome, { maxlength: '25' }), 'Até 25 letras, sem acentos.'),
+      formField('Cidade', textInput('cidade', r.pix.cidade, { maxlength: '15' }), 'Até 15 letras, sem acentos.'),
+      h('div', { class: 'f wide form-actions' }, h('button', { type: 'submit', class: 'btn btn-primary' }, 'Salvar PIX')));
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      api('PUT', '/adm/pagamentos', { pix: { chave: form.elements.chave.value, nome: form.elements.nome.value, cidade: form.elements.cidade.value } })
+        .then(function (x) { toast('PIX salvo'); renderPagamentos(x); }).catch(function (err) { toast(err.message, true); });
+    });
+
+    var testeBox = h('div', { class: 'pix-teste' });
+    var testeBtn = h('button', { type: 'button', class: 'btn btn-ghost btn-sm', disabled: !r.pix.chave || null }, 'Gerar PIX de teste (R$ 1,00)');
+    testeBtn.addEventListener('click', function () {
+      api('POST', '/adm/pagamentos/teste').then(function (x) {
+        testeBox.textContent = '';
+        var ta = h('textarea', { class: 'ta-sm', readonly: true, rows: '3', 'aria-label': 'PIX copia e cola de teste' });
+        ta.value = x.payload;
+        testeBox.appendChild(h('img', { src: x.qr, alt: 'QR Code do PIX de teste', width: '200', height: '200' }));
+        testeBox.appendChild(ta);
+        testeBox.appendChild(h('p', { class: 'muted small', text: 'Pague com a app do banco: tem de aparecer o nome e o valor certos. O dinheiro vai para a sua própria conta.' }));
+      }).catch(function (err) { toast(err.message, true); });
+    });
+
+    el.appendChild(h('div', { class: 'd-grid' },
+      h('section', { class: 'card wide' }, h('div', { class: 'switch-row' }, sw, swTxt)),
+      h('section', { class: 'card wide' }, h('h2', { text: 'PIX' }), form),
+      h('section', { class: 'card' }, h('h2', { text: 'Testar o PIX' }), h('p', { class: 'muted small', text: 'Antes de ligar os pagamentos, confirme que a chave funciona.' }), testeBtn, testeBox),
+      h('section', { class: 'card' }, h('h2', { text: 'Confirmação dos pagamentos' }), dl([
+        ['Modo', r.gateway === 'manual' ? 'PIX manual' : r.gateway],
+        ['Como funciona', r.gateway === 'manual' ? 'Confere o PIX no extrato e carrega em "Confirmar pagamento" na compra.' : 'Automática, pelo gateway.'],
+        ['Cartão', r.formas.indexOf('cartao') > -1 ? 'Disponível' : 'Só com gateway (Asaas preparado)']
+      ]))));
+  }
+
+  // ---------- Estado do sistema ----------
+  function renderEstado(r) {
+    var el = cfgPage('#/config/estado', 'Estado do sistema', 'O que está ligado e o que falta, e onde se resolve.');
+    el.appendChild(h('section', { class: 'card wide' }, h('ul', { class: 'estado' }, r.itens.map(function (i) {
+      var cls = i.ok ? 'ok' : (i.aviso ? 'aviso' : 'falta');
+      return h('li', { class: 'estado-item ' + cls },
+        h('span', { class: 'estado-icon', 'aria-hidden': 'true', text: i.ok ? '✓' : (i.aviso ? '–' : '✗') }),
+        h('span', { class: 'estado-body' },
+          h('strong', { text: i.titulo }),
+          h('span', { class: 'muted small', text: i.detalhe }),
+          i.onde ? h('span', { class: 'estado-onde', text: 'Onde: ' + i.onde }) : null),
+        i.link ? h('a', { class: 'btn btn-ghost btn-sm', href: i.link }, 'Abrir') : null);
+    }))));
+  }
+
+  // ---------- Catálogo do /criar (editor visual) ----------
+  function slugId(s) { return String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '').slice(0, 40); }
+  function num(v) { var n = Number(String(v).replace(',', '.')); return isFinite(n) ? n : NaN; }
+
+  function renderCatalogoVisual(r) {
+    var c = JSON.parse(JSON.stringify(r.catalogo));
+    var el = cfgPage('#/config/catalogo', 'Catálogo do /criar', 'Profissões, tipos de página e extras da compra direta. Os preços dos extras também são usados nas propostas.');
+
+    var moneyIn = function (v, label) { var i = h('input', { type: 'text', inputmode: 'decimal', class: 'in-money', 'aria-label': label }); i.value = String(v).replace('.', ','); return i; };
+    var txtIn = function (v, label, max) { var i = h('input', { type: 'text', maxlength: String(max || 60), 'aria-label': label }); i.value = v || ''; return i; };
+    var chk = function (on, label) { var i = h('input', { type: 'checkbox', 'aria-label': label }); i.checked = !!on; return i; };
+
+    // tipos
+    var tiposBody = h('tbody');
+    function tipoRow(id, t) {
+      var nome = txtIn(t.nome, 'Nome do tipo'), desc = txtIn(t.descricao, 'Descrição', 160), imp = moneyIn(t.implantacao, 'Implantação'), men = moneyIn(t.mensal, 'Mensal');
+      var tr = h('tr', { 'data-id': id }, h('td', null, nome, h('span', { class: 'cat-id', text: id })), h('td', null, desc), h('td', null, imp), h('td', null, men),
+        h('td', null, h('button', { type: 'button', class: 'btn-x', 'aria-label': 'Remover tipo', text: '×', onclick: function () { tr.remove(); } })));
+      tr._get = function () { return { nome: nome.value, descricao: desc.value, implantacao: num(imp.value), mensal: num(men.value) }; };
+      return tr;
+    }
+    Object.keys(c.tipos).forEach(function (id) { tiposBody.appendChild(tipoRow(id, c.tipos[id])); });
+
+    // extras
+    var extrasBody = h('tbody');
+    function extraRow(id, e) {
+      var nome = txtIn(e.nome, 'Nome do extra'), uni = moneyIn(e.unico, 'Preço único'), men = moneyIn(e.mensal, 'Preço mensal'), at = chk(e.ativo, 'Ligado no /criar');
+      var tr = h('tr', { 'data-id': id }, h('td', null, nome, h('span', { class: 'cat-id', text: id })), h('td', null, uni), h('td', null, men), h('td', { class: 'center' }, at),
+        h('td', null, h('button', { type: 'button', class: 'btn-x', 'aria-label': 'Remover extra', text: '×', onclick: function () { tr.remove(); } })));
+      tr._get = function () { return { nome: nome.value, unico: num(uni.value), mensal: num(men.value), ativo: at.checked }; };
+      return tr;
+    }
+    Object.keys(c.extras).forEach(function (id) { extrasBody.appendChild(extraRow(id, c.extras[id])); });
+
+    // profissões: tipos e extras por caixas, lidos dos ids atuais das tabelas
+    var profBox = h('div', { class: 'prof-list' });
+    function idsDe(body) { return Array.prototype.map.call(body.querySelectorAll('tr'), function (tr) { return [tr.getAttribute('data-id'), tr._get().nome]; }); }
+    function profCard(p) {
+      var nome = txtIn(p.nome, 'Nome da profissão'), at = chk(p.ativa, 'Profissão ligada');
+      var tiposWrap = h('div', { class: 'chk-wrap' }), extrasWrap = h('div', { class: 'chk-wrap' });
+      function desenhar() {
+        var marcadosT = card._tipos(), marcadosE = card._extras();
+        tiposWrap.textContent = ''; extrasWrap.textContent = '';
+        idsDe(tiposBody).forEach(function (t) { var i = chk(marcadosT.indexOf(t[0]) > -1, t[1]); i.value = t[0]; tiposWrap.appendChild(h('label', { class: 'chk' }, i, ' ' + t[1])); });
+        idsDe(extrasBody).forEach(function (t) { var i = chk(marcadosE.indexOf(t[0]) > -1, t[1]); i.value = t[0]; extrasWrap.appendChild(h('label', { class: 'chk' }, i, ' ' + t[1])); });
+      }
+      var card = h('div', { class: 'prof-card', 'data-id': p.id },
+        h('div', { class: 'prof-head' }, h('label', { class: 'chk' }, at, ' Ligada'), nome, h('span', { class: 'cat-id', text: p.id }),
+          h('button', { type: 'button', class: 'btn-x', 'aria-label': 'Remover profissão', text: '×', onclick: function () { card.remove(); } })),
+        h('span', { class: 'cfg-label', text: 'Tipos de página' }), tiposWrap,
+        h('span', { class: 'cfg-label', text: 'Extras' }), extrasWrap);
+      var iniT = p.tipos.slice(), iniE = p.extras.slice();
+      card._tipos = function () { var b = tiposWrap.querySelectorAll('input'); return b.length ? Array.prototype.filter.call(b, function (i) { return i.checked; }).map(function (i) { return i.value; }) : iniT; };
+      card._extras = function () { var b = extrasWrap.querySelectorAll('input'); return b.length ? Array.prototype.filter.call(b, function (i) { return i.checked; }).map(function (i) { return i.value; }) : iniE; };
+      card._redraw = desenhar;
+      card._get = function () { return { id: p.id, nome: nome.value, ativa: at.checked, tipos: card._tipos(), extras: card._extras() }; };
+      desenhar();
+      return card;
+    }
+    c.profissoes.forEach(function (p) { profBox.appendChild(profCard(p)); });
+    var redrawProfs = function () { Array.prototype.forEach.call(profBox.children, function (cd) { cd._redraw(); }); };
+    tiposBody.addEventListener('change', redrawProfs);
+    extrasBody.addEventListener('change', redrawProfs);
+    tiposBody.addEventListener('click', function (e) { if (e.target.classList.contains('btn-x')) setTimeout(redrawProfs); });
+    extrasBody.addEventListener('click', function (e) { if (e.target.classList.contains('btn-x')) setTimeout(redrawProfs); });
+
+    // "+ Tipo" / "+ Extra": pede o nome numa linha em vez de um prompt().
+    function novo(pergunta, body, mk, base) {
+      return function () {
+        var btn = this;
+        var input = h('input', { type: 'text', maxlength: '60', placeholder: pergunta, 'aria-label': pergunta });
+        var ok = h('button', { type: 'button', class: 'btn btn-primary btn-sm' }, 'Adicionar');
+        var row = h('div', { class: 'add-row' }, input, ok);
+        ok.addEventListener('click', function () {
+          var id = slugId(input.value);
+          if (!id) { toast('Escreva um nome.', true); return; }
+          if (body.querySelector('[data-id="' + id + '"]')) { toast('Já existe um com esse nome.', true); return; }
+          body.appendChild(mk(id, Object.assign({}, base, { nome: input.value.trim() })));
+          row.remove(); redrawProfs();
+        });
+        btn.parentNode.insertBefore(row, btn);
+        input.focus();
+      };
+    }
+
+    var anualAt = chk(c.plano_anual.ativo, 'Plano anual ligado');
+    var anualMeses = h('input', { type: 'number', min: '1', max: '12', class: 'in-money', 'aria-label': 'Meses pagos no plano anual' });
+    anualMeses.value = c.plano_anual.meses_pagos;
+    var nf = chk(c.emite_nota_fiscal, 'Emite nota fiscal');
+
+    function coletar() {
+      var out = { tipos: {}, extras: {}, profissoes: [], plano_anual: { ativo: anualAt.checked, meses_pagos: Number(anualMeses.value) }, emite_nota_fiscal: nf.checked, pagamentos_ativos: c.pagamentos_ativos };
+      Array.prototype.forEach.call(tiposBody.querySelectorAll('tr'), function (tr) { out.tipos[tr.getAttribute('data-id')] = tr._get(); });
+      Array.prototype.forEach.call(extrasBody.querySelectorAll('tr'), function (tr) { out.extras[tr.getAttribute('data-id')] = tr._get(); });
+      Array.prototype.forEach.call(profBox.children, function (cd) { out.profissoes.push(cd._get()); });
+      return out;
+    }
+    var salvar = h('button', { type: 'button', class: 'btn btn-primary btn-sm' }, 'Salvar catálogo');
+    salvar.addEventListener('click', function () {
+      api('PUT', '/adm/catalogo', { catalogo: coletar() }).then(function (x) { toast('Catálogo salvo: o /criar e as propostas novas já usam estes valores'); renderCatalogoVisual({ catalogo: x.catalogo }); })
+        .catch(function (err) { toast(err.message, true); });
+    });
+
+    var addTipo = h('button', { type: 'button', class: 'btn btn-ghost btn-sm' }, '+ Tipo de página');
+    addTipo.addEventListener('click', novo('Nome do tipo (ex.: Com galeria)', tiposBody, tipoRow, { descricao: '', implantacao: 0, mensal: 0 }));
+    var addExtra = h('button', { type: 'button', class: 'btn btn-ghost btn-sm' }, '+ Extra');
+    addExtra.addEventListener('click', novo('Nome do extra', extrasBody, extraRow, { unico: 0, mensal: 0, ativo: false }));
+    var addProf = h('button', { type: 'button', class: 'btn btn-ghost btn-sm' }, '+ Profissão');
+    addProf.addEventListener('click', function () {
+      var input = h('input', { type: 'text', maxlength: '60', placeholder: 'Nome da profissão (ex.: Pintor)', 'aria-label': 'Nome da profissão' });
+      var ok = h('button', { type: 'button', class: 'btn btn-primary btn-sm' }, 'Adicionar');
+      var row = h('div', { class: 'add-row' }, input, ok);
+      ok.addEventListener('click', function () {
+        var id = slugId(input.value).replace(/_/g, '-');
+        if (!id) { toast('Escreva um nome.', true); return; }
+        if (profBox.querySelector('[data-id="' + id + '"]')) { toast('Essa profissão já existe.', true); return; }
+        profBox.appendChild(profCard({ id: id, nome: input.value.trim(), ativa: false, tipos: [], extras: [] }));
+        row.remove();
+      });
+      addProf.parentNode.insertBefore(row, addProf);
+      input.focus();
+    });
+
+    el.appendChild(h('div', { class: 'd-grid' },
+      h('section', { class: 'card wide' }, h('div', { class: 'link-row' }, salvar,
+        h('span', { class: 'muted small', text: 'Pagamentos no /criar: ' + (c.pagamentos_ativos ? 'ligados' : 'desligados') + ' (em ' }),
+        h('a', { class: 'link', href: '#/config/pagamentos' }, 'Pagamentos'), h('span', { class: 'muted small', text: ')' }),
+        h('a', { class: 'link cat-json', href: '#/config/catalogo/json' }, 'Editar em JSON (avançado)'))),
+      h('section', { class: 'card wide' }, h('h2', { text: 'Tipos de página' }),
+        h('div', { class: 'table-wrap' }, h('table', { class: 'cat-table' },
+          h('thead', null, h('tr', null, ['Nome', 'Descrição', 'Implantação (R$)', 'Mensal (R$)', ''].map(function (t) { return h('th', { text: t }); }))), tiposBody)),
+        addTipo),
+      h('section', { class: 'card wide' }, h('h2', { text: 'Extras' }),
+        h('p', { class: 'muted small', text: 'Preço único, mensal ou os dois. "Ligado" mostra o extra no /criar (nas profissões que o têm). Os mesmos preços aparecem nas propostas; 0 aparece como "a combinar".' }),
+        h('div', { class: 'table-wrap' }, h('table', { class: 'cat-table' },
+          h('thead', null, h('tr', null, ['Nome', 'Único (R$)', 'Mensal (R$)', 'Ligado', ''].map(function (t) { return h('th', { text: t }); }))), extrasBody)),
+        addExtra),
+      h('section', { class: 'card wide' }, h('h2', { text: 'Profissões' }),
+        h('p', { class: 'muted small', text: 'Só aparecem no /criar as profissões ligadas e com pelo menos um tipo de página.' }),
+        profBox, addProf),
+      h('section', { class: 'card wide' }, h('h2', { text: 'Outras opções' }),
+        h('div', { class: 'opts-row' },
+          h('label', { class: 'chk' }, anualAt, ' Plano anual, pagando '), anualMeses, h('span', { class: 'muted small', text: 'meses (10 = 2 meses grátis)' })),
+        h('div', { class: 'opts-row' }, h('label', { class: 'chk' }, nf, ' Emito nota fiscal (senão, o cliente recebe recibo)')))));
   }
 
   function criarPropostaTeste() {
@@ -1688,16 +1950,21 @@
     r.paletas.forEach(function (p) { paletasBox.appendChild(paletaRow(p)); });
 
     // Textos das etapas: em branco volta ao padrão (mostrado como exemplo).
-    var textosBox = h('div', { class: 'form-grid' });
-    var grupo = null;
+    var textosBox = h('div', { class: 'etapas' });
+    var grupo = null, grid = null;
     r.textosCampos.forEach(function (c) {
-      if (c.grupo !== grupo) { grupo = c.grupo; textosBox.appendChild(h('h3', { class: 'wide form-group', text: grupo })); }
+      if (c.grupo !== grupo) {
+        grupo = c.grupo;
+        grid = h('div', { class: 'form-grid' });
+        textosBox.appendChild(h('details', { class: 'etapa' }, h('summary', { text: grupo }), grid));
+      }
       var atual = r.textos[c.chave] || '';
       var longo = c.max > 160;
       var inp = longo
         ? textArea(c.chave, atual === c.padrao ? '' : atual, { maxlength: String(c.max), class: 'ta-sm', placeholder: c.padrao, 'data-txt': c.chave })
         : textInput(c.chave, atual === c.padrao ? '' : atual, { maxlength: String(c.max), placeholder: c.padrao, 'data-txt': c.chave });
-      textosBox.appendChild((longo ? wideField : formField)(c.rotulo, inp, atual !== c.padrao ? 'Alterado. Padrão: ' + c.padrao : null));
+      grid.appendChild((longo ? wideField : formField)(c.rotulo, inp, atual !== c.padrao ? 'Alterado. Padrão: ' + c.padrao : null));
+      if (atual !== c.padrao) grid.parentNode.classList.add('alterada');
     });
 
     function coletar() {
@@ -1746,7 +2013,7 @@
     el.textContent = '';
     el.appendChild(backLink());
     el.appendChild(configNav('#/config/formulario'));
-    el.appendChild(h('div', { class: 'd-head' }, h('div', null, h('h1', { text: 'Formulário' }),
+    el.appendChild(h('div', { class: 'd-head' }, h('div', null, h('h1', { text: 'Formulário do cliente (/comecar)' }),
       h('p', { class: 'd-meta', text: 'Vale para todos os clientes: extras (etapa 2), paletas (etapa 3) e os textos de cada etapa do /comecar. Para um cliente só, use "Personalizar formulário" na proposta.' }))));
     el.appendChild(h('div', { class: 'd-grid' },
       h('section', { class: 'card wide' }, h('div', { class: 'link-row' }, salvar, testar, padrao)),
@@ -1759,7 +2026,7 @@
         paletasBox,
         h('button', { type: 'button', class: 'btn btn-ghost btn-sm', onclick: function () { paletasBox.appendChild(paletaRow(null)); } }, '+ Paleta')),
       h('section', { class: 'card wide' }, h('h2', { text: 'Textos das etapas' }),
-        h('p', { class: 'muted small', text: 'Em branco usa o texto padrão (aparece em cinza como exemplo). Os botões Salvar acima guardam também os textos.' }),
+        h('p', { class: 'muted small', text: 'Abra uma etapa para mudar os textos. Em branco usa o texto padrão (em cinza). As etapas com textos alterados estão marcadas. Os botões Salvar acima guardam também os textos.' }),
         textosBox,
         h('div', { class: 'link-row editor-actions' }, padraoTextos))));
   }

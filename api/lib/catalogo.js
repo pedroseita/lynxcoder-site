@@ -33,6 +33,12 @@ const PADRAO = {
     google: { nome: 'Perfil da empresa no Google', unico: 79, mensal: 0, ativo: true },
     avaliacoes: { nome: 'Avaliações do Google na página', unico: 0, mensal: 9.90, ativo: true },
     dominio: { nome: 'Domínio próprio', unico: 50, mensal: 10, ativo: true },
+    // Também nas propostas; desligados no /criar até terem preço e profissões.
+    antes_depois: { nome: 'Galeria antes e depois', unico: 0, mensal: 0, ativo: false },
+    video: { nome: 'Vídeo de apresentação', unico: 0, mensal: 0, ativo: false },
+    avaliacao_servicos: { nome: 'Avaliação dos serviços pelos clientes', unico: 0, mensal: 0, ativo: false },
+    instagram: { nome: 'Feed do Instagram na página', unico: 0, mensal: 0, ativo: false },
+    email_profissional: { nome: 'E-mail profissional', unico: 0, mensal: 0, ativo: false },
   },
   plano_anual: { ativo: true, meses_pagos: 10 },
   emite_nota_fiscal: false,
@@ -96,8 +102,17 @@ function validar(c) {
 async function load() {
   const salvo = await readJson(FILE);
   if (!salvo) return PADRAO;
+  // Extras que entraram no padrão depois de o catálogo ser salvo: acrescentados.
+  salvo.extras = { ...(salvo.extras || {}), ...Object.fromEntries(Object.entries(PADRAO.extras).filter(([k]) => !(salvo.extras || {})[k])) };
   try { return validar(salvo); } catch { return PADRAO; }
 }
+
+// Extras que também aparecem na proposta: chave da proposta -> extra do catálogo.
+const EXTRAS_PROPOSTA = {
+  extra_logo: 'logo', extra_textos: 'textos', extra_cartao: 'qr', extra_antes_depois: 'antes_depois',
+  extra_video: 'video', extra_perfil_google: 'google', extra_avaliacoes_google: 'avaliacoes',
+  extra_avaliacao_servicos: 'avaliacao_servicos', extra_feed_instagram: 'instagram', extra_email: 'email_profissional',
+};
 
 async function save(input) {
   const c = validar(input);
@@ -165,4 +180,4 @@ function calcular(c, { prof, tipo, extras, plano }) {
   };
 }
 
-module.exports = { PADRAO, load, save, restaurar, publico, calcular, validar };
+module.exports = { PADRAO, load, save, restaurar, publico, calcular, validar, EXTRAS_PROPOSTA };

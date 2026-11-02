@@ -1,7 +1,11 @@
-// Valores da proposta (preços, prazos, contactos), editados no painel em
-// "Configurações" e guardados em /data/config/proposta.json.
+// Valores da proposta, editados no painel em Configurações › Propostas ›
+// Preços e prazos e guardados em /data/config/proposta.json.
 // Cada proposta nova copia estes valores; os preços dos planos podem ser
 // ajustados por cliente.
+//
+// Não são guardados aqui (vêm de outro sítio, para haver um só valor):
+// - preços dos extras: do catálogo da compra direta (lib/catalogo.js);
+// - contato e horário: dos dados da empresa (lib/empresa.js).
 'use strict';
 
 const path = require('node:path');
@@ -40,11 +44,27 @@ const CAMPOS = [
   ['Contato', 'whatsapp', 'WhatsApp da LynxCoder', 'texto'],
   ['Contato', 'email', 'E-mail da LynxCoder', 'texto'],
 ];
-const CHAVES = new Set(CAMPOS.map((c) => c[1]));
-const PADRAO = { validade_dias: '15', email: 'devlynxcoder@gmail.com' };
+// Grupos que vêm de outro sítio e não se editam nesta página.
+const DE_FORA = new Set(['Extras', 'Contato']);
+const CHAVES = new Set(CAMPOS.filter((c) => !DE_FORA.has(c[0])).map((c) => c[1]));
+const PADRAO = { validade_dias: '15' };
+
+// Preço de um extra do catálogo como texto da proposta ("" = a combinar).
+function precoExtra(e) {
+  if (!e) return '';
+  if (e.mensal > 0 && !(e.unico > 0)) return String(e.mensal);
+  return e.unico > 0 ? String(e.unico) : '';
+}
 
 async function load() {
-  return { ...PADRAO, ...(await readJson(FILE, {})) };
+  const proprios = Object.fromEntries(Object.entries(await readJson(FILE, {})).filter(([k]) => CHAVES.has(k)));
+  const cat = await require('./catalogo').load();
+  const emp = await require('./empresa').load();
+  const extras = Object.fromEntries(Object.entries(require('./catalogo').EXTRAS_PROPOSTA).map(([k, id]) => [k, precoExtra(cat.extras[id])]));
+  return {
+    ...PADRAO, ...proprios, ...extras,
+    whatsapp: emp.whatsapp, email: emp.email, horario_inicio: emp.horario_inicio, horario_fim: emp.horario_fim,
+  };
 }
 
 async function save(input) {
@@ -53,7 +73,7 @@ async function save(input) {
     if (CHAVES.has(k)) out[k] = str(v, 120);
   }
   await writeJson(FILE, out);
-  return { ...PADRAO, ...out };
+  return load();
 }
 
 // "490" / "490,5" / "1.490,00" -> "R$ 490,00"; texto livre (ex.: "sob consulta") fica como está.
@@ -65,4 +85,4 @@ function dinheiro(v) {
   return n.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 }
 
-module.exports = { CAMPOS, load, save, dinheiro };
+module.exports = { CAMPOS, DE_FORA, load, save, dinheiro };

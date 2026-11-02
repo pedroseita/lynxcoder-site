@@ -10,14 +10,16 @@
 <link rel="icon" type="image/png" href="/logo.png" sizes="192x192">
 <link rel="preload" href="/criar/fonts/manrope-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/criar/fonts/space-grotesk-latin.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="/criar/criar.css?v=2">
+<link rel="stylesheet" href="/criar/criar.css?v=3">
 </head>
 <body>
+<div class="stage">
 <div class="app">
   <header class="top">
     <div class="top-row">
       <button type="button" class="back" id="backBtn" hidden aria-label="Voltar ao passo anterior">‹ Voltar</button>
       <a class="brand" id="brand" href="/"><img src="/logo.png" alt="" width="34" height="34"><span>LynxCoder</span><small>Sites</small></a>
+      <button type="button" class="pv-open" id="pvOpen" aria-controls="preview">Ver prévia</button>
       <span class="step-count" id="stepCount" aria-live="polite"></span>
     </div>
     <div class="progress" aria-hidden="true"><span id="progressBar"></span></div>
@@ -172,6 +174,20 @@
 
   <p class="seller" id="seller"></p>
 </div>
-<script src="/criar/criar.js?v=2"></script>
+
+<!-- Prévia ao vivo: a página do cliente a ganhar forma a cada escolha (criar.js: renderPreview) -->
+<aside class="preview" id="preview" aria-label="Prévia da sua página">
+  <div class="pv-head">
+    <span class="pv-title">Prévia da sua página</span>
+    <button type="button" class="pv-close" id="pvClose" aria-label="Fechar a prévia">×</button>
+  </div>
+  <div class="pv-phone">
+    <div class="pv-bar"><span class="pv-lock" aria-hidden="true">🔒</span><span id="pvUrl">seunegocio.lynxsites.com.br</span></div>
+    <div class="pv-screen" id="pvScreen"></div>
+  </div>
+  <p class="pv-note">Prévia ilustrativa. A sua página final é revista por nós antes de ir para o ar.</p>
+</aside>
+</div>
+<script src="/criar/criar.js?v=3"></script>
 </body>
 </html>

@@ -33,7 +33,8 @@
 
   // ---------- utilidades ----------
 
-  function h(tag, attrs, kids) {
+  // h(tag, atributos, filhos…): os filhos podem ser vários argumentos ou listas.
+  function h(tag, attrs) {
     var el = document.createElement(tag);
     Object.keys(attrs || {}).forEach(function (k) {
       var v = attrs[k];
@@ -42,7 +43,11 @@
       else if (k.slice(0, 2) === 'on') el.addEventListener(k.slice(2), v);
       else el.setAttribute(k, v === true ? '' : v);
     });
-    [].concat(kids || []).forEach(function (c) { if (c != null) el.appendChild(typeof c === 'string' ? document.createTextNode(c) : c); });
+    for (var i = 2; i < arguments.length; i++) {
+      [].concat(arguments[i] == null ? [] : arguments[i]).forEach(function (c) {
+        if (c != null && c !== false) el.appendChild(typeof c === 'string' ? document.createTextNode(c) : c);
+      });
+    }
     return el;
   }
   function clear(el) { while (el.firstChild) el.removeChild(el.firstChild); return el; }
@@ -73,6 +78,7 @@
       delete copy.cobranca;
       localStorage.setItem(KEY, JSON.stringify(copy));
     } catch (e) { /* sem localStorage: continua a funcionar, só não retoma */ }
+    agendarPreview();
   }
   function forget() { try { localStorage.removeItem(KEY); } catch (e) { /* ignora */ } }
 
@@ -372,7 +378,7 @@
     thumbs[nome] = '';
     fetch(API + '/rascunho/' + S.id + '/fotos/' + encodeURIComponent(nome), { headers: { 'x-token': S.token } })
       .then(function (r) { return r.ok ? r.blob() : null; })
-      .then(function (b) { if (b) { thumbs[nome] = URL.createObjectURL(b); if (S.step === 5) render5(); if (S.step === 6) render6(); } });
+      .then(function (b) { if (b) { thumbs[nome] = URL.createObjectURL(b); if (S.step === 5) render5(); if (S.step === 6) render6(); agendarPreview(); } });
   }
   function bg(el, nome) {
     if (!nome) return el;
@@ -613,6 +619,148 @@
       showError(e.message);
     }).then(function () { setBusy(false); });
   }
+
+  // ---------- prévia ao vivo (cartão ao lado no computador; "Ver prévia" no telemóvel) ----------
+  // Modelo ilustrativo da página: base do futuro gerador. Tudo por textContent.
+  var DIAS_NOME = { seg: 'Seg', ter: 'Ter', qua: 'Qua', qui: 'Qui', sex: 'Sex', sab: 'Sáb', dom: 'Dom' };
+  var ATENDE_TXT = { local: 'Atendimento no local', domicilio: 'Vai até você', online: 'Atendimento online' };
+  var PAG_TXT = { pix: 'PIX', cartao: 'Cartão', dinheiro: 'Dinheiro' };
+  var pvTimer = null;
+
+  function diasTexto(dias) {
+    var ordem = ['seg', 'ter', 'qua', 'qui', 'sex', 'sab', 'dom'];
+    var idx = ordem.filter(function (d) { return dias.indexOf(d) > -1; }).map(function (d) { return ordem.indexOf(d); });
+    if (!idx.length) return '';
+    var seguidos = idx.every(function (v, i) { return i === 0 || v === idx[i - 1] + 1; });
+    if (seguidos && idx.length > 2) return DIAS_NOME[ordem[idx[0]]] + ' a ' + DIAS_NOME[ordem[idx[idx.length - 1]]];
+    return idx.map(function (i) { return DIAS_NOME[ordem[i]]; }).join(', ');
+  }
+  // "08:00" -> "8h", "08:30" -> "8h30"
+  function hhmm(v) { var p = String(v || '').split(':'); return p[0] ? Number(p[0]) + 'h' + (p[1] && p[1] !== '00' ? p[1] : '') : ''; }
+  function precoServico(s) {
+    if (s.preco === 'sob_orcamento') return 'Sob orçamento';
+    var v = Number(String(s.valor).replace(',', '.'));
+    if (!(v > 0)) return 'R$ —';
+    return (s.preco === 'a_partir_de' ? 'a partir de ' : '') + money(v, true);
+  }
+  function pvFoto(nome, cls, vazio) {
+    var el = h('div', { class: cls + (nome && thumbs[nome] ? '' : ' vazio') }, nome && thumbs[nome] ? null : vazio || null);
+    if (nome && thumbs[nome]) el.style.backgroundImage = 'url("' + thumbs[nome] + '")';
+    return el;
+  }
+
+  // Bloco principal conforme o tipo de página (passo 1).
+  function pvBloco(tipoId, servicos) {
+    var nomes = servicos.length ? servicos.map(function (s) { return s.nome; }) : ['Serviço 1', 'Serviço 2'];
+    var btn = function (t) { return h('span', { class: 'pv-btn', text: t }); };
+    var campo = function (t) { return h('span', { class: 'pv-field', text: t }); };
+    switch (tipoId) {
+      case 'orcamento':
+        return h('div', { class: 'pv-card' }, h('strong', { text: 'Peça um orçamento' }),
+          campo('Serviço: ' + nomes[0] + ' ▾'), campo('Descreva o problema…'), campo('📷 Juntar foto'), btn('Enviar pelo WhatsApp'));
+      case 'horario':
+        return h('div', { class: 'pv-card' }, h('strong', { text: 'Peça um horário' }),
+          campo('Serviço: ' + nomes[0] + ' ▾'),
+          h('div', { class: 'pv-chips' }, ['Seg', 'Ter', 'Qua', 'Qui', 'Sex'].map(function (d, i) { return h('span', { class: i === 2 ? 'on' : '', text: d }); })),
+          h('div', { class: 'pv-chips' }, ['Manhã', 'Tarde', 'Noite'].map(function (d, i) { return h('span', { class: i === 1 ? 'on' : '', text: d }); })),
+          btn('Pedir horário no WhatsApp'));
+      case 'agenda':
+        return h('div', { class: 'pv-card' }, h('strong', { text: 'Agende online' }),
+          h('div', { class: 'pv-cal' }, ['9:00', '10:00', '11:00', '14:00', '15:00', '16:00'].map(function (t, i) { return h('span', { class: i === 1 || i === 4 ? 'ocupado' : (i === 3 ? 'on' : ''), text: t }); })),
+          h('span', { class: 'pv-mini', text: 'Horários livres em tempo real' }), btn('Confirmar 14:00'));
+      case 'cardapio':
+        return h('div', { class: 'pv-card' }, h('strong', { text: 'Cardápio de hoje' }),
+          nomes.slice(0, 3).map(function (n, i) { return h('div', { class: 'pv-row' }, h('span', { text: n }), h('span', { class: 'pv-add', text: i === 0 ? '1' : '+' })); }),
+          btn('Ver carrinho e pedir'));
+      case 'calculo':
+        return h('div', { class: 'pv-card' }, h('strong', { text: 'Calcule na hora' }),
+          h('div', { class: 'pv-slider' }, h('span', { text: 'Quantidade' }), h('i'), h('b', { text: '3' })),
+          h('div', { class: 'pv-slider' }, h('span', { text: 'Opções' }), h('i'), h('b', { text: '2' })),
+          h('div', { class: 'pv-row total' }, h('span', { text: 'Valor estimado' }), h('b', { text: 'R$ 240' })),
+          btn('Pedir pelo WhatsApp'));
+      default:
+        return h('div', { class: 'pv-card' }, h('strong', { text: 'Fale comigo' }),
+          h('span', { class: 'pv-mini', text: 'Resposta rápida pelo WhatsApp' }), btn('Chamar no WhatsApp'));
+    }
+  }
+
+  function renderPreview() {
+    var box = $('pvScreen');
+    if (!box || !cfg) return;
+    var n = S.negocio;
+    var p = prof();
+    var cor = (cfg.cores && cfg.cores[S.cor]) || '#2563eb';
+    var extras = extrasValidos();
+    var servicos = S.servicos.filter(function (s) { return s.nome.trim(); });
+    var dominio = extras.indexOf('dominio') > -1;
+    var sub = S.subdominio || slug(n.nome) || 'seunegocio';
+    $('pvUrl').textContent = dominio ? sub + '.com.br' : sub + '.lynxsites.com.br';
+
+    clear(box);
+    box.style.setProperty('--pv', cor);
+    var nome = n.nome || 'Nome do seu negócio';
+    var titulo = (p ? p.nome : 'O seu serviço') + (n.cidade ? ' em ' + n.cidade : '');
+
+    // topo
+    box.appendChild(h('div', { class: 'pv-top' },
+      extras.indexOf('logo') > -1
+        ? h('span', { class: 'pv-logo', text: (n.nome || 'N').trim().charAt(0).toUpperCase() })
+        : h('span', { class: 'pv-dot' }),
+      h('span', { class: 'pv-name' + (n.nome ? '' : ' ph'), text: nome }),
+      h('span', { class: 'pv-wa', text: 'WhatsApp' })));
+
+    // apresentação
+    var dias = diasTexto(n.dias);
+    box.appendChild(h('div', { class: 'pv-hero' },
+      pvFoto(S.fotos.retrato, 'pv-avatar', '👤'),
+      h('div', null,
+        h('h4', { class: n.nome ? '' : 'ph', text: titulo }),
+        h('p', { class: 'pv-sub', text: n.atende.map(function (a) { return ATENDE_TXT[a]; }).join(' · ') || 'Como atende' }),
+        dias ? h('p', { class: 'pv-sub', text: '🕒 ' + dias + (n.inicio ? ' · ' + hhmm(n.inicio) + '–' + hhmm(n.fim) : '') }) : null,
+        extras.indexOf('avaliacoes') > -1 ? h('p', { class: 'pv-stars', text: '★★★★★ 5,0 no Google' }) : null)));
+
+    // bloco do tipo de página
+    box.appendChild(pvBloco(S.tipo, servicos));
+
+    // serviços
+    box.appendChild(h('div', { class: 'pv-sec' }, h('h5', { text: 'Serviços' }),
+      servicos.length
+        ? servicos.map(function (s) { return h('div', { class: 'pv-row' }, h('span', { text: s.nome }), h('b', { text: precoServico(s) })); })
+        : h('p', { class: 'pv-ph', text: 'Os seus serviços aparecem aqui (passo 3).' }),
+      S.pagamentos.length ? h('p', { class: 'pv-mini', text: 'Aceita: ' + S.pagamentos.map(function (x) { return PAG_TXT[x]; }).join(', ') }) : null));
+
+    // fotos do trabalho
+    var fotos = S.fotos.trabalho.slice(0, 5);
+    box.appendChild(h('div', { class: 'pv-sec' }, h('h5', { text: 'Trabalhos' }),
+      h('div', { class: 'pv-grid' }, (fotos.length ? fotos : [null, null, null]).map(function (f) { return pvFoto(f, 'pv-foto', '🖼'); }))));
+
+    // extras com presença na página
+    if (extras.indexOf('avaliacoes') > -1) {
+      box.appendChild(h('div', { class: 'pv-sec' }, h('h5', { text: 'O que dizem os clientes' }),
+        h('div', { class: 'pv-review' }, h('span', { class: 'pv-stars', text: '★★★★★' }), h('span', { text: '"Atendimento rápido e caprichado."' }))));
+    }
+    var botoes = [];
+    if (extras.indexOf('qr') > -1) botoes.push(h('span', { class: 'pv-chip', text: '📇 Salvar contato' }));
+    if (extras.indexOf('google') > -1) botoes.push(h('span', { class: 'pv-chip', text: '📍 Ver no Google Maps' }));
+    if (botoes.length) box.appendChild(h('div', { class: 'pv-chips-row' }, botoes));
+
+    box.appendChild(h('div', { class: 'pv-foot', text: '© ' + (n.nome || 'Seu negócio') + (n.cidade ? ' · ' + n.cidade : '') }));
+  }
+
+  // Redesenha logo a seguir a cada mudança (save() é chamado em todas).
+  function agendarPreview() {
+    clearTimeout(pvTimer);
+    pvTimer = setTimeout(renderPreview, 60);
+  }
+
+  function abrirPreview(abrir) {
+    $('preview').classList.toggle('open', abrir);
+    document.body.classList.toggle('pv-locked', abrir);
+    if (abrir) { renderPreview(); $('pvClose').focus(); } else $('pvOpen').focus();
+  }
+  $('pvOpen').addEventListener('click', function () { abrirPreview(true); });
+  $('pvClose').addEventListener('click', function () { abrirPreview(false); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && $('preview').classList.contains('open')) abrirPreview(false); });
 
   // ---------- arranque ----------
 

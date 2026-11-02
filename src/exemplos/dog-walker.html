@@ -229,7 +229,8 @@ header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;backgroun
 .portrait svg{width:52%;color:var(--muted)}
 .chips{display:flex;flex-wrap:wrap;gap:8px;padding:0;list-style:none;margin:16px 0 0}
 .chips li{border:2px solid var(--line);border-radius:999px;padding:5px 14px;font-size:15px;font-weight:600;background:var(--surface)}
-.quotes{display:grid;gap:14px;grid-template-columns:minmax(0,1fr);margin-top:28px}
+/* os depoimentos ficam no 2.º .wrap da secção (grelha foto | texto): ocupam as duas colunas */
+.quotes{grid-column:1/-1;display:grid;gap:14px;grid-template-columns:minmax(0,1fr);margin-top:28px}
 @media (min-width:860px){.quotes{grid-template-columns:repeat(3,minmax(0,1fr))}}
 .quotes figure{margin:0;background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:20px}
 .quotes .stars{color:var(--sun);letter-spacing:2px;font-size:15px;margin-bottom:8px}

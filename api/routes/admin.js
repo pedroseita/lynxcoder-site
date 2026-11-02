@@ -382,6 +382,9 @@ module.exports = async function adminRoutes(app) {
   // ---------- compras do lynxsites.com.br/criar e catálogo (routes/criar.js) ----------
   await criar.adminRoutes(app);
 
+  // ---------- configurações: empresa, pagamentos, estado (routes/configuracoes.js) ----------
+  await require('./configuracoes')(app);
+
   // ---------- pedidos de alteração do painel do cliente (routes/painel.js) ----------
   await painel.adminRoutes(app);
 

@@ -1,7 +1,7 @@
 // Cobrança da compra direta (/criar). Dois modos, escolhidos por ambiente:
 //
-//   manual (padrão)  PIX para a chave da LynxCoder (PIX_CHAVE, PIX_NOME,
-//                    PIX_CIDADE), com QR Code e "copia e cola" gerados aqui.
+//   manual (padrão)  PIX para a chave da LynxCoder (Configurações › Pagamentos,
+//                    lib/pix.js), com QR Code e "copia e cola" gerados aqui.
 //                    O pagamento é confirmado à mão no painel.
 //   asaas            PREPARADO, ainda não ligado: GATEWAY=asaas + ASAAS_API_KEY
 //                    + ASAAS_WEBHOOK_TOKEN (+ ASAAS_SANDBOX=1 para testes).
@@ -49,12 +49,12 @@ const manual = {
   id: 'manual',
   formas: ['pix'],
   async criarCobranca({ compra, total }) {
-    const chave = (process.env.PIX_CHAVE || '').trim();
-    if (!chave) return { modo: 'manual', pix: null };
+    const cfg = await require('./pix').load();
+    if (!cfg.chave) return { modo: 'manual', pix: null };
     const payload = pixCopiaECola({
-      chave,
-      nome: process.env.PIX_NOME || 'LynxCoder',
-      cidade: process.env.PIX_CIDADE || 'Brasil',
+      chave: cfg.chave,
+      nome: cfg.nome,
+      cidade: cfg.cidade,
       valor: total,
       txid: compra.id.replace(/-/g, ''),
     });

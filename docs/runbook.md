@@ -251,14 +251,27 @@ Fluxo: painel → **+ Nova proposta** → enviar o link ao cliente (WhatsApp/e-m
 
 ### Editar a proposta e o formulário pelo painel
 
-Painel → **Configurações**:
+Painel → **Configurações**, por assunto:
 
-- **Valores**: preços, prazos, contactos (`/data/config/proposta.json`).
+- **Geral**
+  - **Empresa**: nome, CPF/CNPJ, endereço, WhatsApp, e-mail e horário
+    (`/data/config/empresa.json`). Um só sítio: propostas, rodapé do `/criar`
+    e painel do cliente.
+  - **Pagamentos**: interruptor dos pagamentos no `/criar`, chave PIX
+    (`/data/config/pagamentos.json`) e "Gerar PIX de teste (R$ 1,00)".
+  - **Estado do sistema**: o que está ligado e o que falta (SMTP, PIX,
+    gateway, anti-robô…), com onde se resolve.
+- **Compra direta › Catálogo do /criar**: editor visual de tipos de página,
+  extras e profissões (o JSON fica em "Editar em JSON (avançado)").
+- **Propostas**
+  - **Preços e prazos**: planos, manutenção e termos (`/data/config/proposta.json`).
+    Os **extras** usam os preços do catálogo (um só preço por extra) e o
+    **contato** vem de Empresa.
 - **Texto da proposta**: formato simples (`## título`, `- lista`, `**negrito**`,
   `| tabela |`, `[link](/caminho)`) com campos `{{…}}` trocados pelos valores.
   Guardado em `/data/config/proposta-texto.md`; vazio volta ao texto padrão
   (`api/lib/proposta-texto.js`). Cada proposta copia o texto ao ser criada.
-- **Formulário**: extras (etapa 2), paletas (etapa 3) e os textos de cada
+- **Formulário do cliente**: extras (etapa 2), paletas (etapa 3) e os textos de cada
   etapa do `/comecar` (`/data/config/formulario.json`; dos textos só guarda os
   alterados, em branco volta ao padrão de `api/lib/formulario.js`).
 
@@ -337,17 +350,18 @@ fotos, escolhe o endereço e paga, tudo em 6 passos. Especificação: `docs/spec
   rascunho fica no navegador do cliente; no servidor só o hash. Rascunhos e
   cobranças por pagar há 48 h são apagados com as fotos (verificação de hora a hora).
 - **Catálogo** (profissões, tipos, extras, preços): painel → Configurações →
-  **Catálogo /criar** (JSON, validado ao salvar). O valor cobrado vem sempre
-  daqui; o browser só mostra uma prévia.
+  **Catálogo do /criar** (editor visual; JSON no modo avançado; validado ao
+  salvar). O valor cobrado vem sempre daqui; o browser só mostra uma prévia.
+  Os preços dos extras também são os das propostas.
 - **Endereços**: 3 a 32 caracteres, nunca os de `api/lib/reservados.txt`, nem
   um já usado por outra compra, pedido ou cliente.
 
 ### Pagamento
 
-**Desligado por omissão** (`"pagamentos_ativos": false` no catálogo): o
-/criar percorre os 6 passos e o botão final diz "Pagamentos em breve"; a API
-recusa o checkout. Para ligar: painel → Configurações → Catálogo /criar →
-`"pagamentos_ativos": true` → Salvar (sem deploy).
+**Desligado por omissão**: o /criar percorre os 6 passos e o botão final diz
+"Pagamentos em breve"; a API recusa o checkout. Para ligar: painel →
+Configurações → **Pagamentos** → interruptor (pede a chave PIX antes; sem
+deploy). Antes de ligar, "Gerar PIX de teste" e pagar R$ 1,00 numa app de banco.
 
 Ligado: **PIX manual**. O passo 6 mostra QR Code e "copia e cola" com o valor
 exato e o id da compra como identificador. Painel → Compras → a compra →
@@ -355,22 +369,20 @@ exato e o id da compra como identificador. Painel → Compras → a compra →
 Marcar como publicada (a página publica-se à mão, criando a pasta em
 `/root/lynxsites/<endereço>/`).
 
-Variáveis em `infra/onboarding.env` (o mesmo ficheiro do SMTP):
+A **chave PIX** e os **dados de quem vende** (rodapé do /criar, Decreto
+7.962/2013) editam-se no painel: Configurações → Pagamentos e → Empresa. As
+variáveis `PIX_*` e `VENDEDOR_*` do ambiente só valem enquanto não se salvar
+no painel.
+
+Só ficam em `infra/onboarding.env` (o mesmo ficheiro do SMTP) os segredos:
 
 ```bash
-PIX_CHAVE=<chave PIX da LynxCoder>
-PIX_NOME=LynxCoder          # até 25 letras, sem acentos
-PIX_CIDADE=<cidade>         # até 15 letras
-# Rodapé do /criar (Decreto 7.962/2013: identificação de quem vende)
-VENDEDOR_NOME=<nome ou razão social>
-VENDEDOR_DOCUMENTO=<CPF ou CNPJ>
-VENDEDOR_ENDERECO=<endereço>
 # Anti-robô (opcional): Cloudflare → Turnstile → widget para lynxsites.com.br
 TURNSTILE_SITEKEY=<site key>
 TURNSTILE_SECRET=<secret key>
 ```
 
-Sem `PIX_CHAVE`, a confirmação diz que as instruções de pagamento seguem por
+Sem chave PIX, a confirmação diz que as instruções de pagamento seguem por
 WhatsApp/e-mail. Depois de mudar o ficheiro:
 `docker compose -f /root/lynxcoder-site/infra/docker-compose.yml up -d onboarding`.
 
@@ -402,7 +414,7 @@ sozinho fica para a fase 2 (gerador de páginas).
 - Pedidos de alteração em `/data/painel/alteracoes/<cliente>.json` e fotos em
   `/data/painel/anexos/`. Aparecem no Início do admin e na ficha do cliente,
   onde se marca "feito" com uma resposta opcional que o cliente vê.
-- O PIX da mensalidade usa as mesmas variáveis `PIX_*` da compra direta.
+- O PIX da mensalidade usa a mesma chave da compra direta (Configurações › Pagamentos).
 
 ## Painel admin (`admin.lynxcoder.com.br`)
 

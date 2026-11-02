@@ -24,6 +24,8 @@ const { DIRS, HttpError, str, isEmail, newId, ID_RE, readJson, writeJson, create
 const { RESERVADOS } = require('../lib/reservados');
 const catalogo = require('../lib/catalogo');
 const gateway = require('../lib/gateway');
+const empresa = require('../lib/empresa');
+const pix = require('../lib/pix');
 const mail = require('../lib/mail');
 const { sniff } = require('./onboarding');
 
@@ -289,18 +291,20 @@ async function publicRoutes(app) {
     reply.header('cache-control', 'no-store');
     const cat = await catalogo.load();
     const g = gateway.ativo();
+    const emp = await empresa.load();
+    const pixCfg = await pix.load();
     return {
       ok: true,
       catalogo: catalogo.publico(cat),
       cores: CORES,
       reservados: [...RESERVADOS],
-      pagamento: { gateway: g.id, formas: g.formas, pixManual: g.id === 'manual' && !!process.env.PIX_CHAVE },
+      pagamento: { gateway: g.id, formas: g.formas, pixManual: g.id === 'manual' && !!pixCfg.chave },
       turnstile: process.env.TURNSTILE_SITEKEY || null,
       vendedor: {
-        nome: process.env.VENDEDOR_NOME || 'LynxCoder',
-        documento: process.env.VENDEDOR_DOCUMENTO || '',
-        endereco: process.env.VENDEDOR_ENDERECO || '',
-        whatsapp: process.env.VENDEDOR_WHATSAPP || '',
+        nome: emp.nome,
+        documento: emp.documento,
+        endereco: emp.endereco,
+        whatsapp: emp.whatsapp,
       },
     };
   });

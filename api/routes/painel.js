@@ -131,14 +131,15 @@ async function abertas() {
 
 // ---------- o que o cliente vê ----------
 async function resumoCliente(c) {
-  const pix = (process.env.PIX_CHAVE || '').trim();
+  const pixCfg = await require('../lib/pix').load();
+  const emp = await require('../lib/empresa').load();
   const alvo = c.emAberto[0] || (c.situacao === 'vence' ? c.proximo : null);
   let cobranca = null;
   if (alvo && c.mensalidade) {
     cobranca = { referencia: alvo.referencia, vencimento: alvo.vencimento, valor: c.mensalidade, pix: null };
-    if (pix) {
+    if (pixCfg.chave) {
       const payload = gateway.pixCopiaECola({
-        chave: pix, nome: process.env.PIX_NOME || 'LynxCoder', cidade: process.env.PIX_CIDADE || 'Brasil',
+        chave: pixCfg.chave, nome: pixCfg.nome, cidade: pixCfg.cidade,
         valor: c.mensalidade, txid: `M${c.id.replace(/-/g, '')}${alvo.referencia.replace('-', '')}`,
       });
       cobranca.pix = { payload, qr: await require('qrcode').toDataURL(payload, { margin: 1, width: 280 }) };
@@ -160,7 +161,7 @@ async function resumoCliente(c) {
     pagamentos: (c.pagamentos || []).slice(-12).reverse().map((p) => ({ referencia: p.referencia, valor: p.valor, pagoEm: p.pagoEm })),
     cobranca,
     alteracoes: (await listarAlteracoes(c.id)).slice().reverse().map(({ id, texto, criadoEm, estado, feitaEm, resposta, anexo }) => ({ id, texto, criadoEm, estado, feitaEm, resposta, anexo: !!anexo })),
-    contactoLynx: process.env.VENDEDOR_WHATSAPP || '',
+    contactoLynx: emp.whatsapp || '',
   };
 }
 

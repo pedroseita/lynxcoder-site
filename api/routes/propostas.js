@@ -221,7 +221,7 @@ async function publicRoutes(app) {
 
 // ---------- rotas do painel (registadas dentro de routes/admin.js) ----------
 async function adminRoutes(app) {
-  app.get('/adm/config', async () => ({ ok: true, campos: config.CAMPOS, valores: await config.load() }));
+  app.get('/adm/config', async () => ({ ok: true, campos: config.CAMPOS, deFora: [...config.DE_FORA], valores: await config.load() }));
 
   app.put('/adm/config', async (req) => ({ ok: true, valores: await config.save(req.body || {}) }));
 

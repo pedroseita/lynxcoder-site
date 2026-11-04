@@ -143,6 +143,7 @@
     $('stepCount').textContent = step <= TOTAL ? 'Passo ' + step + ' de ' + TOTAL : '';
     $('progressBar').style.width = (Math.min(step, TOTAL) / TOTAL * 100) + '%';
     $('bar').hidden = step === 7;
+    pvFoco = { 1: 'contato', 2: 'topo', 3: 'servicos', 4: 'topo', 5: 'trabalhos', 6: 'topo' }[step] || 'topo';
     ({ 1: render1, 2: render2, 3: render3, 4: render4, 5: render5, 6: render6, 7: render7 })[step]();
     updateBar();
     save();
@@ -322,7 +323,7 @@
       if (cents(e.unico)) preco.push(money(e.unico, true));
       if (cents(e.mensal)) preco.push((preco.length ? '+ ' : '') + money(e.mensal) + '/mês');
       list.appendChild(h('button', {
-        type: 'button', class: 'opt', role: 'checkbox', 'aria-checked': String(on),
+        type: 'button', class: 'opt', role: 'checkbox', 'aria-checked': String(on), 'data-extra': id,
         onclick: function () { if (on) S.extras.splice(S.extras.indexOf(id), 1); else S.extras.push(id); render4(); updateBar(); save(); },
       }, [
         h('span', { class: 'box', 'aria-hidden': 'true', text: on ? '✓' : '' }),
@@ -688,12 +689,39 @@
   // marcado com data-pv) e manda-lhe os dados. As outras usam a prévia genérica.
   var MODELOS = { eletricista: '/criar/modelos/eletricista.html?v=1' };
   var pvFrame = null, pvFrameProf = null, pvPronto = false;
+  var pvFoco = 'topo', pvFocoGenerico = null;
+
+  // Que parte da página corresponde ao campo onde o cliente está a mexer.
+  function focoDe(alvo) {
+    if (!alvo || !alvo.closest) return null;
+    var c = function (sel) { return alvo.closest(sel); };
+    if (c('#tipoList')) return 'contato';
+    if (c('#profList') || c('#profSearch')) return 'topo';
+    if (c('#form2')) {
+      var nome = (alvo.name || '');
+      if (nome === 'nome' || nome === 'email') return 'topo';
+      return 'contato';
+    }
+    if (c('#servList') || c('#addServ')) return 'servicos';
+    if (c('#pagList')) return 'faq';
+    var ex = c('[data-extra]');
+    if (ex) return ex.getAttribute('data-extra') === 'avaliacoes' ? 'avaliacoes' : 'topo';
+    if (c('.retrato')) return 'sobre';
+    if (c('#fotosGrid')) return 'trabalhos';
+    if (c('#corList') || c('#subInput')) return 'topo';
+    return null;
+  }
+  function marcarFoco(e) {
+    var f = focoDe(e.target);
+    if (f && f !== pvFoco) { pvFoco = f; agendarPreview(); }
+  }
 
   function dadosPrevia() {
     var p = prof();
     return {
       profNome: p ? p.nome : '',
       tipo: S.tipo,
+      foco: pvFoco,
       negocio: S.negocio,
       servicos: S.servicos.filter(function (s) { return s.nome.trim(); }),
       pagamentos: S.pagamentos,
@@ -759,7 +787,7 @@
 
     // apresentação
     var dias = diasTexto(n.dias);
-    box.appendChild(h('div', { class: 'pv-hero' },
+    box.appendChild(h('div', { class: 'pv-hero', 'data-sec': 'topo' },
       pvFoto(S.fotos.retrato, 'pv-avatar', '👤'),
       h('div', null,
         h('h4', { class: n.nome ? '' : 'ph', text: titulo }),
@@ -768,10 +796,12 @@
         extras.indexOf('avaliacoes') > -1 ? h('p', { class: 'pv-stars', text: '★★★★★ 5,0 no Google' }) : null)));
 
     // bloco do tipo de página
-    box.appendChild(pvBloco(S.tipo, servicos));
+    var bloco = pvBloco(S.tipo, servicos);
+    bloco.setAttribute('data-sec', 'contato');
+    box.appendChild(bloco);
 
     // serviços
-    box.appendChild(h('div', { class: 'pv-sec' }, h('h5', { text: 'Serviços' }),
+    box.appendChild(h('div', { class: 'pv-sec', 'data-sec': 'servicos' }, h('h5', { text: 'Serviços' }),
       servicos.length
         ? servicos.map(function (s) { return h('div', { class: 'pv-row' }, h('span', { text: s.nome }), h('b', { text: precoServico(s) })); })
         : h('p', { class: 'pv-ph', text: 'Os seus serviços aparecem aqui (passo 3).' }),
@@ -779,12 +809,12 @@
 
     // fotos do trabalho
     var fotos = S.fotos.trabalho.slice(0, 5);
-    box.appendChild(h('div', { class: 'pv-sec' }, h('h5', { text: 'Trabalhos' }),
+    box.appendChild(h('div', { class: 'pv-sec', 'data-sec': 'trabalhos' }, h('h5', { text: 'Trabalhos' }),
       h('div', { class: 'pv-grid' }, (fotos.length ? fotos : [null, null, null]).map(function (f) { return pvFoto(f, 'pv-foto', '🖼'); }))));
 
     // extras com presença na página
     if (extras.indexOf('avaliacoes') > -1) {
-      box.appendChild(h('div', { class: 'pv-sec' }, h('h5', { text: 'O que dizem os clientes' }),
+      box.appendChild(h('div', { class: 'pv-sec', 'data-sec': 'avaliacoes' }, h('h5', { text: 'O que dizem os clientes' }),
         h('div', { class: 'pv-review' }, h('span', { class: 'pv-stars', text: '★★★★★' }), h('span', { text: '"Atendimento rápido e caprichado."' }))));
     }
     var botoes = [];
@@ -793,7 +823,29 @@
     if (botoes.length) box.appendChild(h('div', { class: 'pv-chips-row' }, botoes));
 
     box.appendChild(h('div', { class: 'pv-foot', text: '© ' + (n.nome || 'Seu negócio') + (n.cidade ? ' · ' + n.cidade : '') }));
+
+    // rola até à parte em foco (só quando muda); "sobre" e "faq" ficam no topo
+    if (pvFoco !== pvFocoGenerico) {
+      pvFocoGenerico = pvFoco;
+      var sec = { sobre: 'topo', faq: 'servicos' }[pvFoco] || pvFoco;
+      var alvo = box.querySelector('[data-sec="' + sec + '"]');
+      var topoH = box.querySelector('.pv-top') ? box.querySelector('.pv-top').offsetHeight : 0;
+      box.scrollTo({ top: sec === 'topo' || !alvo ? 0 : alvo.offsetTop - topoH - 6, behavior: 'smooth' });
+    }
   }
+
+  // Prévia genérica: arrastar com o rato rola, como no telemóvel.
+  (function () {
+    var box = $('pvScreen'), a = null;
+    box.addEventListener('pointerdown', function (e) { if (e.pointerType === 'mouse' && e.button === 0) a = { y: e.clientY, top: box.scrollTop, moveu: false }; });
+    window.addEventListener('pointermove', function (e) {
+      if (!a) return;
+      var dy = e.clientY - a.y;
+      if (!a.moveu && Math.abs(dy) < 4) return;
+      a.moveu = true; box.classList.add('arrasta'); box.scrollTop = a.top - dy;
+    });
+    window.addEventListener('pointerup', function () { a = null; box.classList.remove('arrasta'); });
+  })();
 
   // Redesenha logo a seguir a cada mudança (save() é chamado em todas).
   function agendarPreview() {
@@ -822,6 +874,14 @@
       if (e.target.name === 'whatsapp') e.target.value = maskPhone(e.target.value);
       read2(); save();
     });
+    // Um erro antigo some assim que o cliente corrige o campo.
+    $('main').addEventListener('input', function (e) {
+      if (e.target.getAttribute('aria-invalid')) e.target.removeAttribute('aria-invalid');
+      showError('');
+    });
+    // A prévia acompanha a parte que o cliente está a preencher.
+    $('main').addEventListener('focusin', marcarFoco);
+    $('main').addEventListener('click', marcarFoco);
     f2.addEventListener('submit', function (e) { e.preventDefault(); next(); });
     var f6 = $('form6');
     f6.documento.addEventListener('input', function () { f6.documento.value = maskDoc(f6.documento.value); });

@@ -7,7 +7,7 @@
 <title>Prévia · Eletricista</title>
 <!-- Modelo "eletricista" da prévia do /criar (gerado a partir de src/exemplos/eletricista.html).
      Os elementos com data-pv* recebem os dados do cliente (modelo.js). -->
-<link rel="stylesheet" href="/criar/modelos/eletricista.css?v=1">
+<link rel="stylesheet" href="/criar/modelos/eletricista.css?v=2">
 </head>
 <body>
 
@@ -64,7 +64,7 @@
     </div>
   </section>
 
-  <section id="servicos" aria-labelledby="t-svc">
+  <section id="servicos" aria-labelledby="t-svc" data-pv-sec="servicos">
     <div class="wrap">
       <h2 id="t-svc">Serviços</h2>
       <p class="lead">Do chuveiro que desarma ao quadro novo da obra. Orçamento sem compromisso e preço fechado antes de começar.</p>
@@ -90,7 +90,7 @@
     </div>
   </section>
 
-  <section id="trabalhos" aria-labelledby="t-gal">
+  <section id="trabalhos" aria-labelledby="t-gal" data-pv-sec="trabalhos">
     <div class="wrap">
       <h2 id="t-gal">Trabalhos realizados</h2>
       <p class="lead">Alguns serviços recentes em <span data-pv="cidade">Campinas</span> e região.</p>
@@ -105,7 +105,7 @@
     </div>
   </section>
 
-  <section class="about pt0" id="sobre" aria-labelledby="t-about">
+  <section class="about pt0" id="sobre" aria-labelledby="t-about" data-pv-sec="sobre">
     <div class="wrap">
       <div class="portrait" data-pv="retrato" role="img" aria-label="Foto do profissional"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg></div>
       <div>
@@ -117,7 +117,7 @@
     </div>
   </section>
 
-  <section class="pt0" aria-labelledby="t-q" data-pv-extra="avaliacoes">
+  <section class="pt0" aria-labelledby="t-q" data-pv-extra="avaliacoes" data-pv-sec="avaliacoes">
     <div class="wrap">
       <h2 id="t-q">O que os clientes dizem</h2>
       <span class="stars-g">★★★★★ 5,0 no Google</span>
@@ -129,7 +129,7 @@
     </div>
   </section>
 
-  <section class="contact" id="orcamento" aria-labelledby="t-c">
+  <section class="contact" id="orcamento" aria-labelledby="t-c" data-pv-sec="contato">
     <div class="wrap">
       <div>
         <h2 id="t-c" data-pv="contato-titulo">Peça seu orçamento</h2>
@@ -158,7 +158,7 @@
     </div>
   </section>
 
-  <section class="faq" aria-labelledby="t-faq">
+  <section class="faq" aria-labelledby="t-faq" data-pv-sec="faq">
     <div class="wrap">
       <h2 id="t-faq">Perguntas frequentes</h2>
       <details><summary>A visita para orçamento é cobrada?</summary><p>Para serviços simples, o orçamento sai pelo WhatsApp com fotos. Quando é preciso ver no local, a visita é gratuita em Campinas e descontada do serviço nas outras cidades.</p></details>
@@ -183,6 +183,6 @@
 </a>
 
 
-<script src="/criar/modelos/modelo.js?v=1"></script>
+<script src="/criar/modelos/modelo.js?v=2"></script>
 </body>
 </html>

@@ -199,3 +199,7 @@ dialog.demo-dialog::backdrop{background:rgba(10,16,22,.6)}
 .stars-g{display:inline-block;margin:0 0 14px;font-weight:700;color:#d79a00}
 [hidden]{display:none!important}
 html,body{scroll-behavior:auto}
+/* prévia: sem barra de rolagem; arrasta-se com o rato, como no telemóvel */
+html{scrollbar-width:none}
+html::-webkit-scrollbar{display:none}
+html.arrasta,html.arrasta *{cursor:grabbing!important;user-select:none}

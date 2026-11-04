@@ -16,6 +16,9 @@
      data-pv="contato-titulo"  título da secção de contato (muda com o tipo)
      data-pv-tipo="orcamento"  só aparece se o tipo de página for esse
      data-pv-extra="avaliacoes" só aparece com esse extra
+     data-pv-sec="servicos"     secção para onde a prévia rola quando o cliente
+                               mexe nessa parte (topo, servicos, trabalhos,
+                               sobre, avaliacoes, contato, faq)
    Sem um dado, o elemento fica como no exemplo. Tudo por textContent.
    É a base do futuro gerador de páginas: os mesmos marcadores. */
 (function () {
@@ -143,10 +146,43 @@
     all('[data-pv-extra]').forEach(function (b) { b.hidden = (d.extras || []).indexOf(b.getAttribute('data-pv-extra')) < 0; });
   }
 
+  // Rola até à parte da página que o cliente está a preencher (só quando muda).
+  var focoAtual = null;
+  function irPara(foco) {
+    if (!foco || foco === focoAtual) return;
+    focoAtual = foco;
+    var alvo = foco === 'topo' ? null : document.querySelector('[data-pv-sec="' + foco + '"]');
+    if (foco !== 'topo' && (!alvo || alvo.hidden)) return;
+    var topo = document.querySelector('header');
+    var y = alvo ? alvo.getBoundingClientRect().top + window.scrollY - (topo ? topo.offsetHeight : 0) : 0;
+    window.scrollTo({ top: Math.max(0, y), behavior: 'smooth' });
+  }
+
   window.addEventListener('message', function (e) {
     if (e.origin !== location.origin || !e.data || e.data.tipo !== 'lx-previa') return;
-    aplicar(e.data.dados || {});
+    var d = e.data.dados || {};
+    aplicar(d);
+    irPara(d.foco);
   });
+
+  // Arrastar com o rato rola a página (no telemóvel já é o dedo).
+  var arrasto = null;
+  document.addEventListener('pointerdown', function (e) {
+    if (e.pointerType !== 'mouse' || e.button !== 0) return;
+    arrasto = { y: e.clientY, top: window.scrollY, moveu: false };
+  });
+  document.addEventListener('pointermove', function (e) {
+    if (!arrasto) return;
+    var dy = e.clientY - arrasto.y;
+    if (!arrasto.moveu && Math.abs(dy) < 4) return;
+    arrasto.moveu = true;
+    document.documentElement.classList.add('arrasta');
+    window.scrollTo(0, arrasto.top - dy);
+  });
+  function largar() { arrasto = null; document.documentElement.classList.remove('arrasta'); }
+  document.addEventListener('pointerup', largar);
+  document.addEventListener('pointercancel', largar);
+  document.addEventListener('dragstart', function (e) { e.preventDefault(); });
 
   // A prévia não navega: links e formulários ficam parados.
   document.addEventListener('click', function (e) { if (e.target.closest('a, button')) e.preventDefault(); }, true);

@@ -1,4 +1,4 @@
-FROM nginx:1.27-alpine
+FROM nginx:1.29-alpine
 COPY infra/lynxsites/nginx.conf /etc/nginx/conf.d/default.conf
 COPY infra/lynxsites/headers.conf /etc/nginx/snippets/lynxsites-headers.conf
 # Endereços reservados (painel, admin…) nunca servem uma pasta, mesmo que ela

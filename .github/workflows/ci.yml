@@ -13,7 +13,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Validar HTML
-        run: npx --yes html-validate "src/**/*.html" "infra/lynxsites/ajuda/*.html"
+        run: npx --yes html-validate "src/**/*.html" "infra/lynxsites/inicio/*.html"
 
       - name: Sintaxe dos scripts
         run: for f in scripts/*.sh; do bash -n "$f"; done
@@ -136,6 +136,12 @@ jobs:
           echo "— a pagina 404 deve ter conteudo proprio"
           curl -s http://localhost:8080/nao-existe | grep -q "Esta pagina nao existe\|Esta página não existe"
 
+          echo "— ajuda: /ajuda e artigos sem .html, /ajuda/ redireciona"
+          curl -s http://localhost:8080/ajuda | grep -q 'Como podemos ajudar?'
+          test "$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8080/ajuda/painel)" = "200"
+          test "$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8080/ajuda/nao-existe)" = "404"
+          curl -sI http://localhost:8080/ajuda/ | grep -iq '^location: /ajuda'
+
           echo "— CSP presente na pagina"
           curl -sI http://localhost:8080/ | grep -iq 'content-security-policy'
 
@@ -223,7 +229,6 @@ jobs:
           hdr quentinhas.lynxsites.com.br /css/a.css | grep -iq "frame-ancestors"
 
           echo "— lynxsites.com.br mostra a apresentacao e www redireciona"
-          body lynxsites.com.br / | grep -q 'Páginas criadas pela LynxCoder'
           test "$(code lynxsites.com.br /logo.png)" = "200"
           hdr www.lynxsites.com.br /x | grep -iq '^location: https://lynxsites.com.br/x'
 
@@ -235,13 +240,13 @@ jobs:
           hdr lynxsites.com.br /criar/ | grep -iq '^location: /criar'
           body lynxsites.com.br / | grep -q 'href="/criar"'
 
-          echo "— /ajuda: artigos sem .html, CSP estrita, e o /criar aponta para la"
-          body lynxsites.com.br /ajuda | grep -q 'Como podemos ajudar?'
-          hdr lynxsites.com.br /ajuda | grep -iq "content-security-policy: default-src 'self'; script-src 'self';"
-          test "$(code lynxsites.com.br /ajuda/painel)" = "200"
-          test "$(code lynxsites.com.br /ajuda/nao-existe)" = "404"
-          hdr lynxsites.com.br /ajuda/painel.html | grep -iq '^location: /ajuda/painel'
-          body lynxsites.com.br /criar | grep -q 'href="/ajuda/'
+          echo "— vitrine com CSP estrita e imagens dos exemplos; /ajuda antiga redireciona para o lynxcoder"
+          body lynxsites.com.br / | grep -q 'Quero uma assim'
+          hdr lynxsites.com.br / | grep -iq "content-security-policy: default-src 'self'; script-src 'self';"
+          test "$(code lynxsites.com.br /vitrine.js)" = "200"
+          test "$(code lynxsites.com.br /portfolio/eletricista-celular.jpg)" = "200"
+          hdr lynxsites.com.br /ajuda/painel | grep -iq '^location: https://lynxcoder.com.br/ajuda/painel'
+          body lynxsites.com.br /criar | grep -q 'href="https://lynxcoder.com.br/ajuda/'
 
           docker rm -f lynxsites-paginas
 

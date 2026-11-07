@@ -32,7 +32,7 @@
 <link rel="preload" href="/assets/fonts/space-grotesk-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/assets/fonts/manrope-latin.woff2" as="font" type="font/woff2" crossorigin>
 
-<link rel="stylesheet" href="/assets/css/styles.css?v=6">
+<link rel="stylesheet" href="/assets/css/styles.css?v=7">
 
 <script type="application/ld+json">
 {
@@ -255,8 +255,8 @@
       <p>Páginas com serviços, preços e WhatsApp, prontas em 24 horas.</p>
     </div>
 
-    <div class="pf-carousel reveal" id="pfCarousel">
-      <ul class="pf-track" id="pfTrack" tabindex="0" aria-label="Exemplos de páginas">
+    <div class="pf-carousel reveal">
+      <ul class="pf-track" tabindex="0" aria-label="Exemplos de páginas">
         <li class="pf-slide">
           <a class="pf-card pf-amber" href="/exemplos/eletricista" aria-label="Duarte Elétrica: exemplo de página para eletricista">
             <span class="pf-text">
@@ -356,11 +356,11 @@
           <a class="pf-buy" href="https://lynxsites.com.br/criar?prof=mudancas&amp;tipo=calculo" aria-label="Quero uma página de fretes e mudanças assim">Quero uma assim →</a>
         </li>
       </ul>
-      <div class="pf-controls" id="pfControls" hidden>
-        <div class="pf-dots" id="pfDots"></div>
+      <div class="pf-controls" hidden>
+        <div class="pf-dots"></div>
         <div class="pf-nav">
-          <button type="button" class="pf-btn" id="pfPrev" aria-label="Exemplo anterior">←</button>
-          <button type="button" class="pf-btn" id="pfNext" aria-label="Próximo exemplo">→</button>
+          <button type="button" class="pf-btn pf-prev" aria-label="Exemplo anterior">←</button>
+          <button type="button" class="pf-btn pf-next" aria-label="Próximo exemplo">→</button>
         </div>
       </div>
     </div>
@@ -377,25 +377,44 @@
       <h3>Para a sua carreira</h3>
       <p>Currículo online: um link para mandar nas candidaturas, que também vira PDF.</p>
     </div>
-    <div class="pf-feature reveal">
-      <a class="pf-card pf-wide pf-navy" href="/exemplos/curriculo-eletricista" aria-label="Ricardo Almeida: exemplo de currículo online de eletricista">
-        <span class="pf-text">
-          <span class="pf-tag">Currículo online</span>
-          <span class="pf-title">Ricardo Almeida, eletricista</span>
-          <span class="pf-desc">Experiência, formação e trabalhos em separadores, num link que o recrutador abre no celular.</span>
-          <span class="pf-points">
-            <span>Certificações com aviso de validade (NR-10, NR-35…)</span>
-            <span>Trabalhos realizados com detalhe de cada um</span>
-            <span>Salvar em PDF e copiar o link num toque</span>
-            <span>Contato direto pelo WhatsApp</span>
-          </span>
-        </span>
-        <span class="pf-phone" aria-hidden="true">
-          <span class="pf-screen"><img src="/assets/img/portfolio/curriculo-eletricista-celular.jpg" alt="" width="480" height="1723" loading="lazy"></span>
-        </span>
-        <span class="pf-arrow" aria-hidden="true">→</span>
-      </a>
-      <a class="pf-buy" href="/?quero=curriculo#contato" aria-label="Quero um currículo online assim">Quero um assim →</a>
+    <div class="pf-carousel reveal">
+      <ul class="pf-track" tabindex="0" aria-label="Exemplos de currículos online">
+        <li class="pf-slide">
+          <a class="pf-card pf-navy" href="/exemplos/curriculo-eletricista" aria-label="Ricardo Almeida: exemplo de currículo online em separadores">
+            <span class="pf-text">
+              <span class="pf-tag">Currículo · separadores</span>
+              <span class="pf-title">Ricardo Almeida</span>
+              <span class="pf-desc">Experiência, competências e trabalhos em separadores, com certificações que avisam a validade.</span>
+            </span>
+            <span class="pf-phone" aria-hidden="true">
+              <span class="pf-screen"><img src="/assets/img/portfolio/curriculo-eletricista-celular.jpg" alt="" width="480" height="1723" loading="lazy"></span>
+            </span>
+            <span class="pf-arrow" aria-hidden="true">→</span>
+          </a>
+          <a class="pf-buy" href="/?quero=curriculo#contato" aria-label="Quero um currículo online em separadores assim">Quero um assim →</a>
+        </li>
+        <li class="pf-slide">
+          <a class="pf-card pf-circuit" href="/exemplos/curriculo-circuito" aria-label="Ricardo Almeida: exemplo de currículo online animado, estilo circuito">
+            <span class="pf-text">
+              <span class="pf-tag">Currículo · animado</span>
+              <span class="pf-title">Ricardo Almeida</span>
+              <span class="pf-desc">Um fio que acende cada seção ao descer, medidores de competências e PDF num toque.</span>
+            </span>
+            <span class="pf-phone" aria-hidden="true">
+              <span class="pf-screen"><img src="/assets/img/portfolio/curriculo-circuito-celular.jpg" alt="" width="480" height="3569" loading="lazy"></span>
+            </span>
+            <span class="pf-arrow" aria-hidden="true">→</span>
+          </a>
+          <a class="pf-buy" href="/?quero=curriculo#contato" aria-label="Quero um currículo online animado assim">Quero um assim →</a>
+        </li>
+      </ul>
+      <div class="pf-controls" hidden>
+        <div class="pf-dots"></div>
+        <div class="pf-nav">
+          <button type="button" class="pf-btn pf-prev" aria-label="Currículo anterior">←</button>
+          <button type="button" class="pf-btn pf-next" aria-label="Próximo currículo">→</button>
+        </div>
+      </div>
     </div>
   </div>
 </section>
@@ -664,6 +683,6 @@
   </div>
 </footer>
 
-<script src="/assets/js/app.js?v=4"></script>
+<script src="/assets/js/app.js?v=5"></script>
 </body>
 </html>

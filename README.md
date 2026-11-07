@@ -42,7 +42,8 @@ src/                     ← site lynxcoder.com.br (um só COPY no Dockerfile)
 │   ├── hidraulica.html      + js/hidraulica.js   (triagem de urgência)
 │   ├── dog-walker.html      + js/dog-walker.js   (montador de plano semanal)
 │   ├── mudancas.html        + js/mudancas.js     (inventário, veículo e preço)
-│   └── curriculo-eletricista.html + js/curriculo-eletricista.js (currículo online)
+│   ├── curriculo-eletricista.html + js/curriculo-eletricista.js (currículo em separadores)
+│   └── curriculo-circuito.html    + js/curriculo-circuito.js    (currículo animado)
 ├── robots.txt
 ├── sitemap.xml
 └── assets/

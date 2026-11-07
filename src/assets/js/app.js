@@ -190,18 +190,16 @@
   });
 })();
 
-/* ---------- portfólio: carrossel de cartões ----------
+/* ---------- portfólio: carrosséis de cartões (um por linha: negócios, currículos…) ----------
    O deslizar é CSS (scroll-snap); aqui só setas, pontos e o caso de todos os
-   cartões caberem no ecrã (controlos escondidos e cartões centrados). */
-(function () {
-  var root = document.getElementById('pfCarousel');
-  if (!root) return;
-  var track = document.getElementById('pfTrack');
+   cartões caberem no ecrã (controlos escondidos). */
+Array.prototype.forEach.call(document.querySelectorAll('.pf-carousel'), function (root) {
+  var track = root.querySelector('.pf-track');
   var slides = Array.prototype.slice.call(track.querySelectorAll('.pf-slide'));
-  var controls = document.getElementById('pfControls');
-  var dotsBox = document.getElementById('pfDots');
-  var prev = document.getElementById('pfPrev');
-  var next = document.getElementById('pfNext');
+  var controls = root.querySelector('.pf-controls');
+  var dotsBox = root.querySelector('.pf-dots');
+  var prev = root.querySelector('.pf-prev');
+  var next = root.querySelector('.pf-next');
 
   var dots = slides.map(function (slide, i) {
     var b = document.createElement('button');
@@ -233,4 +231,4 @@
   track.addEventListener('scroll', function () { window.requestAnimationFrame(update); }, { passive: true });
   window.addEventListener('resize', update);
   update();
-})();
+});

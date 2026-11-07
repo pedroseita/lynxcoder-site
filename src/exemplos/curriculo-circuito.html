@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ricardo Almeida · Eletricista</title>
+<meta name="robots" content="noindex">
+<meta name="description" content="Currículo de Ricardo Almeida, eletricista predial e industrial em Campinas. NR-10, NR-35, 14 anos de experiência.">
+<meta property="og:title" content="Ricardo Almeida · Eletricista">
+<meta property="og:description" content="Eletricista predial e industrial em Campinas. Disponível para início imediato.">
+<meta property="og:type" content="profile">
+<meta name="theme-color" content="#0A1628">
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<style>
+/* Fontes self-hosted (fontsource 5.3.0): Chakra Petch (latin) e Manrope (a do site) */
+@font-face{font-family:"Chakra Petch";font-style:normal;font-display:swap;font-weight:500;src:url(/assets/fonts/chakra-petch-latin-500.woff2) format("woff2")}
+@font-face{font-family:"Chakra Petch";font-style:normal;font-display:swap;font-weight:600;src:url(/assets/fonts/chakra-petch-latin-600.woff2) format("woff2")}
+@font-face{font-family:"Chakra Petch";font-style:normal;font-display:swap;font-weight:700;src:url(/assets/fonts/chakra-petch-latin-700.woff2) format("woff2")}
+@font-face{font-family:"Manrope";font-style:normal;font-display:swap;font-weight:200 800;src:url(/assets/fonts/manrope-latin.woff2) format("woff2")}
+
+:root{
+  --bg:#EEF3F8; --surface:#FFFFFF; --surface-2:#E3EAF2; --line:#CCD8E5; --text:#0B1A2C; --muted:#4D6178;
+  --green:#05916B; --blue:#1A5FD6; --wire-off:#C3D0DE;
+  --navy:#0A1628; --navy-2:#10233B; --navy-3:#1B3554; --hero-text:#E8F0F8; --hero-muted:#93A9C2;
+  --spark:#19E3A6; --volt:#3D8BFF;
+  --wa:#25D366; --wa-ink:#06301A;
+  --font-d:"Chakra Petch","Arial Narrow",Arial,sans-serif;
+  --font-b:"Manrope",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  color-scheme:light;
+  box-sizing:border-box;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#08121F; --surface:#0E1E33; --surface-2:#132842; --line:#1E3856; --text:#E4EDF7; --muted:#8FA5BF;
+    --green:#19E3A6; --blue:#4D95FF; --wire-off:#1C334F;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#08121F; --surface:#0E1E33; --surface-2:#132842; --line:#1E3856; --text:#E4EDF7; --muted:#8FA5BF;
+  --green:#19E3A6; --blue:#4D95FF; --wire-off:#1C334F;
+  color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font:400 1.02rem/1.65 var(--font-b);-webkit-font-smoothing:antialiased;overflow-x:hidden;padding-bottom:env(safe-area-inset-bottom,0px)}
+:focus-visible{outline:3px solid var(--volt);outline-offset:3px;border-radius:4px}
+.wrap{width:min(100% - 2.5rem, 64rem);margin-inline:auto}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+
+/* faixa de demonstração (padrão dos exemplos do portfólio) */
+.demo{background:var(--spark);color:#03140E;font-size:14px;text-align:center;padding:8px 16px;padding-top:calc(8px + env(safe-area-inset-top,0px))}
+.demo a{color:#03140E;font-weight:700}
+
+/* ============ HERO ============ */
+.hero{position:relative;min-height:100svh;display:flex;align-items:center;background:var(--navy);color:var(--hero-text);overflow:hidden;padding:4rem 0}
+.pcb{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.pcb .trace{fill:none;stroke:var(--navy-3);stroke-width:2}
+.pcb .pad{fill:var(--navy-3)}
+.pcb .flow{fill:none;stroke:var(--spark);stroke-width:2.5;stroke-linecap:round;stroke-dasharray:28 900;stroke-dashoffset:928;animation:flow 6s linear infinite;filter:drop-shadow(0 0 4px var(--spark))}
+.pcb .flow.f2{stroke:var(--volt);animation-duration:8s;animation-delay:-3s;filter:drop-shadow(0 0 4px var(--volt))}
+.pcb .flow.f3{animation-duration:7s;animation-delay:-5s}
+@keyframes flow{to{stroke-dashoffset:0}}
+.hero .wrap{position:relative}
+.kicker{display:inline-flex;align-items:center;gap:.6rem;color:var(--hero-muted);margin:0 0 1.5rem;opacity:0;animation:fade .6s 1.5s forwards}
+.kicker i{width:9px;height:9px;border-radius:50%;background:var(--spark);box-shadow:0 0 10px var(--spark);animation:pulse 2s infinite}
+@keyframes pulse{50%{box-shadow:0 0 0 6px rgba(25,227,166,0)}}
+.name{font:700 clamp(3.2rem,12vw,8rem)/.9 var(--font-d);margin:0;letter-spacing:-.01em}
+.name span{display:block}
+.name .tube{color:var(--hero-text);animation:tube 1.4s steps(1,end) .2s both}
+.name .tube + .tube{animation-delay:.5s}
+@keyframes tube{
+  0%{opacity:.08;text-shadow:none}
+  10%{opacity:1;text-shadow:0 0 18px rgba(25,227,166,.7)}
+  14%{opacity:.15}
+  22%{opacity:1}
+  30%{opacity:.35}
+  34%,100%{opacity:1;text-shadow:0 0 22px rgba(25,227,166,.35)}
+}
+.role{font:600 clamp(1.15rem,3.5vw,1.6rem)/1.3 var(--font-d);color:var(--spark);margin:1.1rem 0 .6rem;min-height:1.3em}
+.role .caret{display:inline-block;width:.55em;height:1em;background:var(--spark);vertical-align:-.12em;margin-left:2px;animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.pitch{max-width:36rem;color:var(--hero-muted);margin:0 0 2rem;opacity:0;animation:fade .7s 1.9s forwards}
+.cta{display:flex;flex-wrap:wrap;gap:.75rem;opacity:0;animation:fade .7s 2.1s forwards}
+@keyframes fade{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.btn{position:relative;display:inline-flex;align-items:center;gap:.55rem;min-height:50px;padding:.75rem 1.35rem;border-radius:8px;font:700 1rem/1 var(--font-b);text-decoration:none;border:0;cursor:pointer}
+.btn svg{width:20px;height:20px;flex:none}
+.btn-spark{background:var(--spark);color:#03140E}
+.btn-spark:hover{background:#4DF0BF}
+.btn-line{background:transparent;color:var(--hero-text);box-shadow:inset 0 0 0 2px var(--navy-3)}
+.btn-line:hover{box-shadow:inset 0 0 0 2px var(--volt)}
+.scroll-cue{position:absolute;left:50%;bottom:1.5rem;transform:translateX(-50%);color:var(--hero-muted);text-decoration:none;font-size:.9rem;display:flex;flex-direction:column;align-items:center;gap:.3rem;opacity:0;animation:fade .7s 2.6s forwards}
+.scroll-cue svg{width:20px;height:20px;animation:bob 1.8s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(5px)}}
+
+/* ============ CIRCUITO (fio que acompanha o scroll) ============ */
+.circuit{position:relative;padding-left:3.5rem}
+@media (min-width:900px){.circuit{padding-left:5rem}}
+.rail{position:absolute;top:0;bottom:0;left:1.15rem;width:4px;background:var(--wire-off);border-radius:2px}
+@media (min-width:900px){.rail{left:2rem}}
+.rail-fill{position:absolute;inset:0 0 auto;height:0;background:linear-gradient(var(--green),var(--blue));border-radius:2px;box-shadow:0 0 12px var(--green)}
+.rail-fill::after{content:"";position:absolute;left:50%;bottom:-6px;width:14px;height:14px;transform:translateX(-50%);border-radius:50%;background:var(--surface);border:3px solid var(--blue);box-shadow:0 0 14px var(--blue)}
+
+.block{position:relative;padding:5rem 0 1rem}
+.block:last-of-type{padding-bottom:5rem}
+.node{position:absolute;top:5.35rem;left:calc(-3.5rem + 1.15rem + 2px);width:22px;height:22px;transform:translate(-50%,0);border-radius:6px;background:var(--surface);border:3px solid var(--wire-off);transition:border-color .3s,box-shadow .3s,background .3s;z-index:1}
+@media (min-width:900px){.node{left:calc(-5rem + 2rem + 2px)}}
+.block.lit .node{border-color:var(--green);background:var(--green);box-shadow:0 0 0 6px color-mix(in srgb,var(--green) 20%,transparent),0 0 18px var(--green)}
+.tag{font:600 .95rem var(--font-d);color:var(--muted);margin:0 0 .25rem;transition:color .3s}
+.block.lit .tag{color:var(--green)}
+h2{font:700 clamp(2rem,5.5vw,3rem)/1 var(--font-d);margin:0 0 1rem}
+.lead{color:var(--muted);max-width:40rem;margin:0 0 2.25rem}
+.lead.tight{margin-bottom:0}
+.reveal > *{opacity:0;transform:translateY(16px);transition:opacity .6s ease,transform .6s ease}
+.block.lit .reveal > *{opacity:1;transform:none}
+.block.lit .reveal > *:nth-child(2){transition-delay:.08s}
+.block.lit .reveal > *:nth-child(3){transition-delay:.16s}
+.block.lit .reveal > *:nth-child(4){transition-delay:.24s}
+
+/* Perfil */
+.profile{display:grid;gap:2rem;align-items:start}
+@media (min-width:800px){.profile{grid-template-columns:13rem 1fr}}
+.avatar{width:13rem;max-width:60vw;aspect-ratio:1;border-radius:18px;overflow:hidden;position:relative;background:var(--navy-3)}
+.avatar svg,.avatar img{width:100%;height:100%;display:block;object-fit:cover}
+.avatar::after{content:"";position:absolute;inset:0;border-radius:18px;box-shadow:inset 0 0 0 3px var(--green)}
+.profile p{margin:0 0 1rem;max-width:40rem}
+.specs{display:grid;grid-template-columns:repeat(auto-fit,minmax(10rem,1fr));gap:.75rem;margin:1.5rem 0 0;padding:0}
+.specs div{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:.8rem 1rem}
+.specs dt{font-size:.85rem;color:var(--muted)}
+.specs dd{margin:0;font-weight:700}
+
+/* Experiência */
+.jobs{list-style:none;margin:0;padding:0;display:grid;gap:1rem}
+.job{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:1.4rem 1.5rem;position:relative;overflow:hidden}
+.job::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--green);transform:scaleY(0);transform-origin:top;transition:transform .6s ease}
+.block.lit .job::before{transform:scaleY(1)}
+.block.lit .job:nth-child(2)::before{transition-delay:.25s}
+.block.lit .job:nth-child(3)::before{transition-delay:.5s}
+.job-head{display:flex;flex-wrap:wrap;justify-content:space-between;gap:.25rem 1rem;margin-bottom:.4rem}
+.job h3{font:700 1.3rem/1.2 var(--font-d);margin:0}
+.when{font:600 .95rem var(--font-d);color:var(--blue);white-space:nowrap}
+.org{color:var(--muted);margin:0 0 .6rem;font-size:.95rem}
+.job ul{margin:0;padding-left:1.1rem}
+.job li{margin-bottom:.2rem}
+.edu{margin-top:1.5rem;display:grid;gap:1rem}
+@media (min-width:700px){.edu{grid-template-columns:1fr 1fr}}
+
+/* Competências: medidores analógicos */
+.gauges{display:grid;grid-template-columns:repeat(auto-fill,minmax(9.5rem,1fr));gap:1rem;list-style:none;margin:0 0 2.5rem;padding:0}
+.gauge{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:1rem .75rem .9rem;text-align:center}
+.gauge svg{width:100%;max-width:9rem;height:auto;display:block;margin:0 auto .4rem;overflow:visible}
+.g-defs{position:absolute;width:0;height:0}
+.g-track{fill:none;stroke:var(--surface-2);stroke-width:9;stroke-linecap:round}
+.g-val{fill:none;stroke:url(#gGrad);stroke-width:9;stroke-linecap:round;stroke-dasharray:157.08;stroke-dashoffset:157.08;transition:stroke-dashoffset 1.4s cubic-bezier(.2,.8,.2,1)}
+.g-tick{stroke:var(--muted);stroke-width:1.5}
+.g-needle{stroke:var(--text);stroke-width:3;stroke-linecap:round;transform-origin:60px 60px;transform:rotate(-90deg);transition:transform 1.6s cubic-bezier(.3,1.5,.5,1)}
+.g-hub{fill:var(--text)}
+.g-num{font:700 1.35rem var(--font-d)}
+.g-name{font-size:.9rem;color:var(--muted);line-height:1.3;margin-top:.1rem}
+.certs{display:grid;grid-template-columns:repeat(auto-fit,minmax(15rem,1fr));gap:.75rem;list-style:none;margin:0;padding:0}
+.cert{display:flex;align-items:center;gap:.9rem;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:.9rem 1rem}
+.seal{width:2.6rem;height:2.6rem;flex:none;border-radius:50%;display:grid;place-items:center;color:#fff;background:var(--green)}
+.seal.warn{background:#B45309}.seal.na{background:var(--blue)}
+.seal svg{width:18px;height:18px}
+.cert strong{display:block;font-family:var(--font-d);font-size:1.1rem}
+.cert small{color:var(--muted)}
+.sub{font:700 1.4rem var(--font-d);margin:0 0 1rem}
+
+/* Trabalhos: carrossel */
+.car-head{display:flex;justify-content:space-between;align-items:end;gap:1rem;flex-wrap:wrap}
+.car-nav{display:flex;gap:.5rem;margin-bottom:2.25rem}
+.car-nav button{width:46px;height:46px;border-radius:50%;border:1px solid var(--line);background:var(--surface);color:var(--text);cursor:pointer;display:grid;place-items:center}
+.car-nav button:hover{border-color:var(--green)}
+.car-nav button:disabled{opacity:.35;cursor:default}
+.car-nav svg{width:20px;height:20px}
+.track{display:flex;gap:1rem;overflow-x:auto;scroll-snap-type:x mandatory;padding:0 0 1rem;margin:0;list-style:none;scrollbar-width:thin;overscroll-behavior-x:contain}
+.track > li{flex:0 0 min(80%,20rem);scroll-snap-align:start}
+.work{height:100%;background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden;display:flex;flex-direction:column}
+.work-art{aspect-ratio:16/10;display:grid;place-items:center;color:#fff;position:relative;overflow:hidden}
+.work-art svg{width:34%;height:auto;position:relative;transition:transform .4s}
+.work:hover .work-art svg{transform:scale(1.08) rotate(-3deg)}
+.work-art::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(135deg,rgba(255,255,255,.07) 0 2px,transparent 2px 14px)}
+.work-body{padding:1.1rem 1.2rem 1.3rem}
+.work h3{font:700 1.2rem/1.2 var(--font-d);margin:0 0 .2rem}
+.work p{margin:0 0 .6rem;color:var(--muted);font-size:.92rem}
+.work ul{margin:0;padding-left:1.1rem;font-size:.92rem}
+
+/* Contato */
+.contact{display:grid;gap:2rem;align-items:start}
+@media (min-width:800px){.contact{grid-template-columns:1.1fr 1fr}}
+.live{position:relative;display:inline-flex;border-radius:12px;padding:3px;overflow:hidden;isolation:isolate}
+.live::before{content:"";position:absolute;inset:-60%;z-index:-1;background:conic-gradient(from 0deg,transparent 0 70%,var(--green) 80%,var(--blue) 90%,transparent 100%);animation:spin 3s linear infinite}
+@keyframes spin{to{transform:rotate(1turn)}}
+.live .btn{background:var(--surface);color:var(--text);border-radius:10px;min-height:58px;font-size:1.05rem}
+.live .btn svg{color:var(--green)}
+.list{list-style:none;margin:1.5rem 0 0;padding:0;display:grid;gap:.6rem}
+.list a,.list button{all:unset;cursor:pointer;display:flex;align-items:center;gap:.9rem;padding:.9rem 1rem;border-radius:10px;background:var(--surface);border:1px solid var(--line);width:100%;box-sizing:border-box}
+.list a:hover,.list button:hover{border-color:var(--green)}
+.list a:focus-visible,.list button:focus-visible{outline:3px solid var(--volt);outline-offset:2px}
+.list svg{width:22px;height:22px;color:var(--green);flex:none}
+.list small{display:block;color:var(--muted);font-size:.85rem}
+.note{color:var(--muted);font-size:.9rem;min-height:1.4em;margin:.6rem 0 0}
+
+.foot{background:var(--navy);color:var(--hero-muted);font-size:.9rem;padding:1.5rem 0}
+.foot a{color:var(--hero-text)}
+
+/* Barra de progresso no topo */
+.topbar{position:fixed;top:env(safe-area-inset-top,0px);left:0;height:3px;width:100%;transform-origin:left;transform:scaleX(0);background:linear-gradient(90deg,var(--spark),var(--volt));z-index:30}
+
+/* demonstração: como chegaria a mensagem no WhatsApp (assets/js/exemplo.js) */
+dialog.demo-dialog{width:min(480px,calc(100% - 32px));border:0;border-radius:14px;padding:0;background:var(--surface);color:var(--text);box-shadow:0 30px 80px rgba(0,0,0,.5)}
+dialog.demo-dialog::backdrop{background:rgba(4,12,24,.7)}
+.dd-head{display:flex;align-items:center;gap:10px;padding:16px 20px;background:var(--wa);color:var(--wa-ink);font-weight:700;border-radius:14px 14px 0 0}
+.dd-head svg{width:22px;height:22px}
+.dd-body{padding:20px}
+.dd-body p{color:var(--muted);font-size:15.5px}
+.dd-body .dd-msg{white-space:pre-wrap;background:#DCF8C6;color:#111B21;border-radius:12px 12px 2px 12px;padding:12px 14px;margin:0 0 16px;font-size:15px;line-height:1.45;max-height:45vh;overflow:auto}
+.dd-actions{display:flex;flex-wrap:wrap;gap:10px;justify-content:flex-end}
+.dd-actions .btn{min-height:46px}
+.dd-actions .btn-ghost{background:var(--surface-2);color:var(--text)}
+
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation:none!important;transition:none!important}
+  .kicker,.pitch,.cta,.scroll-cue{opacity:1}
+  .reveal > *{opacity:1;transform:none}
+  .pcb .flow{display:none}
+}
+
+@media print{
+  :root{--bg:#fff;--surface:#fff;--surface-2:#eee;--line:#ccc;--text:#000;--muted:#444;--green:#05916B;--blue:#1A5FD6}
+  .demo,.pcb,.scroll-cue,.cta,.rail,.node,.car-nav,.topbar,.foot,.live,#acoes,dialog{display:none!important}
+  .hero{min-height:0;background:#fff;color:#000;padding:0 0 1rem}
+  .name .tube{color:#000;text-shadow:none!important}
+  .role{color:#05916B}.role .caret{display:none}
+  .kicker,.pitch{opacity:1;color:#333;animation:none}
+  .circuit{padding-left:0}
+  .block{padding:1rem 0;break-inside:avoid-page}
+  .reveal > *{opacity:1!important;transform:none!important}
+  .track{display:block;overflow:visible}
+  .track > li{margin-bottom:.5rem}
+  .work-art{display:none}
+  .g-val{stroke-dashoffset:var(--off)!important}.g-needle{transform:var(--rot)!important}
+}
+</style>
+</head>
+<body data-wa-phone="5519999990000" data-demo="1">
+<div class="topbar" id="topbar" aria-hidden="true"></div>
+
+<div class="demo">Currículo de exemplo criado pela <a href="/">LynxCoder</a>. Pessoa e contatos fictícios. <a href="/?quero=curriculo#contato">Quero um assim →</a> · <a href="/#contato">Tenho dúvidas</a></div>
+
+<header class="hero">
+  <svg class="pcb" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+    <g>
+      <path class="trace" d="M-20 140 H360 L420 200 H760 L820 140 H1220"/>
+      <path class="trace" d="M-20 620 H240 L300 560 H640 L700 620 H1000 L1060 680 H1220"/>
+      <path class="trace" d="M980 -20 V260 L1040 320 V820"/>
+      <path class="trace" d="M140 820 V500 L200 440 H520"/>
+      <circle class="pad" cx="760" cy="200" r="7"/><circle class="pad" cx="520" cy="440" r="7"/><circle class="pad" cx="640" cy="560" r="7"/><circle class="pad" cx="1040" cy="320" r="7"/>
+    </g>
+    <path class="flow" d="M-20 140 H360 L420 200 H760 L820 140 H1220"/>
+    <path class="flow f2" d="M-20 620 H240 L300 560 H640 L700 620 H1000 L1060 680 H1220"/>
+    <path class="flow f3" d="M980 -20 V260 L1040 320 V820"/>
+  </svg>
+
+  <div class="wrap">
+    <p class="kicker"><i aria-hidden="true"></i>Disponível para início imediato</p>
+    <h1 class="name"><span class="tube">Ricardo</span><span class="tube">Almeida</span></h1>
+    <p class="role"><span id="typed">Eletricista predial e industrial</span><span class="caret" aria-hidden="true"></span></p>
+    <p class="pitch">Técnico em eletrotécnica com 14 anos de experiência em manutenção predial, quadros e comandos. Procuro vaga efetiva em Campinas e região.</p>
+    <div class="cta">
+      <a class="btn btn-spark" href="#contato" data-wa="Olá, Ricardo! Vi o seu currículo e gostaria de marcar uma entrevista.">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm4.5 12.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.2-.4.7-1.4.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.4.1-.7.3-.2.3-.9.9-.9 2.2s1 2.6 1.1 2.7c.1.2 1.9 2.9 4.6 4 1.7.7 2.4.8 3.2.7.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2-.1-.1-.2-.2-.4-.3Z"/></svg>
+        Falar no WhatsApp</a>
+      <button class="btn btn-line js-print" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 3v12m0 0-4-4m4 4 4-4M4 21h16"/></svg>
+        Baixar currículo em PDF</button>
+    </div>
+  </div>
+  <a class="scroll-cue" href="#perfil">Ver currículo
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></a>
+</header>
+
+<main class="circuit wrap" id="circuit">
+  <div class="rail" aria-hidden="true"><div class="rail-fill" id="railFill"></div></div>
+
+  <!-- PERFIL -->
+  <section class="block" id="perfil">
+    <span class="node" aria-hidden="true"></span>
+    <p class="tag">Circuito 1</p>
+    <div class="reveal">
+      <h2>Perfil</h2>
+      <div class="profile">
+        <div class="avatar">
+          <svg viewBox="0 0 200 200" role="img" aria-label="Foto de Ricardo Almeida">
+            <rect width="200" height="200" fill="#1B3554"/>
+            <circle cx="100" cy="84" r="38" fill="#2C4F79"/>
+            <path d="M28 200c6-44 36-68 72-68s66 24 72 68Z" fill="#2C4F79"/>
+            <path d="M62 68c4-22 22-34 38-34s34 12 38 34Z" fill="#19E3A6"/>
+            <rect x="56" y="64" width="88" height="8" fill="#3D8BFF"/>
+          </svg>
+        </div>
+        <div>
+          <p>Comecei como ajudante em obra em 2011 e me formei técnico no SENAI no ano seguinte. Trabalhei cinco anos em manutenção de edifícios comerciais e, desde 2019, atendo condomínios e empresas por conta própria.</p>
+          <p>Gosto de trabalho organizado: quadro identificado, diagrama atualizado e relatório entregue no fim. Sigo NR-10 e bloqueio e etiquetagem em todas as intervenções.</p>
+          <dl class="specs">
+            <div><dt>Idade</dt><dd>34 anos</dd></div>
+            <div><dt>Cidade</dt><dd>Campinas, SP</dd></div>
+            <div><dt>Habilitação</dt><dd>CNH B, carro próprio</dd></div>
+            <div><dt>Turnos</dt><dd>Disponível para escala</dd></div>
+          </dl>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- EXPERIÊNCIA -->
+  <section class="block" id="experiencia">
+    <span class="node" aria-hidden="true"></span>
+    <p class="tag">Circuito 2</p>
+    <div class="reveal">
+      <h2>Experiência</h2>
+      <ol class="jobs">
+        <li class="job">
+          <div class="job-head"><h3>Eletricista autônomo</h3><span class="when">2019 até hoje</span></div>
+          <p class="org">Prestação de serviços, Campinas</p>
+          <ul><li>Contratos mensais de manutenção com 4 condomínios</li><li>Troca de quadros e adequação de padrões CPFL</li><li>Instalação de carregadores para carros elétricos</li></ul>
+        </li>
+        <li class="job">
+          <div class="job-head"><h3>Eletricista de manutenção</h3><span class="when">2014 a 2019</span></div>
+          <p class="org">Predial Sul Serviços</p>
+          <ul><li>Manutenção preventiva e corretiva em 12 edifícios comerciais</li><li>Painéis de bombas, iluminação de emergência e geradores</li><li>Inspeções de SPDA e apoio aos laudos elétricos</li></ul>
+        </li>
+        <li class="job">
+          <div class="job-head"><h3>Ajudante e eletricista de obra</h3><span class="when">2011 a 2014</span></div>
+          <p class="org">Construtora Horizonte</p>
+          <ul><li>Instalações de 3 condomínios residenciais, da infraestrutura aos testes</li></ul>
+        </li>
+      </ol>
+      <div class="edu">
+        <div class="job"><div class="job-head"><h3>Técnico em Eletrotécnica</h3><span class="when">2010 a 2012</span></div><p class="org">SENAI Campinas</p></div>
+        <div class="job"><div class="job-head"><h3>Ensino médio completo</h3><span class="when">2009</span></div><p class="org">E.E. Prof. Carlos Gomes</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- COMPETÊNCIAS -->
+  <section class="block" id="competencias">
+    <span class="node" aria-hidden="true"></span>
+    <p class="tag">Circuito 3</p>
+    <div class="reveal">
+      <h2>Competências</h2>
+      <p class="lead">Nível de domínio em cada área, medido como num voltímetro.</p>
+      <svg class="g-defs" width="0" height="0" aria-hidden="true"><defs><linearGradient id="gGrad" x1="0" x2="1"><stop offset="0" stop-color="#19E3A6"/><stop offset="1" stop-color="#3D8BFF"/></linearGradient></defs></svg>
+      <ul class="gauges" id="gauges"></ul>
+      <div>
+        <p class="sub">Normas e certificações</p>
+        <ul class="certs" id="certs"></ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- TRABALHOS -->
+  <section class="block" id="trabalhos">
+    <span class="node" aria-hidden="true"></span>
+    <p class="tag">Circuito 4</p>
+    <div class="reveal">
+      <div class="car-head">
+        <div><h2>Trabalhos realizados</h2><p class="lead tight">Arraste para o lado ou use as setas.</p></div>
+        <div class="car-nav">
+          <button type="button" id="prev" aria-label="Trabalho anterior"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg></button>
+          <button type="button" id="next" aria-label="Próximo trabalho"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
+        </div>
+      </div>
+      <ul class="track" id="track" tabindex="0" aria-label="Trabalhos realizados"></ul>
+    </div>
+  </section>
+
+  <!-- CONTATO -->
+  <section class="block" id="contato">
+    <span class="node" aria-hidden="true"></span>
+    <p class="tag">Circuito fechado</p>
+    <div class="reveal">
+      <h2>Vamos conversar?</h2>
+      <div class="contact">
+        <div>
+          <p class="lead">Disponível para entrevista presencial ou por vídeo. Respondo no mesmo dia.</p>
+          <span class="live"><a class="btn" href="#contato" data-wa="Olá, Ricardo! Vi o seu currículo e gostaria de marcar uma entrevista.">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm4.5 12.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.2-.4.7-1.4.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.4.1-.7.3-.2.3-.9.9-.9 2.2s1 2.6 1.1 2.7c.1.2 1.9 2.9 4.6 4 1.7.7 2.4.8 3.2.7.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2-.1-.1-.2-.2-.4-.3Z"/></svg>
+            Chamar para entrevista</a></span>
+        </div>
+        <div id="acoes">
+          <ul class="list">
+            <li><a href="tel:+5519999990000" data-tel><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2Z"/></svg><span><small>Telefone</small>(19)&nbsp;99999&#8209;0000</span></a></li>
+            <li><a href="mailto:ricardo@exemplo.com.br"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 6-10 7L2 6"/></svg><span><small>E-mail</small>ricardo@exemplo.com.br</span></a></li>
+            <li><a href="https://www.linkedin.com/" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5ZM3 9.75h4V21H3V9.75Zm6.5 0h3.8v1.6h.06c.53-1 1.83-2.06 3.77-2.06 4.03 0 4.77 2.65 4.77 6.1V21h-4v-4.9c0-1.17-.02-2.68-1.63-2.68-1.64 0-1.89 1.28-1.89 2.6V21h-4V9.75Z"/></svg><span><small>LinkedIn</small>/in/ricardo-almeida</span></a></li>
+            <li><button type="button" id="share"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M10 14a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1M14 10a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/></svg><span><small>Compartilhar</small>Copiar link do currículo</span></button></li>
+            <li><button type="button" class="js-print"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 3v12m0 0-4-4m4 4 4-4M4 21h16"/></svg><span><small>Para anexar</small>Baixar em PDF</span></button></li>
+          </ul>
+          <p class="note" id="note" aria-live="polite"></p>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="wrap">© <span id="year">2026</span> Ricardo Almeida. Currículo online por <a href="/">LynxCoder</a>.</div>
+</footer>
+
+<dialog class="demo-dialog" id="demoDialog" aria-labelledby="ddTitle">
+  <div class="dd-head">
+    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 00-8.6 15.1L2 22l5-1.3A10 10 0 1012 2z"/></svg>
+    <span id="ddTitle">Assim chegaria no WhatsApp</span>
+  </div>
+  <div class="dd-body">
+    <p id="ddIntro">Neste currículo de exemplo o número é fictício. Num currículo real, a mensagem abaixo abriria já pronta no WhatsApp do candidato:</p>
+    <p class="dd-msg" id="ddMsg"></p>
+    <div class="dd-actions">
+      <button type="button" class="btn btn-ghost" id="ddClose">Fechar</button>
+      <a class="btn btn-spark" href="/?quero=curriculo#contato">Quero um currículo assim</a>
+    </div>
+  </div>
+</dialog>
+
+<script src="/assets/js/exemplo.js?v=3"></script>
+<script src="/assets/js/curriculo-circuito.js?v=1"></script>
+</body>
+</html>

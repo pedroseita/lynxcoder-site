@@ -424,6 +424,8 @@ h3 { font-size: clamp(20px, 2.2vw, 26px); }
 .pf-aqua .pf-tag { color: #5fd3dc; }
 .pf-leaf { background: radial-gradient(120% 60% at 50% 100%, rgba(92,194,148,.26), transparent 62%), linear-gradient(180deg, #16281f, #0b130f); }
 .pf-leaf .pf-tag { color: #6fd4a5; }
+.pf-kraft { background: radial-gradient(120% 60% at 50% 100%, rgba(201,161,107,.26), transparent 62%), linear-gradient(180deg, #1a2238, #0b0f1c); }
+.pf-kraft .pf-tag { color: #d7b27e; }
 .pf-title { font-family: var(--font-display); font-size: 22px; font-weight: 600; line-height: 1.15; letter-spacing: -.01em; }
 .pf-desc { color: var(--dim); font-size: 14.5px; line-height: 1.45; }
 

@@ -9,8 +9,10 @@ RUN { echo 'map $host $lx_reservado {'; echo '    default 0;'; \
       echo '}'; } > /etc/nginx/conf.d/00-reservados.conf \
  && rm /tmp/reservados.txt
 COPY infra/lynxsites/criar-headers.conf /etc/nginx/snippets/criar-headers.conf
+COPY infra/lynxsites/ajuda-headers.conf /etc/nginx/snippets/ajuda-headers.conf
 COPY infra/lynxsites/inicio/ /usr/share/nginx/inicio/
 COPY infra/lynxsites/criar/ /usr/share/nginx/inicio/criar/
+COPY infra/lynxsites/ajuda/ /usr/share/nginx/inicio/ajuda/
 COPY src/assets/fonts/manrope-latin.woff2 src/assets/fonts/manrope-latin-ext.woff2 \
      src/assets/fonts/space-grotesk-latin.woff2 src/assets/fonts/space-grotesk-latin-ext.woff2 \
      src/assets/fonts/jetbrains-mono-latin.woff2 \

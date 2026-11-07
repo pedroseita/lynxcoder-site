@@ -495,9 +495,15 @@ acesso (útil se perder o celular). As credenciais ficam em
 
 ## Backups
 
-`scripts/backup.sh` corre todos os dias às 03:30 (cron) e guarda o volume
-`lynxcoder-site_onboarding-data` (pedidos, fotos, mensagens, propostas,
-configurações e acesso ao painel). O código não entra: está no GitHub.
+`scripts/backup.sh` corre todos os dias às 03:30 (cron) e guarda dois arquivos
+com a mesma data:
+
+- `lynxcoder-data-<data>.tar.gz`: o volume `lynxcoder-site_onboarding-data`
+  (pedidos, fotos, mensagens, propostas, compras, configurações e acesso aos painéis);
+- `lynxsites-paginas-<data>.tar.gz`: a pasta `/root/lynxsites`, com as páginas
+  publicadas dos clientes.
+
+O código não entra: está no GitHub.
 
 - Local: `/root/backups/lynxcoder/`, 14 dias.
 - Externo: Google Drive, pasta `lynxcoder-backups`, 60 dias, **criptografado**
@@ -568,8 +574,21 @@ docker run --rm -v /root/.config/rclone:/config/rclone -v /root/backups/lynxcode
 bash scripts/restore.sh /root/backups/lynxcoder/<nome-do-ficheiro>
 ```
 
+As páginas dos clientes restauram-se à parte, com o modo `paginas`:
+
+```bash
+bash scripts/restore.sh paginas          # lista os backups das páginas
+bash scripts/restore.sh paginas latest   # restaura o mais recente (pede "RESTAURAR")
+bash scripts/restore.sh paginas /root/backups/lynxcoder/lynxsites-paginas-<data>.tar.gz
+```
+
+A pasta atual não é apagada: fica em `/root/lynxsites.antes-de-restaurar-<data>`
+até confirmar que está tudo bem e a apagar à mão. O container das páginas é
+reiniciado no fim. Do Drive, trazer o ficheiro como acima.
+
 Num VPS novo: clonar o repositório, repor `/root/.config/rclone/rclone.conf`
-(da cópia no gestor de senhas), `bash scripts/deploy.sh` e restaurar como acima.
+(da cópia no gestor de senhas), `bash scripts/deploy.sh` e restaurar os dados e
+as páginas como acima.
 
 ## Subir o HSTS
 

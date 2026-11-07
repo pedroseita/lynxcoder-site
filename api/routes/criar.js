@@ -284,6 +284,11 @@ async function limparExpirados(log) {
 // ---------- rotas públicas ----------
 
 async function publicRoutes(app) {
+  // Sem as duas chaves, a verificação anti-robô não corre: avisar no arranque
+  // para não passar despercebido (também aparece em Configurações › Estado).
+  const tsSite = !!process.env.TURNSTILE_SITEKEY, tsSecret = !!process.env.TURNSTILE_SECRET;
+  if (tsSite !== tsSecret) app.log.error('Turnstile incompleto: falta ' + (tsSecret ? 'TURNSTILE_SITEKEY' : 'TURNSTILE_SECRET') + '; o /criar não verifica robôs');
+  else if (!tsSecret) app.log.warn('Turnstile desligado: o /criar não verifica robôs (TURNSTILE_SITEKEY e TURNSTILE_SECRET em falta)');
   setInterval(() => limparExpirados(app.log).catch((err) => app.log.error({ err }, 'limpeza de compras')), 3600e3).unref();
   setTimeout(() => limparExpirados(app.log).catch(() => {}), 30e3).unref();
 

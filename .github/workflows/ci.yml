@@ -10,7 +10,7 @@ jobs:
     name: HTML, links e comportamento do nginx
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Validar HTML
         run: npx --yes html-validate "src/**/*.html" "infra/lynxsites/inicio/*.html"
@@ -277,7 +277,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: validate
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Servir e medir
         run: |

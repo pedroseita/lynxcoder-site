@@ -1,4 +1,4 @@
-FROM nginx:1.27-alpine
+FROM nginx:1.29-alpine
 # Fonte única: a página e o logo vêm de src/ (a mesma página que o site mostra
 # quando a manutenção é ligada pelo painel).
 COPY src/manutencao.html /usr/share/nginx/html/index.html

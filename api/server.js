@@ -21,7 +21,17 @@ const flags = require('./lib/flags');
 const PORT = Number(process.env.PORT || 3000);
 const MB = 1024 * 1024;
 
-const app = Fastify({ logger: { level: process.env.LOG_LEVEL || 'info' }, trustProxy: true, bodyLimit: 1 * MB });
+// Só se confia em proxies com endereço privado (o Traefik, pela rede Docker).
+// O req.ip é o primeiro endereço público a contar da direita do X-Forwarded-For,
+// o que o Traefik escreveu; um X-Forwarded-For inventado pelo visitante fica à
+// esquerda e é ignorado pelos limites por IP. (trustProxy: true confiava em
+// tudo; um número, como 1, devolve o IP do Traefik nesta versão do Fastify e
+// juntava todos os visitantes no mesmo limite.)
+// Se um dia a Cloudflare passar a proxy (nuvem laranja), o Traefik tem de
+// confiar nas gamas dela (forwardedHeaders.trustedIPs), senão todos os
+// visitantes partilham os IPs da Cloudflare.
+const TRUST_PROXY = 'loopback, linklocal, uniquelocal';
+const app = Fastify({ logger: { level: process.env.LOG_LEVEL || 'info' }, trustProxy: TRUST_PROXY, bodyLimit: 1 * MB });
 
 app.register(multipart, {
   limits: { fileSize: 8 * MB, files: 14, fields: 4, fieldSize: 256 * 1024, parts: 18, headerPairs: 200 },

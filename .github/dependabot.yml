@@ -1,0 +1,22 @@
+# Atualizações automáticas: o Dependabot abre um PR por atualização e a CI testa-o.
+# Nada entra sem ser aprovado (merge) por nós.
+version: 2
+updates:
+  # Dependências da API (Node + Fastify).
+  - package-ecosystem: npm
+    directory: /api
+    schedule: { interval: weekly, day: monday }
+    open-pull-requests-limit: 5
+    groups:
+      menores:
+        update-types: [minor, patch]
+
+  # Imagens base: node:22-alpine (API) e nginx:1.27-alpine (site, lynxsites, manutenção).
+  - package-ecosystem: docker
+    directories: [/api, /infra, /infra/lynxsites, /infra/maintenance]
+    schedule: { interval: weekly, day: monday }
+
+  # Ações usadas pela CI.
+  - package-ecosystem: github-actions
+    directory: /
+    schedule: { interval: monthly }

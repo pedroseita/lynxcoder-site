@@ -51,7 +51,13 @@ module.exports = async function configuracoesRoutes(app) {
     const emp = await empresa.load();
     const pag = await estadoPagamentos();
     const m = await flags.estado();
-    const turnstile = !!(process.env.TURNSTILE_SITEKEY && process.env.TURNSTILE_SECRET);
+    const tsSite = !!process.env.TURNSTILE_SITEKEY, tsSecret = !!process.env.TURNSTILE_SECRET;
+    const turnstile = tsSite && tsSecret;
+    // Só uma das chaves é o pior caso: o widget aparece mas nada é verificado.
+    const tsIncompleto = tsSite !== tsSecret;
+    const tsDetalhe = turnstile ? 'Ligado.'
+      : tsIncompleto ? 'Incompleto: falta ' + (tsSecret ? 'TURNSTILE_SITEKEY' : 'TURNSTILE_SECRET') + '. O /criar não está a verificar robôs.'
+        : 'Desligado: o /criar não verifica robôs. Ligue antes de abrir os pagamentos.';
     return {
       ok: true,
       itens: [
@@ -60,7 +66,7 @@ module.exports = async function configuracoesRoutes(app) {
         { id: 'pix', ok: !!pag.pix.chave, titulo: 'Chave PIX', detalhe: pag.pix.chave ? 'Configurada (' + pag.pix.nome + ', ' + pag.pix.cidade + ').' : 'Sem chave: a compra e as mensalidades não mostram QR Code.', link: '#/config/pagamentos' },
         { id: 'pagamentos', ok: pag.ativos, aviso: !pag.ativos, titulo: 'Pagamentos no /criar', detalhe: pag.ativos ? 'Ligados: o cliente pode pagar no fim da compra.' : 'Desligados: o /criar mostra "Pagamentos em breve".', link: '#/config/pagamentos' },
         { id: 'gateway', ok: pag.gateway !== 'manual', aviso: pag.gateway === 'manual', titulo: 'Confirmação automática (gateway)', detalhe: pag.gateway === 'manual' ? 'PIX manual: confirma cada pagamento no painel. Asaas preparado, por ligar.' : 'Ligado: ' + pag.gateway + '.', onde: 'GATEWAY e ASAAS_* no infra/onboarding.env' },
-        { id: 'turnstile', ok: turnstile, aviso: !turnstile, titulo: 'Anti-robô no /criar (Turnstile)', detalhe: turnstile ? 'Ligado.' : 'Desligado (opcional).', onde: 'TURNSTILE_SITEKEY e TURNSTILE_SECRET no infra/onboarding.env' },
+        { id: 'turnstile', ok: turnstile, aviso: !turnstile && !tsIncompleto && !pag.ativos, titulo: 'Anti-robô no /criar (Turnstile)', detalhe: tsDetalhe, onde: 'TURNSTILE_SITEKEY e TURNSTILE_SECRET no infra/onboarding.env' },
         { id: 'manutencao', ok: !m.ativo, titulo: 'Site lynxcoder.com.br', detalhe: m.ativo ? 'Em manutenção.' : 'No ar.', link: null },
       ],
     };

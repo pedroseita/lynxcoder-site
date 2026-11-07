@@ -49,6 +49,11 @@ jobs:
       - name: Build da imagem de manutenção
         run: docker build -f infra/maintenance/Dockerfile -t lynx-maint:ci .
 
+      # Só as dependências que vão para produção; falha com vulnerabilidades altas ou críticas.
+      - name: Dependências da API sem vulnerabilidades graves
+        working-directory: api
+        run: npm audit --omit=dev --audit-level=high
+
       # A API do /comecar: arranca, responde ao health e recusa envios inválidos.
       - name: Testar a API de onboarding
         run: |
@@ -67,6 +72,11 @@ jobs:
           echo "— ficheiro que nao e imagem deve ser recusado"
           printf 'nao sou imagem' > /tmp/falso.jpg
           curl -s -F fotos=@/tmp/falso.jpg http://localhost:3000/api/onboarding | grep -q '"ok":false'
+
+          echo "— limites por IP: X-Forwarded-For inventado pelo visitante nao escapa ao limite"
+          for i in $(seq 1 20); do curl -s -o /dev/null -H "X-Forwarded-For: 9.9.9.$i, 5.5.5.5" -d 'nome=x' http://localhost:3000/api/contato; done
+          test "$(curl -s -o /dev/null -w '%{http_code}' -H 'X-Forwarded-For: 9.9.9.99, 5.5.5.5' -d 'nome=x' http://localhost:3000/api/contato)" = "429"
+          test "$(curl -s -o /dev/null -w '%{http_code}' -H 'X-Forwarded-For: 6.6.6.6' -d 'nome=x' http://localhost:3000/api/contato)" = "400"
 
           echo "— contato valido redireciona para /obrigado.html"
           test "$(curl -s -o /dev/null -w '%{http_code} %{redirect_url}' -d 'nome=Teste CI&email=ci@exemplo.com&mensagem=Mensagem de teste automatico do CI.' http://localhost:3000/api/contato)" = "303 http://localhost:3000/obrigado.html"

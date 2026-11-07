@@ -12,9 +12,9 @@ atrás de um Traefik já existente no VPS.
 | `lynxcoder.com.br` | site institucional, portfólio e páginas de exemplo | `lynxcoder-site` (nginx, `src/`) |
 | `admin.lynxcoder.com.br` | painel de gestão (login + 2 etapas) | `lynxcoder-onboarding` (API) |
 | `blog.lynxcoder.com.br` | blog próprio, escrito no painel | `lynxcoder-onboarding` (API) |
-| `lynxsites.com.br` | apresentação das páginas para clientes | `lynxsites-paginas` (nginx) |
+| `lynxcoder.com.br/ajuda` | central de ajuda para os clientes (páginas fixas) | `lynxcoder-site` (nginx, `src/ajuda/`) |
+| `lynxsites.com.br` | vitrine da compra direta: passos, exemplos, preço "a partir de" | `lynxsites-paginas` (nginx) |
 | `lynxsites.com.br/criar` | compra de página em 6 passos, com prévia ao vivo | `lynxsites-paginas` + API em `/api/criar/` |
-| `lynxsites.com.br/ajuda` | central de ajuda para os clientes (páginas fixas) | `lynxsites-paginas` (nginx) |
 | `painel.lynxsites.com.br` | painel do cliente (login por código no e-mail) | `lynxcoder-onboarding` (API) |
 | `<nome>.lynxsites.com.br` | página de cada cliente (uma pasta por cliente) | `lynxsites-paginas` (nginx) |
 
@@ -33,6 +33,7 @@ src/                     ← site lynxcoder.com.br (um só COPY no Dockerfile)
 ├── manutencao.html        página de manutenção (painel e container de manutenção)
 ├── comecar.html           formulário de início de projeto (só abre com link de convite)
 ├── proposta.html          proposta individual (só abre com link; texto vem da API)
+├── ajuda/                 central de ajuda: index.html (com pesquisa) e um .html por artigo
 ├── exemplos/              páginas de exemplo do portfólio (noindex, dados fictícios)
 │   ├── eletricista.html     só assets/js/exemplo.js (WhatsApp em modo demonstração)
 │   ├── quentinhas.html      + js/quentinhas.js   (cardápio e carrinho)
@@ -44,8 +45,8 @@ src/                     ← site lynxcoder.com.br (um só COPY no Dockerfile)
 ├── robots.txt
 ├── sitemap.xml
 └── assets/
-    ├── css/               styles.css (design system), comecar.css, proposta.css
-    ├── js/                app.js (nav, blog na home), comecar.js, proposta.js,
+    ├── css/               styles.css (design system), comecar.css, proposta.css, ajuda.css
+    ├── js/                app.js (nav, blog na home), comecar.js, proposta.js, ajuda.js,
     │                      exemplo.js (comum aos exemplos) + um por exemplo
     ├── fonts/*.woff2      self-hosted (fontsource), sem pedidos à Google
     └── img/               logo.png e portfolio/<exemplo>-celular.jpg (480×3569)
@@ -59,12 +60,11 @@ infra/
 └── lynxsites/             tudo o que é servido em lynxsites.com.br (projeto à parte)
     ├── Dockerfile, nginx.conf, headers.conf
     ├── docker-compose.yml   router único *.lynxsites.com.br (prioridade 1)
-    ├── inicio/              página de apresentação do lynxsites.com.br
+    ├── inicio/              vitrine do lynxsites.com.br (usa as imagens de src/assets/img/portfolio)
     ├── criar/               compra de página: index.html, criar.css, criar.js
     │   └── modelos/         prévia com o layout do exemplo (eletricista); modelo.js
     │                        aplica os dados do cliente (marcadores data-pv)
-    ├── ajuda/               central de ajuda: index.html (com pesquisa), um .html por artigo
-    └── criar-headers.conf, ajuda-headers.conf   CSP própria do /criar e da /ajuda
+    └── criar-headers.conf, inicio-headers.conf   CSP própria do /criar e da vitrine
 
 api/                     ← API (Node + Fastify), container lynxcoder-onboarding
 ├── server.js
@@ -123,6 +123,9 @@ docs/runbook.md: `DATA_DIR`, `ADMIN_HOST`, `PAINEL_HOST`…).
 ./scripts/cliente-teste.sh     # página de teste pedroeletricista.lynxsites.com.br (--remover apaga)
 ```
 
+Um exemplo novo do portfólio entra em dois sítios: o cartão em `src/index.html`
+e o da vitrine em `infra/lynxsites/inicio/index.html` (a imagem é a mesma).
+
 Publicar um cliente é só criar a pasta `/root/lynxsites/<nome>/` com o
 `index.html`: o certificado e o router já cobrem qualquer `<nome>.lynxsites.com.br`.
 
@@ -142,7 +145,7 @@ Detalhe completo, incluindo rollback e o que fazer quando algo falha, em
 | Termos e privacidade da compra direta | `src/terms.html`, `src/privacy.html` | não falam ainda dos 7 dias de arrependimento nem do gateway |
 | CPF/CNPJ e endereço no rodapé do /criar | Painel › Configurações › Empresa | obrigatórios em vendas online (Decreto 7.962/2013) |
 | Modelos da prévia | `infra/lynxsites/criar/modelos/` | só o eletricista; faltam os outros 6 exemplos |
-| Artigos da ajuda em falta | `infra/lynxsites/ajuda/` | atrasos, cancelamento e formas de pagamento esperam pelas regras e pelo gateway |
+| Artigos da ajuda em falta | `src/ajuda/` | atrasos, cancelamento e formas de pagamento esperam pelas regras e pelo gateway |
 | Gerador de páginas e "Publicar" | — | hoje a página do cliente publica-se à mão; os modelos são a base |
 | Anti-robô (Turnstile) no /criar | `infra/onboarding.env` | código pronto, faltam as chaves |
 | Capa Open Graph 1200×630 | `src/assets/img/` | hoje o `og:image` aponta para o logo quadrado |

@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ricardo Almeida · Currículo de eletricista</title>
+<meta name="robots" content="noindex">
+<meta name="description" content="Currículo de Ricardo Almeida, eletricista predial e industrial. Técnico em Eletrotécnica, NR-10, NR-35.">
+<meta property="og:title" content="Ricardo Almeida · Currículo de eletricista">
+<meta property="og:description" content="Eletricista predial e industrial em Campinas. NR-10, NR-10 SEP e NR-35 em dia.">
+<meta property="og:type" content="profile">
+<meta name="theme-color" content="#0A1628">
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<style>
+/* Fontes self-hosted (fontsource 5.3.0): Barlow e Barlow Condensed, latin */
+@font-face{font-family:"Barlow";font-style:normal;font-display:swap;font-weight:400;src:url(/assets/fonts/barlow-latin-400.woff2) format("woff2")}
+@font-face{font-family:"Barlow";font-style:normal;font-display:swap;font-weight:500;src:url(/assets/fonts/barlow-latin-500.woff2) format("woff2")}
+@font-face{font-family:"Barlow";font-style:normal;font-display:swap;font-weight:600;src:url(/assets/fonts/barlow-latin-600.woff2) format("woff2")}
+@font-face{font-family:"Barlow Condensed";font-style:normal;font-display:swap;font-weight:500;src:url(/assets/fonts/barlow-condensed-latin-500.woff2) format("woff2")}
+@font-face{font-family:"Barlow Condensed";font-style:normal;font-display:swap;font-weight:600;src:url(/assets/fonts/barlow-condensed-latin-600.woff2) format("woff2")}
+@font-face{font-family:"Barlow Condensed";font-style:normal;font-display:swap;font-weight:700;src:url(/assets/fonts/barlow-condensed-latin-700.woff2) format("woff2")}
+
+:root{
+  /* Superfícies do cartão (seguem o tema) */
+  --card:#FFFFFF; --card-2:#F1F5F9; --line:#DCE4ED; --text:#0E1B2C; --muted:#526478;
+  /* Marca (fixas) */
+  --navy:#0A1628; --navy-2:#11243C; --navy-3:#1A3556;
+  --t1:#10B981; --t2:#0EA5A4; --t3:#0891B2; --t4:#2563EB; --t5:#4F46E5;
+  --ink-on:#FFFFFF;
+  --wa:#25D366; --wa-ink:#06301A;
+  --font-d:"Barlow Condensed","Arial Narrow",Arial,sans-serif;
+  --font-b:"Barlow",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  color-scheme:light;
+  box-sizing:border-box;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --card:#0F2136; --card-2:#142B45; --line:#21405F; --text:#E6EEF7; --muted:#93A7BF;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --card:#0F2136; --card-2:#142B45; --line:#21405F; --text:#E6EEF7; --muted:#93A7BF;
+  color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{height:100%}
+body{
+  margin:0;min-height:100%;color:var(--text);font:400 1rem/1.6 var(--font-b);-webkit-font-smoothing:antialiased;
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  background:
+    radial-gradient(60rem 40rem at 0% 0%, rgba(16,185,129,.28), transparent 60%),
+    radial-gradient(50rem 40rem at 100% 100%, rgba(37,99,235,.35), transparent 60%),
+    var(--navy);
+  background-attachment:fixed;
+}
+:focus-visible{outline:3px solid #3B8EFF;outline-offset:3px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+/* faixa de demonstração (padrão dos exemplos do portfólio) */
+.demo{background:var(--t1);color:#04121F;font-size:14px;text-align:center;padding:8px 16px;padding-top:calc(8px + env(safe-area-inset-top,0px))}
+.demo a{color:#04121F;font-weight:700}
+
+.page{width:min(100% - 2rem, 60rem);margin:2.5rem auto;display:grid;grid-template-columns:3.25rem 1fr;align-items:start}
+
+/* ---- Barra social ---- */
+.social{list-style:none;margin:5.5rem 0 0;padding:0;background:rgba(10,22,40,.6);display:flex;flex-direction:column}
+.social a{display:grid;place-items:center;width:3.25rem;height:3.25rem;color:#C9D6E5;border-bottom:1px solid rgba(255,255,255,.06)}
+.social a:hover{background:var(--t1);color:#fff}
+.social svg{width:18px;height:18px}
+
+/* ---- Cartão ---- */
+.card{background:var(--card);box-shadow:0 30px 60px -20px rgba(0,0,0,.55);min-width:0}
+.top{display:grid;grid-template-columns:11rem 1fr}
+.photo{grid-row:span 2;background:var(--navy-3);aspect-ratio:1;position:relative;overflow:hidden}
+.photo svg,.photo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.idbar{display:grid;grid-template-columns:1fr auto;background:var(--navy-2);color:#fff;min-height:5.5rem}
+.idbar h1{font:700 clamp(1.7rem,4vw,2.4rem)/1 var(--font-d);margin:0;padding:1.4rem 1.5rem;align-self:center}
+.idbar .job{background:var(--t1);padding:0 1.5rem;display:flex;align-items:center;font:600 1.05rem/1.2 var(--font-d);color:#04121F}
+
+/* ---- Separadores ---- */
+.tabs{display:grid;grid-template-columns:repeat(5,1fr);margin:0;padding:0}
+.tab{border:0;margin:0;cursor:pointer;color:var(--ink-on);font:500 .9rem var(--font-b);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.3rem;min-height:5.5rem;padding:.5rem .25rem;position:relative}
+.tab svg{width:22px;height:22px}
+.tab:nth-child(1){background:var(--t1)}.tab:nth-child(2){background:var(--t2)}.tab:nth-child(3){background:var(--t3)}.tab:nth-child(4){background:var(--t4)}.tab:nth-child(5){background:var(--t5)}
+.tab[aria-selected="true"]{background:var(--card);color:var(--tc)}
+.tab[aria-selected="true"]::after{content:"";position:absolute;left:0;right:0;top:0;height:4px;background:var(--tc)}
+.tab:nth-child(1){--tc:var(--t1)}.tab:nth-child(2){--tc:var(--t2)}.tab:nth-child(3){--tc:var(--t3)}.tab:nth-child(4){--tc:var(--t4)}.tab:nth-child(5){--tc:var(--t5)}
+.tab:not([aria-selected="true"]):hover{filter:brightness(1.1)}
+
+/* ---- Painéis ---- */
+.panel{padding:2.25rem 2rem 2.5rem;min-height:26rem}
+.panel[hidden]{display:none}
+.panel.enter{animation:in .25s ease-out}
+@keyframes in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+h2{font:700 2.1rem/1 var(--font-d);margin:0 0 .75rem}
+h3{font:700 1.3rem/1.15 var(--font-d);margin:0 0 .35rem}
+.intro{max-width:42rem;margin:0 0 1.75rem;color:var(--muted);font-size:1.05rem}
+.band{background:var(--card-2);margin:0 -2rem;padding:1.75rem 2rem}
+.cols{display:grid;gap:1.75rem;grid-template-columns:repeat(auto-fit,minmax(13rem,1fr))}
+.feat .ico{width:2rem;height:2rem;display:grid;place-items:center;color:#fff;margin-bottom:.6rem}
+.feat .ico svg{width:18px;height:18px}
+.feat p{margin:0;color:var(--muted);font-size:.95rem}
+.c1{background:var(--t1)}.c2{background:var(--t2)}.c3{background:var(--t3)}.c4{background:var(--t4)}.c5{background:var(--t5)}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(11rem,1fr));gap:1px;background:var(--line);border:1px solid var(--line);margin:1.75rem 0 0}
+.facts div{background:var(--card);padding:.85rem 1rem}
+.facts dt{color:var(--muted);font-size:.85rem}
+.facts dd{margin:0;font-weight:600}
+
+/* Currículo */
+.split{display:grid;gap:2.25rem}
+@media (min-width:760px){.split{grid-template-columns:1fr 1fr}}
+.col-title{display:flex;align-items:center;gap:.6rem;font:700 1.5rem var(--font-d);margin:0 0 1.25rem}
+.col-title span{width:.75rem;height:.75rem;background:var(--t2)}
+.col-title span.c1{background:var(--t1)}.col-title span.c3{background:var(--t3)}.col-title span.c4{background:var(--t4)}.col-title span.c5{background:var(--t5)}
+.col-title.mt{margin-top:2rem}
+.tl{list-style:none;margin:0;padding:0 0 0 1.25rem;border-left:2px solid var(--line)}
+.tl li{position:relative;margin-bottom:1.6rem}
+.tl li:last-child{margin-bottom:0}
+.tl li::before{content:"";position:absolute;left:calc(-1.25rem - 7px);top:.35rem;width:12px;height:12px;background:var(--card);border:2px solid var(--t2)}
+.tl .when{font:600 .95rem var(--font-d);color:var(--t3)}
+.tl .org{color:var(--muted);font-size:.95rem;margin:0 0 .35rem}
+.tl p{margin:0;font-size:.95rem}
+
+/* Competências */
+.skills{display:grid;gap:1rem 2.5rem;list-style:none;margin:0 0 2rem;padding:0}
+@media (min-width:760px){.skills{grid-template-columns:1fr 1fr}}
+.skill{display:flex;justify-content:space-between;align-items:center;gap:1rem;padding-bottom:.75rem;border-bottom:1px solid var(--line)}
+.dots{display:flex;gap:4px;flex:none}
+.dots i{width:14px;height:6px;background:var(--line)}
+.dots i.on{background:var(--t3)}
+.certs{display:grid;gap:.6rem;list-style:none;margin:0;padding:0;grid-template-columns:repeat(auto-fit,minmax(15rem,1fr))}
+.cert{display:flex;justify-content:space-between;align-items:center;gap:.75rem;background:var(--card-2);padding:.8rem 1rem;border-left:4px solid var(--t3)}
+.cert strong{display:block}
+.cert small{color:var(--muted)}
+.badge{font-size:.8rem;font-weight:600;padding:.2rem .5rem;white-space:nowrap;color:#fff;background:var(--t1)}
+.badge.warn{background:#B45309}
+.badge.na{background:var(--muted)}
+.chips{display:flex;flex-wrap:wrap;gap:.4rem;list-style:none;margin:0;padding:0}
+.chips li{background:var(--card-2);padding:.3rem .7rem;font-size:.95rem}
+
+/* Trabalhos */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(12rem,1fr));gap:4px;list-style:none;margin:0;padding:0}
+.work{all:unset;cursor:pointer;display:block;position:relative;aspect-ratio:4/3;color:#fff;overflow:hidden}
+.work:focus-visible{outline:3px solid #3B8EFF;outline-offset:2px}
+.work .art{position:absolute;inset:0;display:grid;place-items:center}
+.work .art svg{width:42%;height:42%;opacity:.9;transition:transform .25s}
+.work:hover .art svg{transform:scale(1.06)}
+.work .cap{position:absolute;left:0;right:0;bottom:0;padding:.6rem .8rem;background:linear-gradient(transparent,rgba(4,18,31,.85));font:600 1rem/1.2 var(--font-d)}
+dialog.work-dlg{border:0;padding:0;max-width:min(92vw,34rem);background:var(--card);color:var(--text);box-shadow:0 30px 60px rgba(0,0,0,.5)}
+dialog.work-dlg::backdrop{background:rgba(4,12,24,.7)}
+.dlg-art{aspect-ratio:16/9;display:grid;place-items:center;color:#fff}
+.dlg-art svg{width:22%;height:auto}
+.dlg-body{padding:1.5rem}
+.dlg-body p{margin:.25rem 0 1rem;color:var(--muted)}
+.dlg-body ul{margin:0 0 1.25rem;padding-left:1.1rem}
+.btn{display:inline-flex;align-items:center;gap:.5rem;min-height:44px;padding:.6rem 1.1rem;border:0;cursor:pointer;font:600 1rem var(--font-b);text-decoration:none;color:#fff;background:var(--t4)}
+.btn.alt{background:var(--card-2);color:var(--text)}
+.btn svg{width:18px;height:18px}
+
+/* Contato */
+.contact{display:grid;gap:2rem}
+@media (min-width:760px){.contact{grid-template-columns:1fr 1fr}}
+.channels{list-style:none;margin:0;padding:0;display:grid;gap:4px}
+.channels a{display:flex;align-items:center;gap:1rem;padding:1rem;background:var(--card-2);color:var(--text);text-decoration:none}
+.channels a:hover{background:var(--t5);color:#fff}
+.channels a:hover small{color:#E0E7FF}
+.channels .ci{width:2.5rem;height:2.5rem;display:grid;place-items:center;background:var(--t5);color:#fff;flex:none}
+.channels svg{width:18px;height:18px}
+.channels small{display:block;color:var(--muted);font-size:.85rem}
+.actions{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1.25rem}
+.note{color:var(--muted);font-size:.9rem;margin-top:.75rem;min-height:1.4em}
+
+.foot{background:linear-gradient(90deg,var(--t1),var(--t4));color:#fff;font-size:.85rem;padding:.75rem 2rem;display:flex;justify-content:space-between;flex-wrap:wrap;gap:.5rem}
+.foot a{color:#fff}
+
+/* demonstração: como chegaria a mensagem no WhatsApp (assets/js/exemplo.js) */
+dialog.demo-dialog{width:min(480px,calc(100% - 32px));border:0;padding:0;background:var(--card);color:var(--text);box-shadow:0 30px 80px rgba(0,0,0,.5)}
+dialog.demo-dialog::backdrop{background:rgba(4,12,24,.7)}
+.dd-head{display:flex;align-items:center;gap:10px;padding:16px 20px;background:var(--wa);color:var(--wa-ink);font-weight:700}
+.dd-head svg{width:22px;height:22px}
+.dd-body{padding:20px}
+.dd-body p{color:var(--muted);font-size:15.5px}
+.dd-body .dd-msg{white-space:pre-wrap;background:#DCF8C6;color:#111B21;padding:12px 14px;margin:0 0 16px;font-size:15px;line-height:1.45;max-height:45vh;overflow:auto}
+.dd-actions{display:flex;flex-wrap:wrap;gap:10px;justify-content:flex-end}
+
+/* ---- Mobile ---- */
+@media (max-width:640px){
+  .page{grid-template-columns:1fr;margin:0 auto 1rem;width:100%}
+  .social{order:2;flex-direction:row;justify-content:center;margin:0;background:var(--navy-2)}
+  .social a{border:0}
+  .top{grid-template-columns:6.5rem 1fr}
+  .idbar{grid-template-columns:1fr;min-height:0}
+  .idbar h1{padding:1rem 1rem .4rem}
+  .idbar .job{background:transparent;color:var(--t1);padding:0 1rem 1rem;font-size:1rem}
+  .photo{grid-row:auto;aspect-ratio:auto}
+  .tabs{grid-column:1/-1}
+  .tab{min-height:4.25rem;font-size:.78rem}
+  .tab span{display:block}
+  .panel{padding:1.75rem 1.25rem 2rem}
+  .band{margin:0 -1.25rem;padding:1.5rem 1.25rem}
+  .foot{padding:.75rem 1.25rem}
+}
+
+/* ---- Impressão / PDF: todas as secções seguidas ---- */
+@media print{
+  body{background:#fff}
+  :root{--card:#fff;--card-2:#f3f5f8;--text:#000;--muted:#444;--line:#ccc}
+  .demo,.social,.tabs,.actions,.foot,dialog,#portfolio{display:none!important}
+  .page{display:block;margin:0;width:100%}
+  .card{box-shadow:none}
+  .top{grid-template-columns:7rem 1fr}
+  .panel,.panel[hidden]{display:block!important;min-height:0;padding:1rem 0;break-inside:avoid-page}
+  .band{margin:0;padding:1rem}
+  .channels a{padding:.4rem 0;background:none}
+  .channels .ci{display:none}
+}
+</style>
+</head>
+<body data-wa-phone="5519999990000" data-demo="1">
+
+<div class="demo">Currículo de exemplo criado pela <a href="/">LynxCoder</a>. Pessoa e contatos fictícios. <a href="/?quero=curriculo#contato">Quero um assim →</a> · <a href="/#contato">Tenho dúvidas</a></div>
+
+<div class="page">
+  <ul class="social" aria-label="Redes e contatos">
+    <li><a href="https://www.linkedin.com/" target="_blank" rel="noopener" aria-label="LinkedIn"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5ZM3 9.75h4V21H3V9.75Zm6.5 0h3.8v1.6h.06c.53-1 1.83-2.06 3.77-2.06 4.03 0 4.77 2.65 4.77 6.1V21h-4v-4.9c0-1.17-.02-2.68-1.63-2.68-1.64 0-1.89 1.28-1.89 2.6V21h-4V9.75Z"/></svg></a></li>
+    <li><a href="#contato" data-wa="Olá, Ricardo! Vi o seu currículo e gostaria de falar sobre uma vaga." aria-label="WhatsApp"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2c-1.5 0-3-.4-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Z"/></svg></a></li>
+    <li><a href="mailto:ricardo@exemplo.com.br" aria-label="E-mail"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="2" y="4" width="20" height="16"/><path d="m22 6-10 7L2 6"/></svg></a></li>
+    <li><a href="tel:+5519999990000" data-tel aria-label="Telefone"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2Z"/></svg></a></li>
+  </ul>
+
+  <article class="card">
+    <header class="top">
+      <div class="photo">
+        <svg viewBox="0 0 200 200" role="img" aria-label="Foto de Ricardo Almeida">
+          <rect width="200" height="200" fill="#1A3556"/>
+          <circle cx="100" cy="82" r="38" fill="#2B4E78"/>
+          <path d="M28 200c6-44 36-68 72-68s66 24 72 68Z" fill="#2B4E78"/>
+          <path d="M62 66c4-22 22-34 38-34s34 12 38 34Z" fill="#10B981"/>
+          <rect x="56" y="62" width="88" height="8" fill="#0EA5A4"/>
+        </svg>
+      </div>
+      <div class="idbar">
+        <h1>Ricardo Almeida</h1>
+        <div class="job">Eletricista predial e industrial</div>
+      </div>
+      <div class="tabs" role="tablist" aria-label="Seções do currículo">
+        <button class="tab" type="button" role="tab" id="t-sobre" aria-controls="sobre" aria-selected="true" data-key="sobre">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7Z"/></svg><span>Sobre</span></button>
+        <button class="tab" type="button" role="tab" id="t-experiencia" aria-controls="experiencia" aria-selected="false" tabindex="-1" data-key="experiencia">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M9 3h6a2 2 0 0 1 2 2v2h3a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h3V5a2 2 0 0 1 2-2Zm0 4h6V5H9v2Z"/></svg><span>Experiência</span></button>
+        <button class="tab" type="button" role="tab" id="t-competencias" aria-controls="competencias" aria-selected="false" tabindex="-1" data-key="competencias">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8Z"/></svg><span>Competências</span></button>
+        <button class="tab" type="button" role="tab" id="t-portfolio" aria-controls="portfolio" aria-selected="false" tabindex="-1" data-key="portfolio">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 3h8v8H3V3Zm10 0h8v8h-8V3ZM3 13h8v8H3v-8Zm10 0h8v8h-8v-8Z"/></svg><span>Trabalhos</span></button>
+        <button class="tab" type="button" role="tab" id="t-contato" aria-controls="contato" aria-selected="false" tabindex="-1" data-key="contato">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4 4h16a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H9l-5 4v-4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z"/></svg><span>Contato</span></button>
+      </div>
+    </header>
+
+    <!-- SOBRE -->
+    <section class="panel" id="sobre" role="tabpanel" aria-labelledby="t-sobre">
+      <h2>Olá, sou o Ricardo</h2>
+      <p class="intro">Técnico em eletrotécnica com 14 anos de experiência em instalações prediais, manutenção de condomínios e painéis industriais. Procuro uma vaga efetiva como eletricista de manutenção ou encarregado de elétrica na região de Campinas.</p>
+      <div class="band">
+        <div class="cols">
+          <div class="feat">
+            <div class="ico c1"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8Z"/></svg></div>
+            <h3>Manutenção predial</h3>
+            <p>Preventiva e corretiva em edifícios comerciais e condomínios, com relatório mensal para a gestão.</p>
+          </div>
+          <div class="feat">
+            <div class="ico c3"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 3h18v18H3V3Zm3 3v4h4V6H6Zm8 0v4h4V6h-4Zm-8 8v4h4v-4H6Zm8 0v4h4v-4h-4Z"/></svg></div>
+            <h3>Quadros e painéis</h3>
+            <p>Montagem, leitura de diagramas e comissionamento de quadros de distribuição e comando de motores.</p>
+          </div>
+          <div class="feat">
+            <div class="ico c5"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2 3 6v6c0 5 3.8 9.4 9 10 5.2-.6 9-5 9-10V6l-9-4Z"/></svg></div>
+            <h3>Segurança em primeiro lugar</h3>
+            <p>NR-10, NR-10 SEP e NR-35 em dia. Bloqueio e etiquetagem em todas as intervenções.</p>
+          </div>
+        </div>
+      </div>
+      <dl class="facts">
+        <div><dt>Idade</dt><dd>34 anos</dd></div>
+        <div><dt>Cidade</dt><dd>Campinas, SP</dd></div>
+        <div><dt>Habilitação</dt><dd>CNH B, veículo próprio</dd></div>
+        <div><dt>Disponibilidade</dt><dd>Início imediato, turnos</dd></div>
+      </dl>
+    </section>
+
+    <!-- EXPERIÊNCIA -->
+    <section class="panel" id="experiencia" role="tabpanel" aria-labelledby="t-experiencia" hidden>
+      <div class="split">
+        <div>
+          <p class="col-title"><span aria-hidden="true"></span>Experiência profissional</p>
+          <ol class="tl">
+            <li><span class="when">2019 até hoje</span><h3>Eletricista autônomo</h3><p class="org">Prestação de serviços, Campinas</p>
+              <p>Contratos de manutenção com 4 condomínios, troca de quadros, adequação de padrão CPFL e instalação de carregadores veiculares.</p></li>
+            <li><span class="when">2014 a 2019</span><h3>Eletricista de manutenção</h3><p class="org">Predial Sul Serviços</p>
+              <p>Manutenção em 12 edifícios comerciais, inspeções de SPDA e apoio aos laudos elétricos.</p></li>
+            <li><span class="when">2011 a 2014</span><h3>Ajudante e eletricista de obra</h3><p class="org">Construtora Horizonte</p>
+              <p>Instalações de 3 condomínios residenciais, da infraestrutura ao teste dos quadros.</p></li>
+          </ol>
+        </div>
+        <div>
+          <p class="col-title"><span class="c4" aria-hidden="true"></span>Formação</p>
+          <ol class="tl">
+            <li><span class="when">2010 a 2012</span><h3>Técnico em Eletrotécnica</h3><p class="org">SENAI Campinas</p>
+              <p>Instalações prediais, comandos elétricos, máquinas e eletrônica básica.</p></li>
+            <li><span class="when">2009</span><h3>Ensino médio completo</h3><p class="org">E.E. Prof. Carlos Gomes</p></li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <!-- COMPETÊNCIAS -->
+    <section class="panel" id="competencias" role="tabpanel" aria-labelledby="t-competencias" hidden>
+      <p class="col-title"><span class="c3" aria-hidden="true"></span>Competências técnicas</p>
+      <ul class="skills" id="skills"></ul>
+      <p class="col-title"><span class="c1" aria-hidden="true"></span>Normas e certificações</p>
+      <ul class="certs" id="certs"></ul>
+      <p class="col-title mt"><span class="c5" aria-hidden="true"></span>Também sei usar</p>
+      <ul class="chips">
+        <li>Megômetro</li><li>Alicate amperímetro</li><li>Terrômetro</li><li>Termovisor</li><li>AutoCAD básico</li><li>Pacote Office</li>
+      </ul>
+    </section>
+
+    <!-- TRABALHOS -->
+    <section class="panel" id="portfolio" role="tabpanel" aria-labelledby="t-portfolio" hidden>
+      <h2>Trabalhos realizados</h2>
+      <p class="intro">Toque num trabalho para ver os detalhes.</p>
+      <ul class="grid" id="works"></ul>
+    </section>
+
+    <!-- CONTATO -->
+    <section class="panel" id="contato" role="tabpanel" aria-labelledby="t-contato" hidden>
+      <div class="contact">
+        <div>
+          <h2>Vamos conversar</h2>
+          <p class="intro">Disponível para entrevista presencial ou por vídeo. Respondo no mesmo dia.</p>
+          <div class="actions">
+            <button class="btn" type="button" id="print"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 3v12m0 0-4-4m4 4 4-4M4 21h16"/></svg>Salvar em PDF</button>
+            <button class="btn alt" type="button" id="share">Copiar link do currículo</button>
+          </div>
+          <p class="note" id="note" aria-live="polite"></p>
+        </div>
+        <ul class="channels">
+          <li><a href="#contato" data-wa="Olá, Ricardo! Vi o seu currículo e gostaria de falar sobre uma vaga."><span class="ci"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Z"/></svg></span><span><small>WhatsApp</small>(19) 99999-0000</span></a></li>
+          <li><a href="tel:+5519999990000" data-tel><span class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2Z"/></svg></span><span><small>Telefone</small>(19)&nbsp;99999&#8209;0000</span></a></li>
+          <li><a href="mailto:ricardo@exemplo.com.br"><span class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="2" y="4" width="20" height="16"/><path d="m22 6-10 7L2 6"/></svg></span><span><small>E-mail</small>ricardo@exemplo.com.br</span></a></li>
+          <li><a href="https://www.linkedin.com/" target="_blank" rel="noopener"><span class="ci"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5ZM3 9.75h4V21H3V9.75Zm6.5 0h3.8v1.6h.06c.53-1 1.83-2.06 3.77-2.06 4.03 0 4.77 2.65 4.77 6.1V21h-4v-4.9c0-1.17-.02-2.68-1.63-2.68-1.64 0-1.89 1.28-1.89 2.6V21h-4V9.75Z"/></svg></span><span><small>LinkedIn</small>/in/ricardo-almeida</span></a></li>
+        </ul>
+      </div>
+    </section>
+
+    <footer class="foot">
+      <span>© <span id="year">2026</span> Ricardo Almeida</span>
+      <span>Currículo online por <a href="/">LynxCoder</a></span>
+    </footer>
+  </article>
+</div>
+
+<dialog class="work-dlg" id="dlg" aria-labelledby="dlg-title">
+  <div class="dlg-art" id="dlg-art"></div>
+  <div class="dlg-body">
+    <h3 id="dlg-title">Trabalho</h3>
+    <p id="dlg-meta"></p>
+    <ul id="dlg-list"></ul>
+    <button class="btn alt" type="button" id="dlg-close">Fechar</button>
+  </div>
+</dialog>
+
+<dialog class="demo-dialog" id="demoDialog" aria-labelledby="ddTitle">
+  <div class="dd-head">
+    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 00-8.6 15.1L2 22l5-1.3A10 10 0 1012 2z"/></svg>
+    <span id="ddTitle">Assim chegaria no WhatsApp</span>
+  </div>
+  <div class="dd-body">
+    <p id="ddIntro">Neste currículo de exemplo o número é fictício. Num currículo real, a mensagem abaixo abriria já pronta no WhatsApp do candidato:</p>
+    <p class="dd-msg" id="ddMsg"></p>
+    <div class="dd-actions">
+      <button type="button" class="btn alt" id="ddClose">Fechar</button>
+      <a class="btn" href="/?quero=curriculo#contato">Quero um currículo assim</a>
+    </div>
+  </div>
+</dialog>
+
+<script src="/assets/js/exemplo.js?v=3"></script>
+<script src="/assets/js/curriculo-eletricista.js?v=1"></script>
+</body>
+</html>

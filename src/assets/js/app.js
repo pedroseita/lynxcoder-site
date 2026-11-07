@@ -118,6 +118,18 @@
       .catch(function () { /* fica a mensagem "a caminho" */ });
   }
 
+  /* ---- Contato com o pedido já começado: /?quero=curriculo#contato ----
+     Vem do "Quero um assim" dos exemplos que ainda não se compram no /criar.
+     Só preenche se a mensagem estiver vazia; o texto é fixo (nunca o do URL). */
+  var QUERO = {
+    curriculo: 'Olá! Quero um currículo online como o do exemplo. Sou da área de ',
+  };
+  var fMsg = document.getElementById('f-msg');
+  var quero = new URLSearchParams(window.location.search).get('quero');
+  if (fMsg && quero && Object.prototype.hasOwnProperty.call(QUERO, quero) && !fMsg.value) {
+    fMsg.value = QUERO[quero];
+  }
+
   /* Páginas internas (privacy, terms, 404) não têm nav mobile — sair sem erro.
      Sem esta guarda, um único null aqui abortava o IIFE inteiro. */
   if (!burger || !mobile) return;
